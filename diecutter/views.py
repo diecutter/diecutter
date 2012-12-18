@@ -5,8 +5,17 @@ from os.path import abspath, join, dirname, exists, basename
 from cornice import Service
 from pyramid.exceptions import NotFound
 from jinja2 import Template
+from diecutter import __version__ as VERSION
 
 TEMPLATE_DIR = join(dirname(abspath(__file__)), 'templates')
+
+token = 'mon_token' # set your token here
+
+def token_validator(request):
+    if token != request.POST.get('token', ''):
+        request.errors.add('authentication', 'token', 'invalid token')
+        request.errors.status = 403
+        return request.errors
 
 
 def get_template(template_name):
@@ -34,10 +43,10 @@ conf_template = Service(name='template', path='/{template_name}',
 @template_service.get()
 def get_hello(request):
     """Returns Hello in JSON."""
-    return {'diecutter': 'Hello'}
+    return {'diecutter': 'Hello', 'version': VERSION}
 
 
-@conf_template.put()
+@conf_template.put(validators=(token_validator,))
 def put_template(request):
     filename = request.matchdict['template_name']
     input_file = request.POST['file'].file

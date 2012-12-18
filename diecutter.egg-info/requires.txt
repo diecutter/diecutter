@@ -1,3 +1,0 @@
-cornice
-PasteScript
-waitress
