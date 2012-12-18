@@ -9,7 +9,7 @@ from diecutter import __version__ as VERSION
 
 TEMPLATE_DIR = join(dirname(abspath(__file__)), 'templates')
 
-token = 'mon_token' # set your token here
+token = ''  # set your token here
 
 def token_validator(request):
     if token != request.POST.get('token', ''):
