@@ -23,4 +23,4 @@ To render a template with some variables::
     Received "toto"
 
     curl -X POST http://diecutter.local/template_name.ini -d 'variable=toto'
-	Received "toto"
+    Received "toto"
