@@ -1,42 +1,21 @@
 """ Cornice services.
 """
 import json
-from os.path import abspath, join, dirname, exists, basename
 from cornice import Service
 from pyramid.exceptions import NotFound
-from jinja2 import Template
+from os import makedirs
+from os.path import join, abspath, dirname, exists
+
 from diecutter import __version__ as VERSION
+from diecutter.settings import TEMPLATE_DIR
+from diecutter.utils import Resource
+from diecutter.validators import token_validator
 
-TEMPLATE_DIR = join(dirname(abspath(__file__)), 'templates')
-
-token = ''  # set your token here
-
-def token_validator(request):
-    if token != request.POST.get('token', ''):
-        request.errors.add('authentication', 'token', 'invalid token')
-        request.errors.status = 403
-        return request.errors
-
-
-def get_template(template_name):
-    """Return the template string from a template_name."""
-    template = join(TEMPLATE_DIR, basename(template_name))
-    if exists(template):
-        return open(template).read()
-
-
-class Jinja2Engine(object):
-    def render(self, template, context):
-        """Return the rendered template against context."""
-        template = Template(template)
-        return template.render(**context)
-
-engine = Jinja2Engine()
 
 template_service = Service(name='template_service', path='/',
                            description="The template API")
 
-conf_template = Service(name='template', path='/{template_name}',
+conf_template = Service(name='template', path='/{template_path:.*}',
               description="Return the template render or raw")
 
 
@@ -48,10 +27,16 @@ def get_hello(request):
 
 @conf_template.put(validators=(token_validator,))
 def put_template(request):
-    filename = request.matchdict['template_name']
+    filename = request.matchdict['template_path']
     input_file = request.POST['file'].file
 
-    file_path = join(TEMPLATE_DIR, filename)
+    file_path = abspath(join(TEMPLATE_DIR, filename))
+    if not file_path.startswith(TEMPLATE_DIR):
+        NotFound('Ressource not found.')
+
+    if not exists(dirname(file_path)):
+        makedirs(dirname(file_path))
+
     with open(file_path, 'w') as output_file:
         # Finally write the data to the output file
         input_file.seek(0)
@@ -64,23 +49,23 @@ def put_template(request):
 
 @conf_template.get()
 def get_conf_template(request):
-    template = get_template(request.matchdict['template_name'])
-    if template:
-        request.response.content_type = "text/plain"
-        request.response.write(template)
-        return request.response
-    return NotFound('Template not found')
+    resource = Resource(request.matchdict['template_path'])
+    if not resource.exists:
+        return NotFound('Template not found')
+    request.response.content_type = 'text/plain'
+    request.response.write(resource.read())
+    return request.response
 
 
 @conf_template.post()
 def post_conf_template(request):
-    template = get_template(request.matchdict['template_name'])
+    resource = Resource(request.matchdict['template_path'])
     try:
         context = json.loads(request.body)
     except:
         context = request.POST.copy()
-    if template:
-        request.response.content_type = "text/plain"
-        request.response.write(engine.render(template, context))
-        return request.response
-    return NotFound('Template not found')
+    if not resource.exists:
+        return NotFound('Template not found')
+    request.response.content_type = resource.content_type
+    request.response.write(resource.render(context))
+    return request.response
