@@ -8,6 +8,19 @@ from diecutter.settings import TEMPLATE_DIR
 from diecutter.jinja import Jinja2Engine
 
 
+def render_path(path, context):
+    """Take a context and render the path.
+    >>> from diecutter.utils import render_path
+    >>> render_path('circus/circus_+watcher_name+.ini',
+    ...     dict(watcher_name='diecutter'))
+    'circus/circus_diecutter.ini'
+
+    """
+    for key, val in context.iteritems():
+        path = path.replace('+%s+' % key, val)
+    return path
+
+
 class Resource(object):
     def __init__(self, path, engine=Jinja2Engine()):
         self.path = join(TEMPLATE_DIR, path)
@@ -59,8 +72,9 @@ class Resource(object):
                     for file_name in sorted(files):
                         resource = Resource(join(relpath(root, TEMPLATE_DIR),
                                                  file_name))
+                        path = join(relpath(root, full_root).lstrip('./'),
+                                    file_name)
                         temp_zip.writestr(
-                            join(relpath(root, full_root).lstrip('./'),
-                                 file_name),
+                            render_path(path, context),
                             resource.render(context))
             return temp_file.getvalue()
