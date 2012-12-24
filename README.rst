@@ -120,3 +120,21 @@ You just add to put ``+context_name+`` it will match automatically::
            46                     3 files
     $ cat circus/circus_diecutter.ini
     [watcher:diecutter]
+
+A full example : the diecutter django_admin.py startproject
+===========================================================
+
+As an example, we added a +django_project+ template that you can use like this::
+
+    $ curl http://localhost:8106/+django_project+ -d 'django_project=diecutter_demo' > diecutter_demo.zip
+    $ unzip -l diecutter_demo.zip
+    Archive:  diecutter_demo.zip
+      Length      Date    Time    Name
+    ---------  ---------- -----   ----
+          256  2012-12-24 12:08   diecutter_demo/manage.py
+            0  2012-12-24 12:08   diecutter_demo/diecutter_demo/__init__.py
+         5239  2012-12-24 12:08   diecutter_demo/diecutter_demo/settings.py
+          579  2012-12-24 12:08   diecutter_demo/diecutter_demo/urls.py
+         1149  2012-12-24 12:08   diecutter_demo/diecutter_demo/wsgi.py
+    ---------                     -------
+         7223                     5 files
