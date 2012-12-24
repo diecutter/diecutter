@@ -49,7 +49,7 @@ class Resource(object):
     def render(self, context):
         """Return the template rendered against context."""
         if self.is_file:
-            return self.engine.render(self.path, context)
+            return self.engine.render(self.read(), context)
         elif self.is_dir:
             full_root = dirname(self.path)
             temp_file = StringIO()
@@ -61,6 +61,6 @@ class Resource(object):
                                                  file_name))
                         temp_zip.writestr(
                             join(relpath(root, full_root).lstrip('./'),
-                             file_name),
+                                 file_name),
                             resource.render(context))
             return temp_file.getvalue()

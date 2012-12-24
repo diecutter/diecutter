@@ -8,5 +8,4 @@ class Jinja2Engine(object):
         template = Template(template)
         return template.render(**context)
 
-
 engine = Jinja2Engine()

@@ -15,7 +15,7 @@ from diecutter.validators import token_validator
 template_service = Service(name='template_service', path='/',
                            description="The template API")
 
-conf_template = Service(name='template', path='/{template_path:.*}',
+conf_template = Service(name='template', path='/{template_path:.+}',
               description="Return the template render or raw")
 
 
