@@ -17,7 +17,10 @@ def render_path(path, context):
 
     """
     for key, val in context.iteritems():
-        path = path.replace('+%s+' % key, val)
+        try:
+            path = path.replace('+%s+' % key, val)
+        except TypeError:
+            pass
     return path
 
 

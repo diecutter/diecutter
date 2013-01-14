@@ -1,6 +1,7 @@
 """ Cornice services.
 """
 import json
+from datetime import datetime
 from cornice import Service
 from pyramid.exceptions import NotFound
 from os import makedirs
@@ -16,7 +17,7 @@ template_service = Service(name='template_service', path='/',
                            description="The template API")
 
 conf_template = Service(name='template', path='/{template_path:.+}',
-              description="Return the template render or raw")
+                        description="Return the template render or raw")
 
 
 @template_service.get()
@@ -64,8 +65,16 @@ def post_conf_template(request):
         context = json.loads(request.body)
     except:
         context = request.POST.copy()
+    context['diecutter'] = {
+        'api_url': '%s://%s' % (request.environ['wsgi.url_scheme'],
+                                request.environ['HTTP_HOST']),
+        'version': VERSION,
+        'now': datetime.now()}
     if not resource.exists:
         return NotFound('Template not found')
     request.response.content_type = resource.content_type
-    request.response.write(resource.render(context))
+    try:
+        request.response.write(resource.render(context))
+    except KeyError as e:
+        request.write(json.dumps(str(e)))
     return request.response
