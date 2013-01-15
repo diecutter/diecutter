@@ -21,8 +21,8 @@ Install diecutter from Github, configure it then run the server:
 
    # Download and install (in a virtualenv if you like).
    pip install -e git+git@github.com:novagile/diecutter.git#egg=diecutter
-   # Configure: customize at least "diecutter.template_dir" setting.
-   wget -O diecutter.ini https://raw.github.com/novagile/diecutter/master/diecutter.ini
+   # Configure: adapt "YOUR_TEMPLATE_DIR"!
+   wget -O diecutter.ini --post-data "template_dir=YOUR_TEMPLATE_DIR" http://diecutter.alwaysdata.net/diecutter.ini
    # Run the server.
    pserve diecutter.ini --reload
 
