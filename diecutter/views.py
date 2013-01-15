@@ -28,6 +28,9 @@ def get_template_dir(request):
     except KeyError:
         error_msg = 'Missing mandatory "diecutter.template_dir" setting.'
         raise ConfigurationError(error_msg)
+    if not template_dir:
+        error_msg = 'Mandatory "diecutter.template_dir" setting is empty.'
+        raise ConfigurationError(error_msg)
     return template_dir
 
 

@@ -1,11 +1,14 @@
+# Local configuration.
+/etc/
+
+# Libraries (automatically installed).
+/lib/
+
+# Python files.
 *.pyc
 /*.egg-info/
 /*.egg/
-/lib/
 
-# Templates.
-/diecutter/templates/
-
-# Editor files.
+# Editors' temporary buffers.
 *~
 .*.swp
