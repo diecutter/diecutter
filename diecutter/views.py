@@ -3,12 +3,11 @@
 import json
 from datetime import datetime
 from cornice import Service
-from pyramid.exceptions import NotFound
+from pyramid.exceptions import ConfigurationError, NotFound
 from os import makedirs
-from os.path import join, abspath, dirname, exists
+from os.path import join, abspath, dirname, exists, normpath
 
 from diecutter import __version__ as VERSION
-from diecutter.settings import TEMPLATE_DIR
 from diecutter.utils import Resource
 from diecutter.validators import token_validator
 
@@ -18,6 +17,32 @@ template_service = Service(name='template_service', path='/',
 
 conf_template = Service(name='template', path='/{template_path:.+}',
                         description="Return the template render or raw")
+
+
+def get_template_dir(request):
+    """Return validated template directory configuration for request."""
+    try:
+        template_dir = request.registry.settings['diecutter.template_dir']
+    except KeyError:
+        error_msg = 'Missing mandatory "diecutter.template_dir" setting.'
+        raise ConfigurationError(error_msg)
+    return template_dir
+
+
+def get_resource_path(request):
+    """Return validated (absolute) resource path from request.
+
+    Checks that resource path is inside request's template_dir.
+
+    """
+    template_dir = get_template_dir(request)
+    filename = request.matchdict['template_path']
+    file_path = normpath(abspath(join(template_dir, filename)))
+    if not file_path.startswith(template_dir):
+        NotFound('Ressource not found.')
+    if filename.endswith('/'):  # Preserve trailing '/'
+        file_path += '/'
+    return file_path
 
 
 @template_service.get()
@@ -31,9 +56,7 @@ def put_template(request):
     filename = request.matchdict['template_path']
     input_file = request.POST['file'].file
 
-    file_path = abspath(join(TEMPLATE_DIR, filename))
-    if not file_path.startswith(TEMPLATE_DIR):
-        NotFound('Ressource not found.')
+    file_path = get_resource_path(request)
 
     if not exists(dirname(file_path)):
         makedirs(dirname(file_path))
@@ -50,7 +73,7 @@ def put_template(request):
 
 @conf_template.get()
 def get_conf_template(request):
-    resource = Resource(request.matchdict['template_path'])
+    resource = Resource(get_resource_path(request))
     if not resource.exists:
         return NotFound('Template not found')
     request.response.content_type = 'text/plain'
@@ -60,7 +83,7 @@ def get_conf_template(request):
 
 @conf_template.post()
 def post_conf_template(request):
-    resource = Resource(request.matchdict['template_path'])
+    resource = Resource(get_resource_path(request))
     try:
         context = json.loads(request.body)
     except:
