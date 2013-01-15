@@ -3,13 +3,12 @@
 import json
 from datetime import datetime
 from cornice import Service
-from pyramid.exceptions import ConfigurationError, NotFound
+from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
 from os import makedirs
 from os.path import join, abspath, dirname, exists, normpath
 
 from diecutter import __version__ as VERSION
 from diecutter.exceptions import TemplateError
-from diecutter.settings import TEMPLATE_DIR
 from diecutter.utils import Resource
 from diecutter.validators import token_validator
 
@@ -50,6 +49,15 @@ def get_resource_path(request):
     return file_path
 
 
+def is_readonly(request):
+    """Return "readonly" flag status (boolean) for request.
+
+    As an example, PUT operations should be forbidden if readonly flag is On.
+
+    """
+    return request.registry.settings.get('diecutter.readonly', False)
+
+
 @template_service.get()
 def get_hello(request):
     """Returns Hello in JSON."""
@@ -58,6 +66,8 @@ def get_hello(request):
 
 @conf_template.put(validators=(token_validator,))
 def put_template(request):
+    if is_readonly(request):
+        raise Forbidden('This diecutter server is readonly.')
     filename = request.matchdict['template_path']
     input_file = request.POST['file'].file
 
