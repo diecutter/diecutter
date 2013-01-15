@@ -8,6 +8,7 @@ from os import makedirs
 from os.path import join, abspath, dirname, exists
 
 from diecutter import __version__ as VERSION
+from diecutter.exceptions import TemplateError
 from diecutter.settings import TEMPLATE_DIR
 from diecutter.utils import Resource
 from diecutter.validators import token_validator
@@ -75,6 +76,7 @@ def post_conf_template(request):
     request.response.content_type = resource.content_type
     try:
         request.response.write(resource.render(context))
-    except KeyError as e:
-        request.write(json.dumps(str(e)))
+    except TemplateError as e:
+        request.response.status_int = 500
+        request.response.write(json.dumps(str(e)))
     return request.response

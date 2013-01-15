@@ -6,6 +6,7 @@ from cStringIO import StringIO
 
 from diecutter.settings import TEMPLATE_DIR
 from diecutter.jinja import Jinja2Engine
+from diecutter.exceptions import TemplateError
 
 
 def render_path(path, context):
@@ -51,7 +52,7 @@ class Resource(object):
     def read(self):
         """Return the template source file."""
         if self.is_file:
-            return open(self.path, 'r').read()
+            return open(self.path, 'r').read().decode('utf-8')
         elif self.is_dir:
             lines = []
             full_root = dirname(self.path)
@@ -77,7 +78,13 @@ class Resource(object):
                                                  file_name))
                         path = join(relpath(root, full_root).lstrip('./'),
                                     file_name)
-                        temp_zip.writestr(
-                            render_path(path, context),
-                            resource.render(context))
+                        try:
+                            temp_zip.writestr(
+                                render_path(path, context),
+                                resource.render(context).encode('utf-8'))
+                        except TemplateError as e:
+                            raise TemplateError('%s: %s' % (path, e))
+                        except UnicodeDecodeError as e:
+                            raise TemplateError('%s: %s' % (path, e))
+
             return temp_file.getvalue()
