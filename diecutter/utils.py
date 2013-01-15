@@ -4,7 +4,6 @@ from os.path import join, exists, isfile, isdir, dirname, relpath
 import zipfile
 from cStringIO import StringIO
 
-from diecutter.settings import TEMPLATE_DIR
 from diecutter.jinja import Jinja2Engine
 from diecutter.exceptions import TemplateError
 
@@ -27,7 +26,16 @@ def render_path(path, context):
 
 class Resource(object):
     def __init__(self, path, engine=Jinja2Engine()):
-        self.path = join(TEMPLATE_DIR, path)
+        """Constructor.
+
+        path
+          An absolute path on the filesystem.
+
+        engine
+          A class that implements render(template, context).
+
+        """
+        self.path = path
         self.engine = engine
 
     @property
@@ -74,8 +82,8 @@ class Resource(object):
                                  compression=zipfile.ZIP_DEFLATED) as temp_zip:
                 for root, dirs, files in os.walk(self.path):
                     for file_name in sorted(files):
-                        resource = Resource(join(relpath(root, TEMPLATE_DIR),
-                                                 file_name))
+                        resource = Resource(join(root, file_name),
+                                            self.engine)
                         path = join(relpath(root, full_root).lstrip('./'),
                                     file_name)
                         try:
