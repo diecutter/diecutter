@@ -78,21 +78,22 @@ class Resource(object):
         elif self.is_dir:
             full_root = dirname(self.path)
             temp_file = StringIO()
-            with zipfile.ZipFile(temp_file, 'w',
-                                 compression=zipfile.ZIP_DEFLATED) as temp_zip:
-                for root, dirs, files in os.walk(self.path):
-                    for file_name in sorted(files):
-                        resource = Resource(join(root, file_name),
-                                            self.engine)
-                        path = join(relpath(root, full_root).lstrip('./'),
-                                    file_name)
-                        try:
-                            temp_zip.writestr(
-                                render_path(path, context),
-                                resource.render(context).encode('utf-8'))
-                        except TemplateError as e:
-                            raise TemplateError('%s: %s' % (path, e))
-                        except UnicodeDecodeError as e:
-                            raise TemplateError('%s: %s' % (path, e))
+            temp_zip = zipfile.ZipFile(temp_file, 'w',
+                                       compression=zipfile.ZIP_DEFLATED)
+            for root, dirs, files in os.walk(self.path):
+                for file_name in sorted(files):
+                    resource = Resource(join(root, file_name),
+                                        self.engine)
+                    path = join(relpath(root, full_root).lstrip('./'),
+                                file_name)
+                    try:
+                        temp_zip.writestr(
+                            render_path(path, context),
+                            resource.render(context).encode('utf-8'))
+                    except TemplateError as e:
+                        raise TemplateError('%s: %s' % (path, e))
+                    except UnicodeDecodeError as e:
+                        raise TemplateError('%s: %s' % (path, e))
+            temp_zip.close()
 
             return temp_file.getvalue()
