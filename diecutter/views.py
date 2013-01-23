@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 from cornice import Service
 from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
+from pyramid.httpexceptions import HTTPNotImplemented
 from os import makedirs
 from os.path import join, abspath, dirname, exists, normpath
 
@@ -96,13 +97,68 @@ def get_conf_template(request):
     return request.response
 
 
+def extract_post_context(request):
+    """Extract and return context from a standard POST request."""
+    return request.POST.copy()
+
+
+def extract_json_context(request):
+    """Extract and return context from a application/json request."""
+    return request.json_body
+
+
+def extract_ini_context(request):
+    """Extract and return context from a text/ini (ConfigParser) request."""
+    from ConfigParser import ConfigParser
+    from cStringIO import StringIO
+    context = {}
+    parser = ConfigParser()
+    parser.readfp(StringIO('[__globals__]\n' + request.body))
+    for option, value in parser.items('__globals__'):
+        context[option] = value
+    parser.remove_section('__globals__')
+    for section in parser.sections():
+        context[section] = {}
+        for option, value in parser.items(section):
+            context[section][option] = value
+    return context
+
+
+CONTEXT_EXTRACTORS = {
+    'application/x-www-form-urlencoded': extract_post_context,
+    'application/json': extract_json_context,
+    'text/ini': extract_ini_context,
+}
+
+
+def extract_context(request):
+    """Extract context dictionary from request and return it.
+
+    Raise :py:class:`NotImplementedError` if request input (content-type) is
+    not supported.
+
+    """
+    try:
+        extractors_setting = 'diecutter.context_extractors'
+        context_extractors = request.registry.settings[extractors_setting]
+    except KeyError:
+        context_extractors = CONTEXT_EXTRACTORS
+    try:
+        extractor = context_extractors[request.content_type]
+    except KeyError:
+        raise NotImplementedError('Unsupported input content-type %s'
+                                  % request.content_type)
+    context = extractor(request)
+    return context
+
+
 @conf_template.post()
 def post_conf_template(request):
     resource = Resource(get_resource_path(request))
     try:
-        context = json.loads(request.body)
-    except:
-        context = request.POST.copy()
+        context = extract_context(request)
+    except NotImplementedError as e:
+        raise HTTPNotImplemented(e.message)
     context['diecutter'] = {
         'api_url': '%s://%s' % (request.environ['wsgi.url_scheme'],
                                 request.environ['HTTP_HOST']),
