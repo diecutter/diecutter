@@ -31,7 +31,7 @@ def extract_ini_context(request):
 CONTEXT_EXTRACTORS = {
     'application/x-www-form-urlencoded': extract_post_context,
     'application/json': extract_json_context,
-    'text/ini': extract_ini_context,
+    'text/plain': extract_ini_context,
 }
 """Default context extractors configuration.
 
