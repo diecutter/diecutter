@@ -1,14 +1,15 @@
-""" Cornice services.
-"""
-import json
+"""Cornice services."""
 from datetime import datetime
-from cornice import Service
-from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
-from pyramid.httpexceptions import HTTPNotImplemented
+import json
 from os import makedirs
 from os.path import join, abspath, dirname, exists, normpath
 
+from cornice import Service
+from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
+from pyramid.httpexceptions import HTTPNotImplemented
+
 from diecutter import __version__ as VERSION
+from diecutter.contextextractors import extract_context
 from diecutter.exceptions import TemplateError
 from diecutter.utils import Resource
 from diecutter.validators import token_validator
@@ -95,61 +96,6 @@ def get_conf_template(request):
     request.response.content_type = 'text/plain'
     request.response.write(resource.read())
     return request.response
-
-
-def extract_post_context(request):
-    """Extract and return context from a standard POST request."""
-    return request.POST.copy()
-
-
-def extract_json_context(request):
-    """Extract and return context from a application/json request."""
-    return request.json_body
-
-
-def extract_ini_context(request):
-    """Extract and return context from a text/ini (ConfigParser) request."""
-    from ConfigParser import ConfigParser
-    from cStringIO import StringIO
-    context = {}
-    parser = ConfigParser()
-    parser.readfp(StringIO('[__globals__]\n' + request.body))
-    for option, value in parser.items('__globals__'):
-        context[option] = value
-    parser.remove_section('__globals__')
-    for section in parser.sections():
-        context[section] = {}
-        for option, value in parser.items(section):
-            context[section][option] = value
-    return context
-
-
-CONTEXT_EXTRACTORS = {
-    'application/x-www-form-urlencoded': extract_post_context,
-    'application/json': extract_json_context,
-    'text/ini': extract_ini_context,
-}
-
-
-def extract_context(request):
-    """Extract context dictionary from request and return it.
-
-    Raise :py:class:`NotImplementedError` if request input (content-type) is
-    not supported.
-
-    """
-    try:
-        extractors_setting = 'diecutter.context_extractors'
-        context_extractors = request.registry.settings[extractors_setting]
-    except KeyError:
-        context_extractors = CONTEXT_EXTRACTORS
-    try:
-        extractor = context_extractors[request.content_type]
-    except KeyError:
-        raise NotImplementedError('Unsupported input content-type %s'
-                                  % request.content_type)
-    context = extractor(request)
-    return context
 
 
 @conf_template.post()
