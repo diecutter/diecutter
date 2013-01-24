@@ -1,13 +1,15 @@
-""" Cornice services.
-"""
-import json
+"""Cornice services."""
 from datetime import datetime
-from cornice import Service
-from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
+import json
 from os import makedirs
 from os.path import join, abspath, dirname, exists, normpath
 
+from cornice import Service
+from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
+from pyramid.httpexceptions import HTTPNotImplemented
+
 from diecutter import __version__ as VERSION
+from diecutter.contextextractors import extract_context
 from diecutter.exceptions import TemplateError
 from diecutter.utils import Resource
 from diecutter.validators import token_validator
@@ -100,9 +102,9 @@ def get_conf_template(request):
 def post_conf_template(request):
     resource = Resource(get_resource_path(request))
     try:
-        context = json.loads(request.body)
-    except:
-        context = request.POST.copy()
+        context = extract_context(request)
+    except NotImplementedError as e:
+        raise HTTPNotImplemented(e.message)
     context['diecutter'] = {
         'api_url': '%s://%s' % (request.environ['wsgi.url_scheme'],
                                 request.environ['HTTP_HOST']),

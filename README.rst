@@ -4,16 +4,12 @@ Diecutter
 
 An API service that will give you back a configuration file from a template and variables.
 
-
-*****
-Usage
-*****
-
 The project is at a really early stage, but you can try it already.
 
 
+*******
 Install
-=======
+*******
 
 Install diecutter from Github, configure it then run the server:
 
@@ -32,8 +28,9 @@ Check it works::
     {"diecutter": "Hello", "version": "0.1dev"}
 
 
+*****
 Files
-=====
+*****
 
 Put your template in the service templates directory or use the API::
 
@@ -50,14 +47,10 @@ And we can render the template against some variables::
     $ curl -X POST http://localhost:8106/hello -d 'who=world'
     Hello world
 
-Or the same with some JSON input::
 
-    $ curl -X POST http://localhost:8106/hello -d '{"who": "world"}' -H "Content-Type: application/json"
-    Hello world
-
-
+***********
 Directories
-===========
+***********
 
 You can also get directories::
     
@@ -74,7 +67,6 @@ You can also get directories::
     $ curl http://localhost:8106/circus/
     circus.ini
     circus_django.ini
-
 
 If you want to render the directory against a global context::
 
@@ -95,8 +87,66 @@ If you want to render the directory against a global context::
     1 directory, 3 files
 
 
+******************
+Posting input data
+******************
+
+When you perform POST requests on resources, you provide a context, i.e.
+variables and values.
+
+Diecutter has builtin support for the following input content-types:
+
+* "application/x-www-form-urlencoded": the default when you perform POST
+  requests with ``wget`` or ``curl``.
+  See http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1
+
+* "application/json": JSON encoded data. See http://json.org/.
+
+* "text/plain": INI-style plain text files. See
+  https://en.wikipedia.org/wiki/INI_file and
+  http://docs.python.org/2.7/library/configparser.html.
+
+Diecutter expects data to be provided as the body of the request.
+"multipart/form-data" requests aren't supported currently.
+
+Here are "flat" examples using ``curl``.
+
+.. code-block:: sh
+
+   # All examples below return the same result.
+
+   # Default (implicit application/x-www-form-urlencoded content type).
+   curl -X POST -d 'who=world' http://localhost:8106/hello
+
+   # Explicit "application/x-www-form-urlencoded" content-type.
+   curl -X POST -d 'who=world' -H "Content-Type: application/x-www-form-urlencoded" http://localhost:8106/hello
+
+   # JSON.
+   curl -X POST -d '{"who": "world"}' -H "Content-Type: application/json" http://localhost:8106/hello
+
+   # INI.
+   curl -X POST -d 'who=world' -H "Content-Type: text/plain" http://localhost:8106/hello
+
+.. note:: Pass content of a file using ``@`` in curl's ``-d`` option.
+
+INI content-type allows you to provide 2 levels of data:
+
+.. code-block:: sh
+
+   cat > input.ini <<EOF
+   hello = world
+   [foo]
+   bar = baz
+   EOF
+   curl -X POST -d '@input.ini' -H "Content-Type: text/plain" http://localhost:8106/hello
+   # Templates can use variables like {{ hello }} and {{ foo.bar }}.
+
+JSON allows you to provide multiple levels of data.
+
+
+*****************
 Render file names
-=================
+*****************
 
 Sometimes you want to define names from the context.
 
@@ -123,8 +173,10 @@ You just add to put ``+context_name+`` it will match automatically::
     $ cat circus/circus_diecutter.ini
     [watcher:diecutter]
 
+
+***********************************************************
 A full example : the diecutter django_admin.py startproject
-===========================================================
+***********************************************************
 
 As an example, we added a +django_project+ template that you can use like this::
 
