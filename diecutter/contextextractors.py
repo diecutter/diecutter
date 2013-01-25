@@ -29,6 +29,7 @@ def extract_ini_context(request):
 
 
 CONTEXT_EXTRACTORS = {
+    '': extract_post_context,  # Default fallback.
     'application/x-www-form-urlencoded': extract_post_context,
     'application/json': extract_json_context,
     'text/plain': extract_ini_context,
