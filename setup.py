@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Python packaging."""
 import os
 from setuptools import setup
@@ -22,8 +23,8 @@ setup(name='diecutter',
                    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
                    ],
       keywords="web services, templates, template",
-      author='',
-      author_email='',
+      author=u'Rémy HUBSCHER',
+      author_email='hubscher.remy@gmail.com',
       url='https://github.com/novagile/diecutter',
       packages=['diecutter'],
       include_package_data=True,

@@ -1,6 +1,14 @@
 Changelog
 =========
 
-0.1 (unreleased)
+0.1 (2013-01-29)
 ----------------
- - First draft of the navigator
+ - #11 - On POST requests, handle empty content-type as
+    'application/x-www-form-urlencoded'.
+ - #8 - Introduced support of INI files as input for POST requests
+ - #2 - Added a 'readonly' option that, if set to 'True', forbids PUT
+    requests.
+ - #1 - Add a diecutter context with diecutter.api_url,
+    diecutter.version and diecutter.now
+ - Add directory support
+ - Add file support
