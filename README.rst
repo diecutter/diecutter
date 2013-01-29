@@ -138,7 +138,7 @@ INI content-type allows you to provide 2 levels of data:
    [foo]
    bar = baz
    EOF
-   curl -X POST -d '@input.ini' -H "Content-Type: text/plain" http://localhost:8106/hello
+   curl -X POST --data-binary '@input.ini' -H "Content-Type: text/plain" http://localhost:8106/hello
    # Templates can use variables like {{ hello }} and {{ foo.bar }}.
 
 JSON allows you to provide multiple levels of data.
