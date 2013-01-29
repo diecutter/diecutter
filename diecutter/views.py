@@ -51,13 +51,23 @@ def get_resource_path(request):
     return file_path
 
 
+def to_boolean(value):
+    _BOOL_STATES = {'1': True, 'yes': True, 'true': True, 'on': True,
+                    '0': False, 'no': False, 'false': False, 'off': False}
+
+    value = str(value).lower().strip()
+    if value not in _BOOL_STATES:
+        raise ValueError(value)
+    return _BOOL_STATES[value]
+
+
 def is_readonly(request):
     """Return "readonly" flag status (boolean) for request.
 
     As an example, PUT operations should be forbidden if readonly flag is On.
 
     """
-    return request.registry.settings.get('diecutter.readonly', False)
+    return to_boolean(request.registry.settings.get('diecutter.readonly', False))
 
 
 @template_service.get()
