@@ -9,7 +9,7 @@ def extract_post_context(request):
 
 def extract_json_context(request):
     """Extract and return context from a application/json request."""
-    return request.json_body
+    return request.json_body.copy()
 
 
 def extract_ini_context(request):
