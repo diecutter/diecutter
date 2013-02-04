@@ -1,3 +1,6 @@
+# Local binaries.
+/bin/
+
 # Local configuration.
 /etc/
 
