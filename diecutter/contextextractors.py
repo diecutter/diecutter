@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Utilities to extract context dictionary from request."""
 
 
