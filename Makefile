@@ -31,7 +31,8 @@ buildout:
 
 
 maintainer-clean:
-	rm -r bin/ lib/
+	rm -rf bin/ lib/
+	find ./ -name *.egg-info -exec rm -rf {} \;
 
 
 serve:
