@@ -115,3 +115,62 @@ option2 = o2
                                    'global2': 'g2',
                                    'section1': {'option1': 'o1',
                                                 'option2': 'o2'}})
+
+
+class GetContextExtractorsTestCase(unittest.TestCase):
+    """Test contextextractors.get_context_extractors()."""
+    def request_factory(self, settings={}):
+        """Return mock request instance."""
+        request = testing.DummyRequest()
+        request.registry.settings = settings
+        return request
+
+    def test_default_configuration(self):
+        """get_context_extractors() with no settings returns default ones."""
+        request = self.request_factory(settings={})
+        extractors = contextextractors.get_context_extractors(request)
+        self.assertEqual(extractors, contextextractors.CONTEXT_EXTRACTORS)
+
+    def test_custom_configuration(self):
+        """get_context_extractors() reads request.registry.settings."""
+        settings = {contextextractors.EXTRACTORS_SETTING: '123456'}
+        request = self.request_factory(settings)
+        extractors = contextextractors.get_context_extractors(request)
+        self.assertEqual(extractors, '123456')
+
+
+class ExtractContextTestCase(unittest.TestCase):
+    """Test diecutter.contextextractors.extract_context()."""
+    def extractor_factory(self, output):
+        """Return callable that takes a request and returns output."""
+        def extractor(request):
+            return output
+        return extractor
+
+    def request_factory(self, extractors={}, content_type=''):
+        """Return request with extractors setting and content_type."""
+        request = testing.DummyRequest()
+        request.content_type = content_type
+        settings = {contextextractors.EXTRACTORS_SETTING: extractors}
+        request.registry.settings = settings
+        return request
+
+    def test_no_mapping(self):
+        """extract_context() raises exception if content-type isn't supported.
+
+        """
+        extractors = {}
+        content_type = 'application/dummy'
+        request = self.request_factory(extractors, content_type)
+        self.assertRaises(NotImplementedError,
+                          contextextractors.extract_context,
+                          request)
+
+    def test_mapping(self):
+        """extract_context() uses extractor matching content-type."""
+        output = {'a': 'AAA'}
+        content_type = 'application/dummy'
+        extractors = {content_type: self.extractor_factory(output)}
+        request = self.request_factory(extractors, content_type)
+        context = contextextractors.extract_context(request)
+        self.assertEqual(context, output)

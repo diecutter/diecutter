@@ -52,6 +52,14 @@ EXTRACTORS_SETTING = 'diecutter.context_extractors'
 """Key in Pyramid registry where context extractors configuration lives."""
 
 
+def get_context_extractors(request):
+    """Return context extractors configuration from request."""
+    try:
+        return request.registry.settings[EXTRACTORS_SETTING]
+    except KeyError:
+        return CONTEXT_EXTRACTORS
+
+
 def extract_context(request):
     """Extract context dictionary from request and return it.
 
@@ -59,10 +67,7 @@ def extract_context(request):
     not supported.
 
     """
-    try:
-        context_extractors = request.registry.settings[EXTRACTORS_SETTING]
-    except KeyError:
-        context_extractors = CONTEXT_EXTRACTORS
+    context_extractors = get_context_extractors(request)
     try:
         extractor = context_extractors[request.content_type]
     except KeyError:
