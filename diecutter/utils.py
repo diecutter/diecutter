@@ -74,7 +74,11 @@ class Resource(object):
     def render(self, context):
         """Return the template rendered against context."""
         if self.is_file:
-            return self.engine.render(self.read(), context)
+            try:
+                return self.engine.render(self.read(), context)
+            except TemplateError as e:
+                print self.path
+                raise TemplateError('%s: %s' % (self.path, e))
         elif self.is_dir:
             full_root = dirname(self.path)
             temp_file = StringIO()
@@ -90,9 +94,7 @@ class Resource(object):
                         temp_zip.writestr(
                             render_path(path, context),
                             resource.render(context).encode('utf-8'))
-                    except TemplateError as e:
-                        raise TemplateError('%s: %s' % (path, e))
-                    except UnicodeDecodeError as e:
+                    except (TemplateError, UnicodeDecodeError) as e:
                         raise TemplateError('%s: %s' % (path, e))
             temp_zip.close()
 
