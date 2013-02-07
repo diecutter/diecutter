@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-from os.path import join, exists, isfile, isdir, dirname, relpath
+from os.path import join, exists, dirname, relpath
 import zipfile
 from cStringIO import StringIO
 
@@ -10,9 +10,10 @@ from diecutter.exceptions import TemplateError
 
 def render_path(path, context):
     """Take a context and render the path.
+
     >>> from diecutter.utils import render_path
     >>> render_path('circus/circus_+watcher_name+.ini',
-    ...     dict(watcher_name='diecutter'))
+    ...             {'watcher_name': 'diecutter'})
     'circus/circus_diecutter.ini'
 
     """
@@ -43,59 +44,70 @@ class Resource(object):
         return exists(self.path)
 
     @property
-    def is_file(self):
-        return isfile(self.path)
-
-    @property
-    def is_dir(self):
-        return isdir(self.path)
-
-    @property
     def content_type(self):
-        if self.is_file:
-            return 'text/plain'
-        else:
-            return 'application/zip'
+        raise NotImplementedError()
 
     def read(self):
         """Return the template source file."""
-        if self.is_file:
-            return open(self.path, 'r').read().decode('utf-8')
-        elif self.is_dir:
-            lines = []
-            full_root = dirname(self.path)
-            for root, dirs, files in os.walk(self.path):
-                for file_name in sorted(files):
-                    lines.append(
-                        join(relpath(root, full_root).lstrip('./'),
-                             file_name))
-            return '\n'.join(lines)
+        raise NotImplementedError()
 
     def render(self, context):
         """Return the template rendered against context."""
-        if self.is_file:
-            try:
-                return self.engine.render(self.read(), context)
-            except TemplateError as e:
-                print self.path
-                raise TemplateError('%s: %s' % (self.path, e))
-        elif self.is_dir:
-            full_root = dirname(self.path)
-            temp_file = StringIO()
-            temp_zip = zipfile.ZipFile(temp_file, 'w',
-                                       compression=zipfile.ZIP_DEFLATED)
-            for root, dirs, files in os.walk(self.path):
-                for file_name in sorted(files):
-                    resource = Resource(join(root, file_name),
-                                        self.engine)
-                    path = join(relpath(root, full_root).lstrip('./'),
-                                file_name)
-                    try:
-                        temp_zip.writestr(
-                            render_path(path, context),
-                            resource.render(context).encode('utf-8'))
-                    except (TemplateError, UnicodeDecodeError) as e:
-                        raise TemplateError('%s: %s' % (path, e))
-            temp_zip.close()
+        raise NotImplementedError()
 
-            return temp_file.getvalue()
+
+class FileResource(Resource):
+    @property
+    def content_type(self):
+        return 'text/plain'
+
+    def read(self):
+        """Return the template source file."""
+        return open(self.path, 'r').read().decode('utf-8')
+
+    def render(self, context):
+        """Return the template rendered against context."""
+        try:
+            return self.engine.render(self.read(), context)
+        except TemplateError as e:
+            print self.path
+            raise TemplateError('%s: %s' % (self.path, e))
+
+
+class DirResource(Resource):
+    @property
+    def content_type(self):
+        return 'application/zip'
+
+    def read(self):
+        """Return directory tree."""
+        lines = []
+        full_root = dirname(self.path)
+        for root, dirs, files in os.walk(self.path):
+            for file_name in sorted(files):
+                lines.append(
+                    join(relpath(root, full_root).lstrip('./'),
+                         file_name))
+        return '\n'.join(lines)
+
+    def render(self, context):
+        """Return the template rendered against context."""
+        full_root = dirname(self.path)
+        temp_file = StringIO()
+        temp_zip = zipfile.ZipFile(temp_file, 'w',
+                                   compression=zipfile.ZIP_DEFLATED)
+        for root, dirs, files in os.walk(self.path):
+            for file_name in sorted(files):
+                resource = Resource(join(root, file_name),
+                                    self.engine)
+                path = join(relpath(root, full_root).lstrip('./'),
+                            file_name)
+                try:
+                    temp_zip.writestr(
+                        render_path(path, context),
+                        resource.render(context).encode('utf-8'))
+                except (TemplateError, UnicodeDecodeError) as e:
+                    raise TemplateError('%s: %s' % (path, e))
+        temp_zip.close()
+
+        return temp_file.getvalue()

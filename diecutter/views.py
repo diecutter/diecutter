@@ -2,7 +2,7 @@
 from datetime import datetime
 import json
 from os import makedirs
-from os.path import join, abspath, dirname, exists, normpath
+from os.path import join, abspath, dirname, exists, isdir, normpath
 
 from cornice import Service
 from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
@@ -11,7 +11,7 @@ from pyramid.httpexceptions import HTTPNotImplemented
 from diecutter import __version__ as VERSION
 from diecutter.contextextractors import extract_context
 from diecutter.exceptions import TemplateError
-from diecutter.utils import Resource
+from diecutter.utils import DirResource, FileResource
 from diecutter.validators import token_validator
 
 
@@ -51,6 +51,20 @@ def get_resource_path(request):
     return file_path
 
 
+def get_resource(request):
+    """Return the resource matching request.
+
+    Return value is a :py:class:`FileResource` or :py:class`DirResource`.
+
+    """
+    path = get_resource_path(request)
+    if isdir(path):
+        resource = DirResource(path)
+    else:
+        resource = FileResource(path)
+    return resource
+
+
 def to_boolean(value):
     _BOOL_STATES = {'1': True, 'yes': True, 'true': True, 'on': True,
                     '0': False, 'no': False, 'false': False, 'off': False}
@@ -67,7 +81,8 @@ def is_readonly(request):
     As an example, PUT operations should be forbidden if readonly flag is On.
 
     """
-    return to_boolean(request.registry.settings.get('diecutter.readonly', False))
+    return to_boolean(request.registry.settings.get('diecutter.readonly',
+                                                    False))
 
 
 @template_service.get()
@@ -100,7 +115,7 @@ def put_template(request):
 
 @conf_template.get()
 def get_conf_template(request):
-    resource = Resource(get_resource_path(request))
+    resource = get_resource(request)
     if not resource.exists:
         return NotFound('Template not found')
     request.response.content_type = 'text/plain'
@@ -110,7 +125,7 @@ def get_conf_template(request):
 
 @conf_template.post()
 def post_conf_template(request):
-    resource = Resource(get_resource_path(request))
+    resource = get_resource(request)
     try:
         context = extract_context(request)
     except NotImplementedError as e:
