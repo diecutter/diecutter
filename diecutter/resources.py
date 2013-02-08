@@ -11,7 +11,7 @@ from diecutter.exceptions import TemplateError
 def render_path(path, context):
     """Take a context and render the path.
 
-    >>> from diecutter.utils import render_path
+    >>> from diecutter.resources import render_path
     >>> render_path('circus/circus_+watcher_name+.ini',
     ...             {'watcher_name': 'diecutter'})
     'circus/circus_diecutter.ini'
