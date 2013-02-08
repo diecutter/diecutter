@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Utilities to extract context dictionary from request."""
+from diecutter import exceptions
 
 
 def extract_post_context(request):
@@ -14,11 +15,16 @@ def extract_json_context(request):
 
 def extract_ini_context(request):
     """Extract and return context from a text/ini (ConfigParser) request."""
-    from ConfigParser import ConfigParser
+    from ConfigParser import ConfigParser, ParsingError
     from cStringIO import StringIO
     context = {}
     parser = ConfigParser()
-    parser.readfp(StringIO('[__globals__]\n' + request.body))
+    if not request.body:  # Quick handling of empty requests.
+        return context
+    try:
+        parser.readfp(StringIO('[__globals__]\n' + request.body))
+    except ParsingError:
+        raise exceptions.DataParsingError('Failed to parse INI data.')
     for option, value in parser.items('__globals__'):
         context[option] = value
     parser.remove_section('__globals__')

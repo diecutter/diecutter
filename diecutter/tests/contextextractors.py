@@ -5,6 +5,7 @@ import unittest
 from pyramid import testing
 
 from diecutter import contextextractors
+from diecutter import exceptions
 
 
 class PostTestCase(unittest.TestCase):
@@ -115,6 +116,13 @@ option2 = o2
                                    'global2': 'g2',
                                    'section1': {'option1': 'o1',
                                                 'option2': 'o2'}})
+
+    def test_parsing_error(self):
+        """extract_ini_context() raises DataParsingError in case of error."""
+        data = u'[I am missing closing square-bracket'
+        request = self.request_factory(data)
+        self.assertRaises(exceptions.DataParsingError,
+                          contextextractors.extract_ini_context, request)
 
 
 class GetContextExtractorsTestCase(unittest.TestCase):
