@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-from os.path import join, exists, dirname, relpath
+from os.path import dirname, exists, isdir, isfile, join, relpath
 import zipfile
 from cStringIO import StringIO
 
@@ -58,6 +58,10 @@ class Resource(object):
 
 class FileResource(Resource):
     @property
+    def exists(self):
+        return isfile(self.path)
+
+    @property
     def content_type(self):
         return 'text/plain'
 
@@ -75,6 +79,10 @@ class FileResource(Resource):
 
 
 class DirResource(Resource):
+    @property
+    def exists(self):
+        return isdir(self.path)
+
     @property
     def content_type(self):
         return 'application/zip'

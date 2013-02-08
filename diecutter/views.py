@@ -11,7 +11,7 @@ from pyramid.httpexceptions import HTTPNotImplemented
 from diecutter import __version__ as VERSION
 from diecutter.contextextractors import extract_context
 from diecutter.exceptions import TemplateError
-from diecutter.utils import DirResource, FileResource
+from diecutter import resources
 from diecutter.validators import token_validator
 
 
@@ -59,9 +59,9 @@ def get_resource(request):
     """
     path = get_resource_path(request)
     if isdir(path):
-        resource = DirResource(path)
+        resource = resources.DirResource(path)
     else:
-        resource = FileResource(path)
+        resource = resources.FileResource(path)
     return resource
 
 
