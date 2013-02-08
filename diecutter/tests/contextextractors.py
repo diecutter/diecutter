@@ -34,7 +34,7 @@ class PostTestCase(unittest.TestCase):
         self.assertFalse(context is request.POST)
         del context['dummy']
         self.assertEqual(context, {})
-        self.assertIn('dummy', request.POST)
+        self.assertTrue('dummy' in request.POST)
 
 
 class JsonTestCase(unittest.TestCase):
@@ -64,7 +64,7 @@ class JsonTestCase(unittest.TestCase):
         self.assertFalse(context is request.json_body)
         del context['dummy']
         self.assertEqual(context, {})
-        self.assertIn('dummy', request.json_body)
+        self.assertTrue('dummy' in request.json_body)
 
 
 class IniTestCase(unittest.TestCase):
