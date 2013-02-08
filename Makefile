@@ -30,9 +30,16 @@ buildout:
 	$(BUILDOUT) -N -c etc/buildout.cfg buildout:directory=$(ROOT_DIR)
 
 
+clean:
+	find $(ROOT_DIR)/ -name "*.pyc" -delete
+
+
+distclean: clean
+	rm -rf $(ROOT_DIR)/*.egg-info
+
+
 maintainer-clean:
-	rm -rf bin/ lib/
-	find ./ -name *.egg-info -exec rm -rf {} \;
+	rm -rf $(ROOT_DIR)/bin/ $(ROOT_DIR)/lib/
 
 
 serve:
