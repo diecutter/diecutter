@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Tests around diecutter.resources."""
-from os import mkdir
+from os import mkdir, sep
 from os.path import exists, isdir, isfile, join
 import unittest
 
@@ -142,16 +142,54 @@ class DirResourceTestCase(unittest.TestCase):
             mkdir(dir_path)
             file_path = join(dir_path, 'one')
             open(file_path, 'w')
+            dir_path += sep
             resource = resources.DirResource(path=dir_path, engine=None)
-            self.assertEqual(resource.read(), 'dummy/one')
+            self.assertEqual(resource.read(), 'one')
 
     def test_read_two_flat(self):
         """DirResource.read() two files returns two filenames."""
         with temporary_directory() as template_dir:
             dir_path = join(template_dir, 'dummy')
             mkdir(dir_path)
-            for filename in ('one', 'two'):
-                file_path = join(dir_path, filename)
+            for file_name in ('one', 'two'):
+                file_path = join(dir_path, file_name)
                 open(file_path, 'w')
+            dir_path += sep
             resource = resources.DirResource(path=dir_path, engine=None)
-            self.assertEqual(resource.read(), "dummy/one\ndummy/two")
+            self.assertEqual(resource.read(), "one\ntwo")
+
+    def test_read_nested(self):
+        """DirResource.read() recurses nested files and directories."""
+        with temporary_directory() as template_dir:
+            dir_path = join(template_dir, 'dummy')
+            mkdir(dir_path)
+            for dir_name in ('a', 'b'):
+                mkdir(join(dir_path, dir_name))
+                for file_name in ('one', 'two'):
+                    file_path = join(dir_path, dir_name, file_name)
+                    open(file_path, 'w')
+            dir_path += sep
+            resource = resources.DirResource(path=dir_path, engine=None)
+            self.assertEqual(resource.read(),
+                             "a/one\na/two\nb/one\nb/two")
+
+    def test_no_trailing_slash(self):
+        """DirResource with no trailing slash uses dirname as prefix."""
+        with temporary_directory() as template_dir:
+            dir_path = join(template_dir, 'dummy')
+            mkdir(dir_path)
+            file_path = join(dir_path, 'one')
+            open(file_path, 'w')
+            resource = resources.DirResource(path=dir_path, engine=None)
+            self.assertEqual(resource.read(), 'dummy/one')
+
+    def test_trailing_slash(self):
+        """DirResource with trailing slash uses dirname as prefix."""
+        with temporary_directory() as template_dir:
+            dir_path = join(template_dir, 'dummy')
+            mkdir(dir_path)
+            file_path = join(dir_path, 'one')
+            open(file_path, 'w')
+            dir_path += sep
+            resource = resources.DirResource(path=dir_path, engine=None)
+            self.assertEqual(resource.read(), 'one')

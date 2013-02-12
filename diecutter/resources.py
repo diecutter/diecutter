@@ -92,7 +92,8 @@ class DirResource(Resource):
         """Return directory tree."""
         lines = []
         full_root = dirname(self.path)
-        for root, dirs, files in os.walk(self.path):
+        for root, dirs, files in os.walk(self.path, topdown=True):
+            dirs.sort()
             for file_name in sorted(files):
                 lines.append(
                     join(relpath(root, full_root).lstrip('./'),
@@ -105,7 +106,8 @@ class DirResource(Resource):
         temp_file = StringIO()
         temp_zip = zipfile.ZipFile(temp_file, 'w',
                                    compression=zipfile.ZIP_DEFLATED)
-        for root, dirs, files in os.walk(self.path):
+        for root, dirs, files in os.walk(self.path, topdown=True):
+            dirs.sort()
             for file_name in sorted(files):
                 resource = Resource(join(root, file_name),
                                     self.engine)
