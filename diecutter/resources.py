@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Resources exposed on APIs."""
 import os
 from os.path import dirname, exists, isdir, isfile, join, relpath
 import zipfile
@@ -48,11 +49,11 @@ class Resource(object):
         raise NotImplementedError()
 
     def read(self):
-        """Return the template source file."""
+        """Return resource content."""
         raise NotImplementedError()
 
     def render(self, context):
-        """Return the template rendered against context."""
+        """Return resource rendered against context."""
         raise NotImplementedError()
 
 
@@ -99,7 +100,7 @@ class DirResource(Resource):
         return '\n'.join(lines)
 
     def render(self, context):
-        """Return the template rendered against context."""
+        """Return archive of files in tree rendered against context."""
         full_root = dirname(self.path)
         temp_file = StringIO()
         temp_zip = zipfile.ZipFile(temp_file, 'w',

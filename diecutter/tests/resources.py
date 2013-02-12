@@ -95,3 +95,63 @@ class FileResourceTestCase(unittest.TestCase):
             open(path, 'w').write(template.encode('utf8'))
             resource = resources.FileResource(path=path, engine=engine)
             self.assertRaises(TemplateError, resource.render, context)
+
+
+class DirResourceTestCase(unittest.TestCase):
+    """Test :py:class:`diecutter.resources.DirResource`."""
+    def test_content_type(self):
+        """DirResource.content_type is 'application/zip'."""
+        resource = resources.DirResource(path='', engine=None)
+        self.assertEqual(resource.content_type, 'application/zip')
+
+    def test_exists_false(self):
+        """DirResource.exists is False if dir doesn't exist at path."""
+        path = join('i', 'do', 'not', 'exist')
+        self.assertFalse(exists(path))  # Just in case.
+        resource = resources.DirResource(path=path, engine=None)
+        self.assertTrue(resource.exists is False)
+
+    def test_exists_dir(self):
+        """DirResource.exists is True if path points a directory."""
+        with temporary_directory() as template_dir:
+            path = join(template_dir, 'dummy')
+            mkdir(path)
+            self.assertTrue(isdir(path))  # Check initial status.
+            resource = resources.DirResource(path=path, engine=None)
+            self.assertTrue(resource.exists is True)
+
+    def test_exists_file(self):
+        """DirResource.exists is False if path points a file."""
+        with temporary_directory() as template_dir:
+            path = join(template_dir, 'dummy')
+            open(path, 'w')
+            self.assertTrue(isfile(path))  # Check initial status.
+            resource = resources.DirResource(path=path, engine=None)
+            self.assertTrue(resource.exists is False)
+
+    def test_read_empty(self):
+        """DirResource.read() empty dir returns empty string."""
+        with temporary_directory() as path:
+            resource = resources.DirResource(path=path, engine=None)
+            self.assertEqual(resource.read(), u'')
+
+    def test_read_one_flat(self):
+        """DirResource.read() one file returns one filename."""
+        with temporary_directory() as template_dir:
+            dir_path = join(template_dir, 'dummy')
+            mkdir(dir_path)
+            file_path = join(dir_path, 'one')
+            open(file_path, 'w')
+            resource = resources.DirResource(path=dir_path, engine=None)
+            self.assertEqual(resource.read(), 'dummy/one')
+
+    def test_read_two_flat(self):
+        """DirResource.read() two files returns two filenames."""
+        with temporary_directory() as template_dir:
+            dir_path = join(template_dir, 'dummy')
+            mkdir(dir_path)
+            for filename in ('one', 'two'):
+                file_path = join(dir_path, filename)
+                open(file_path, 'w')
+            resource = resources.DirResource(path=dir_path, engine=None)
+            self.assertEqual(resource.read(), "dummy/one\ndummy/two")
