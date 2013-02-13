@@ -1,33 +1,15 @@
 # -*- coding: utf-8 -*-
 """Resources exposed on APIs."""
 import os
-from os.path import dirname, exists, isdir, isfile, join, relpath
+from os.path import basename, isdir, isfile, join, relpath
 import zipfile
 from cStringIO import StringIO
 
-from diecutter.jinja import Jinja2Engine
 from diecutter.exceptions import TemplateError
 
 
-def render_path(path, context):
-    """Take a context and render the path.
-
-    >>> from diecutter.resources import render_path
-    >>> render_path('circus/circus_+watcher_name+.ini',
-    ...             {'watcher_name': 'diecutter'})
-    'circus/circus_diecutter.ini'
-
-    """
-    for key, val in context.iteritems():
-        try:
-            path = path.replace('+%s+' % key, val)
-        except TypeError:
-            pass
-    return path
-
-
 class Resource(object):
-    def __init__(self, path, engine=Jinja2Engine()):
+    def __init__(self, path='', engine=None):
         """Constructor.
 
         path
@@ -42,7 +24,7 @@ class Resource(object):
 
     @property
     def exists(self):
-        return exists(self.path)
+        raise NotImplementedError()
 
     @property
     def content_type(self):
@@ -80,6 +62,7 @@ class FileResource(Resource):
 
 
 class DirResource(Resource):
+    """Container for other files and directories resources."""
     @property
     def exists(self):
         return isdir(self.path)
@@ -88,37 +71,66 @@ class DirResource(Resource):
     def content_type(self):
         return 'application/zip'
 
-    def read(self):
-        """Return directory tree."""
-        lines = []
-        full_root = dirname(self.path)
+    def read_tree(self):
+        """Generate list of relative paths to contained resources."""
         for root, dirs, files in os.walk(self.path, topdown=True):
             dirs.sort()
+            prefix = relpath(root, self.path).lstrip('./')
             for file_name in sorted(files):
-                lines.append(
-                    join(relpath(root, full_root).lstrip('./'),
-                         file_name))
+                yield join(prefix, file_name)
+
+    def read(self):
+        """Return directory tree as a list of paths of file resources."""
+        prefix = basename(self.path)
+        lines = [join(prefix, path) for path in self.read_tree()]
         return '\n'.join(lines)
+
+    def render_filename(self, path, context):
+        """Return rendered filename against context.
+
+        .. warning::
+
+           Only flat string variables are accepted. Other variables are ignored
+           silently!
+
+        """
+        for key, val in context.iteritems():
+            try:
+                path = path.replace('+%s+' % key, val)
+            except TypeError:
+                pass
+        return path
+
+    def render_tree(self, context):
+        """Generate list of (resource_path, filename, context).
+
+        Included resources may depend on context, i.e. some resources may be
+        used several times, or skipped.
+
+        Rendered filenames may depend on context, i.e. variables may be used
+        to render filenames.
+
+        Context may change for each resource.
+
+        """
+        filename_prefix = basename(self.path)
+        for resource_path in self.read_tree():
+            filename = self.render_filename(resource_path, context)
+            filename = join(filename_prefix, filename)
+            yield (resource_path, filename, context)
 
     def render(self, context):
         """Return archive of files in tree rendered against context."""
-        full_root = dirname(self.path)
         temp_file = StringIO()
         temp_zip = zipfile.ZipFile(temp_file, 'w',
                                    compression=zipfile.ZIP_DEFLATED)
-        for root, dirs, files in os.walk(self.path, topdown=True):
-            dirs.sort()
-            for file_name in sorted(files):
-                resource = Resource(join(root, file_name),
+        for resource_path, filename, context in self.render_tree:
+            resource = FileResource(join(self.path, resource_path),
                                     self.engine)
-                path = join(relpath(root, full_root).lstrip('./'),
-                            file_name)
-                try:
-                    temp_zip.writestr(
-                        render_path(path, context),
-                        resource.render(context).encode('utf-8'))
-                except (TemplateError, UnicodeDecodeError) as e:
-                    raise TemplateError('%s: %s' % (path, e))
+            try:
+                content = resource.render(context).encode('utf-8')
+            except (TemplateError, UnicodeDecodeError) as e:
+                raise TemplateError('%s: %s' % (resource_path, e))
+            temp_zip.writestr(filename, content)
         temp_zip.close()
-
         return temp_file.getvalue()

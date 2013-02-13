@@ -22,6 +22,42 @@ class MockEngine(object):
         return (self.render_result, args, kwargs)
 
 
+class ResourceTestCase(unittest.TestCase):
+    """Test :py:class:`diecutter.resources.Resource`."""
+    def test_init(self):
+        """Resource constructor accepts optional ``path`` and ``engine``."""
+        resource = resources.Resource()
+        self.assertEqual(resource.path, '')
+        self.assertEqual(resource.engine, None)
+        resource = resources.Resource('path', 'engine')
+        self.assertEqual(resource.path, 'path')
+        self.assertEqual(resource.engine, 'engine')
+        resource = resources.Resource(engine='engine', path='path')
+        self.assertEqual(resource.path, 'path')
+        self.assertEqual(resource.engine, 'engine')
+
+    def test_exists(self):
+        """Resource.exists property must be overriden by subclasses."""
+        resource = resources.Resource()
+        self.assertRaises(NotImplementedError, lambda: resource.exists)
+
+    def test_content_type(self):
+        """Resource.content_type property must be overriden by subclasses."""
+        resource = resources.Resource()
+        self.assertRaises(NotImplementedError, lambda: resource.content_type)
+
+    def test_read(self):
+        """Resource.read() must be overriden by subclasses."""
+        resource = resources.Resource()
+        self.assertRaises(NotImplementedError, resource.read)
+
+    def test_render(self):
+        """Resource.render() must be overriden by subclasses."""
+        resource = resources.Resource()
+        context = {}
+        self.assertRaises(NotImplementedError, resource.render, context)
+
+
 class FileResourceTestCase(unittest.TestCase):
     """Test :py:class:`diecutter.resources.FileResource`."""
     def test_content_type(self):
@@ -193,3 +229,29 @@ class DirResourceTestCase(unittest.TestCase):
             dir_path += sep
             resource = resources.DirResource(path=dir_path, engine=None)
             self.assertEqual(resource.read(), 'one')
+
+    def test_render_filename(self):
+        """DirResource.render_filename() renders filename against context."""
+        resource = resources.DirResource()
+        filename = resource.render_filename('circus/circus_+watcher_name+.ini',
+                                            {'watcher_name': 'diecutter'})
+        self.assertEqual(filename, 'circus/circus_diecutter.ini')
+
+    def test_render_filename_error(self):
+        """DirResource.render_filename() only accepts flat string variables.
+
+        .. warning::
+
+           Only flat string variables are accepted. Other variables are ignored
+           silently!
+
+        """
+        resource = resources.DirResource()
+        # Nested variable.
+        filename = resource.render_filename('+watcher.name+.ini',
+                                            {'watcher': {'name': 'diecutter'}})
+        self.assertEqual(filename, '+watcher.name+.ini')
+        # Non-string variable.
+        filename = resource.render_filename('+name+.ini',
+                                            {'name': 42})
+        self.assertEqual(filename, '+name+.ini')
