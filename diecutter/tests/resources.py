@@ -62,14 +62,14 @@ class FileResourceTestCase(unittest.TestCase):
     """Test :py:class:`diecutter.resources.FileResource`."""
     def test_content_type(self):
         """FileResource.content_type is 'text/plain'."""
-        resource = resources.FileResource(path='', engine=None)
+        resource = resources.FileResource()
         self.assertEqual(resource.content_type, 'text/plain')
 
     def test_exists_false(self):
         """FileResource.exists is False if file doesn't exist at path."""
         path = join('i', 'do', 'not', 'exist')
         self.assertFalse(exists(path))  # Just in case.
-        resource = resources.FileResource(path=path, engine=None)
+        resource = resources.FileResource(path=path)
         self.assertTrue(resource.exists is False)
 
     def test_exists_dir(self):
@@ -78,7 +78,7 @@ class FileResourceTestCase(unittest.TestCase):
             path = join(template_dir, 'dummy')
             mkdir(path)
             self.assertTrue(isdir(path))  # Check initial status.
-            resource = resources.FileResource(path=path, engine=None)
+            resource = resources.FileResource(path=path)
             self.assertTrue(resource.exists is False)
 
     def test_exists_file(self):
@@ -87,7 +87,7 @@ class FileResourceTestCase(unittest.TestCase):
             path = join(template_dir, 'dummy')
             open(path, 'w')
             self.assertTrue(isfile(path))  # Check initial status.
-            resource = resources.FileResource(path=path, engine=None)
+            resource = resources.FileResource(path=path)
             self.assertTrue(resource.exists is True)
 
     def test_read_empty(self):
@@ -95,7 +95,7 @@ class FileResourceTestCase(unittest.TestCase):
         with temporary_directory() as template_dir:
             path = join(template_dir, 'dummy')
             open(path, 'w')
-            resource = resources.FileResource(path=path, engine=None)
+            resource = resources.FileResource(path=path)
             self.assertEqual(resource.read(), u'')
 
     def test_read_utf8(self):
@@ -104,7 +104,7 @@ class FileResourceTestCase(unittest.TestCase):
             path = join(template_dir, 'dummy')
             content = u'Thé ou café ?'
             open(path, 'w').write(content.encode('utf8'))
-            resource = resources.FileResource(path=path, engine=None)
+            resource = resources.FileResource(path=path)
             self.assertEqual(resource.read(), content)
 
     def test_render(self):
@@ -137,14 +137,14 @@ class DirResourceTestCase(unittest.TestCase):
     """Test :py:class:`diecutter.resources.DirResource`."""
     def test_content_type(self):
         """DirResource.content_type is 'application/zip'."""
-        resource = resources.DirResource(path='', engine=None)
+        resource = resources.DirResource()
         self.assertEqual(resource.content_type, 'application/zip')
 
     def test_exists_false(self):
         """DirResource.exists is False if dir doesn't exist at path."""
         path = join('i', 'do', 'not', 'exist')
         self.assertFalse(exists(path))  # Just in case.
-        resource = resources.DirResource(path=path, engine=None)
+        resource = resources.DirResource(path=path)
         self.assertTrue(resource.exists is False)
 
     def test_exists_dir(self):
@@ -153,7 +153,7 @@ class DirResourceTestCase(unittest.TestCase):
             path = join(template_dir, 'dummy')
             mkdir(path)
             self.assertTrue(isdir(path))  # Check initial status.
-            resource = resources.DirResource(path=path, engine=None)
+            resource = resources.DirResource(path=path)
             self.assertTrue(resource.exists is True)
 
     def test_exists_file(self):
@@ -162,13 +162,13 @@ class DirResourceTestCase(unittest.TestCase):
             path = join(template_dir, 'dummy')
             open(path, 'w')
             self.assertTrue(isfile(path))  # Check initial status.
-            resource = resources.DirResource(path=path, engine=None)
+            resource = resources.DirResource(path=path)
             self.assertTrue(resource.exists is False)
 
     def test_read_empty(self):
         """DirResource.read() empty dir returns empty string."""
         with temporary_directory() as path:
-            resource = resources.DirResource(path=path, engine=None)
+            resource = resources.DirResource(path=path)
             self.assertEqual(resource.read(), u'')
 
     def test_read_one_flat(self):
@@ -179,7 +179,7 @@ class DirResourceTestCase(unittest.TestCase):
             file_path = join(dir_path, 'one')
             open(file_path, 'w')
             dir_path += sep
-            resource = resources.DirResource(path=dir_path, engine=None)
+            resource = resources.DirResource(path=dir_path)
             self.assertEqual(resource.read(), 'one')
 
     def test_read_two_flat(self):
@@ -191,7 +191,7 @@ class DirResourceTestCase(unittest.TestCase):
                 file_path = join(dir_path, file_name)
                 open(file_path, 'w')
             dir_path += sep
-            resource = resources.DirResource(path=dir_path, engine=None)
+            resource = resources.DirResource(path=dir_path)
             self.assertEqual(resource.read(), "one\ntwo")
 
     def test_read_nested(self):
@@ -205,7 +205,7 @@ class DirResourceTestCase(unittest.TestCase):
                     file_path = join(dir_path, dir_name, file_name)
                     open(file_path, 'w')
             dir_path += sep
-            resource = resources.DirResource(path=dir_path, engine=None)
+            resource = resources.DirResource(path=dir_path)
             self.assertEqual(resource.read(),
                              "a/one\na/two\nb/one\nb/two")
 
@@ -216,7 +216,7 @@ class DirResourceTestCase(unittest.TestCase):
             mkdir(dir_path)
             file_path = join(dir_path, 'one')
             open(file_path, 'w')
-            resource = resources.DirResource(path=dir_path, engine=None)
+            resource = resources.DirResource(path=dir_path)
             self.assertEqual(resource.read(), 'dummy/one')
 
     def test_trailing_slash(self):
@@ -227,31 +227,5 @@ class DirResourceTestCase(unittest.TestCase):
             file_path = join(dir_path, 'one')
             open(file_path, 'w')
             dir_path += sep
-            resource = resources.DirResource(path=dir_path, engine=None)
+            resource = resources.DirResource(path=dir_path)
             self.assertEqual(resource.read(), 'one')
-
-    def test_render_filename(self):
-        """DirResource.render_filename() renders filename against context."""
-        resource = resources.DirResource()
-        filename = resource.render_filename('circus/circus_+watcher_name+.ini',
-                                            {'watcher_name': 'diecutter'})
-        self.assertEqual(filename, 'circus/circus_diecutter.ini')
-
-    def test_render_filename_error(self):
-        """DirResource.render_filename() only accepts flat string variables.
-
-        .. warning::
-
-           Only flat string variables are accepted. Other variables are ignored
-           silently!
-
-        """
-        resource = resources.DirResource()
-        # Nested variable.
-        filename = resource.render_filename('+watcher.name+.ini',
-                                            {'watcher': {'name': 'diecutter'}})
-        self.assertEqual(filename, '+watcher.name+.ini')
-        # Non-string variable.
-        filename = resource.render_filename('+name+.ini',
-                                            {'name': 42})
-        self.assertEqual(filename, '+name+.ini')
