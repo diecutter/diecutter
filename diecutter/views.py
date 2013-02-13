@@ -9,7 +9,7 @@ from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
 from pyramid.httpexceptions import HTTPNotImplemented
 
 from diecutter import __version__ as VERSION
-from diecutter.jinja import Jinja2Engine
+from diecutter.engines.jinja import Jinja2Engine
 from diecutter import resources
 from diecutter.contextextractors import extract_context
 from diecutter.exceptions import TemplateError

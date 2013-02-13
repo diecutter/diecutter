@@ -5,6 +5,7 @@ from os.path import basename, isdir, isfile, join, relpath
 import zipfile
 from cStringIO import StringIO
 
+from diecutter.engines.filename import FilenameEngine
 from diecutter.exceptions import TemplateError
 
 
@@ -86,20 +87,9 @@ class DirResource(Resource):
         return '\n'.join(lines)
 
     def render_filename(self, path, context):
-        """Return rendered filename against context.
-
-        .. warning::
-
-           Only flat string variables are accepted. Other variables are ignored
-           silently!
-
-        """
-        for key, val in context.iteritems():
-            try:
-                path = path.replace('+%s+' % key, val)
-            except TypeError:
-                pass
-        return path
+        """Return rendered filename against context using FilenameEngine."""
+        engine = FilenameEngine()
+        return engine.render(path, context)
 
     def render_tree(self, context):
         """Generate list of (resource_path, filename, context).
