@@ -9,6 +9,7 @@ from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
 from pyramid.httpexceptions import HTTPNotImplemented
 
 from diecutter import __version__ as VERSION
+from diecutter.engines.filename import FilenameEngine
 from diecutter.engines.jinja import Jinja2Engine
 from diecutter import resources
 from diecutter.contextextractors import extract_context
@@ -59,10 +60,15 @@ def get_resource(request):
 
     """
     path = get_resource_path(request)
+    engine = Jinja2Engine()
+    filename_engine = FilenameEngine()
     if isdir(path):
-        resource = resources.DirResource(path=path, engine=Jinja2Engine())
+        resource = resources.DirResource(path=path, engine=engine,
+                                         filename_engine=filename_engine)
     else:
-        resource = resources.FileResource(path=path, engine=Jinja2Engine())
+        resource = resources.FileResource(path=path, engine=engine,
+                                          filename_engine=filename_engine)
+
     return resource
 
 

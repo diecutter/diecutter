@@ -5,12 +5,11 @@ from os.path import basename, isdir, isfile, join, relpath
 import zipfile
 from cStringIO import StringIO
 
-from diecutter.engines.filename import FilenameEngine
 from diecutter.exceptions import TemplateError
 
 
 class Resource(object):
-    def __init__(self, path='', engine=None):
+    def __init__(self, path='', engine=None, filename_engine=None):
         """Constructor.
 
         path
@@ -18,10 +17,16 @@ class Resource(object):
 
         engine
           A class that implements render(template, context).
+          This one is used to render file contents.
+
+        filename_engine
+          A class that implements render(template, context).
+          This one is used to render filenames.
 
         """
         self.path = path
         self.engine = engine
+        self.filename_engine = filename_engine
 
     @property
     def exists(self):
@@ -38,6 +43,10 @@ class Resource(object):
     def render(self, context):
         """Return resource rendered against context."""
         raise NotImplementedError()
+
+    def render_filename(self, path, context):
+        """Return rendered filename against context using FilenameEngine."""
+        return self.filename_engine.render(path, context)
 
 
 class FileResource(Resource):
@@ -85,11 +94,6 @@ class DirResource(Resource):
         prefix = basename(self.path)
         lines = [join(prefix, path) for path in self.read_tree()]
         return '\n'.join(lines)
-
-    def render_filename(self, path, context):
-        """Return rendered filename against context using FilenameEngine."""
-        engine = FilenameEngine()
-        return engine.render(path, context)
 
     def render_tree(self, context):
         """Generate list of (resource_path, filename, context).

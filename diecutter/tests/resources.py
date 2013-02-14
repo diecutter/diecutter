@@ -57,6 +57,22 @@ class ResourceTestCase(unittest.TestCase):
         context = {}
         self.assertRaises(NotImplementedError, resource.render, context)
 
+    def test_render_filename(self):
+        """Resource.render_filename() renders filename against context."""
+        # Initialize.
+        input_filename = 'dummy.txt'
+        context = {'some': 'data'}
+        expected_output_filename = 'this is rendered filename'
+        engine = MockEngine(expected_output_filename)
+        resource = resources.Resource(filename_engine=engine)
+        # Render.
+        rendered = resource.render_filename(input_filename, context)
+        # Check.
+        (output_filename, args, kwargs) = rendered  # Extract from mock result.
+        self.assertEqual(output_filename, expected_output_filename)
+        self.assertEqual(args, (input_filename, context))
+        self.assertEqual(kwargs, {})
+
 
 class FileResourceTestCase(unittest.TestCase):
     """Test :py:class:`diecutter.resources.FileResource`."""
