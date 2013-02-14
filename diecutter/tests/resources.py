@@ -5,29 +5,9 @@ from os.path import exists, isdir, isfile, join
 import unittest
 
 from diecutter import resources
+from diecutter.engines.mock import MockEngine
 from diecutter.exceptions import TemplateError
 from diecutter.tests import temporary_directory
-
-
-class MockEngine(object):
-    """Template engine mock."""
-    def __init__(self, render_result=u'this is a mock', fail=None):
-        self.render_result = render_result
-        self.fail = fail
-        self.args = None
-        self.kwargs = None
-
-    def render(self, *args, **kwargs):
-        """Return self.render_result + populates args and kwargs.
-
-        If self.fail is not None, then raises a TemplateError(self.fail).
-
-        """
-        if self.fail is not None:
-            raise TemplateError(self.fail)
-        self.args = args
-        self.kwargs = kwargs
-        return self.render_result
 
 
 class ResourceTestCase(unittest.TestCase):
@@ -252,3 +232,34 @@ class DirResourceTestCase(unittest.TestCase):
             dir_path += sep
             resource = resources.DirResource(path=dir_path)
             self.assertEqual(resource.read(), 'one')
+
+    def test_render_tree(self):
+        """DirResource.render_tree() recurses nested files and directories."""
+        expected_output_filename = 'rendered/{args[0]!s}'
+        filename_engine = MockEngine(expected_output_filename)
+        context = {'fake': 'fake-context'}
+        with temporary_directory() as template_dir:
+            dir_path = join(template_dir, 'dummy')
+            mkdir(dir_path)
+            for dir_name in ('+a+', 'b'):
+                mkdir(join(dir_path, dir_name))
+                for file_name in ('+one+', 'two'):
+                    file_path = join(dir_path, dir_name, file_name)
+                    open(file_path, 'w')
+            dir_path += sep
+            resource = resources.DirResource(path=dir_path,
+                                             filename_engine=filename_engine)
+            rendered = list(resource.render_tree(context))
+            self.assertEqual(rendered,
+                             [(join(template_dir, 'dummy', '+a+', '+one+'),
+                               'rendered/+a+/+one+',
+                               context),
+                              (join(template_dir, 'dummy', '+a+', 'two'),
+                               'rendered/+a+/two',
+                               context),
+                              (join(template_dir, 'dummy', 'b', '+one+'),
+                               'rendered/b/+one+',
+                               context),
+                              (join(template_dir, 'dummy', 'b', 'two'),
+                               'rendered/b/two',
+                               context)])

@@ -81,18 +81,38 @@ class DirResource(Resource):
     def content_type(self):
         return 'application/zip'
 
+    def relative_filename(self, filename):
+        """Return filename relative to :py:attr:`path`.
+
+        >>> from diecutter.resources import DirResource
+        >>> resource = DirResource(path='abs/path/no-trailing')
+        >>> resource.relative_filename('abs/path/no-trailing/name')
+        'no-trailing/name'
+        >>> resource.relative_filename('abs/path/no-trailing/nested/name')
+        'no-trailing/nested/name'
+
+        Trailing slash in :py:attr:`path` affects returned value.
+
+        >>> resource = DirResource(path='abs/path/trailing/')
+        >>> resource.relative_filename('abs/path/trailing/name')
+        'name'
+        >>> resource.relative_filename('abs/path/trailing/nested/name')
+        'nested/name'
+
+        """
+        prefix = basename(self.path)
+        return join(prefix, relpath(filename, self.path))
+
     def read_tree(self):
-        """Generate list of relative paths to contained resources."""
+        """Generate list of paths to contained resources."""
         for root, dirs, files in os.walk(self.path, topdown=True):
             dirs.sort()
-            prefix = relpath(root, self.path).lstrip('./')
             for file_name in sorted(files):
-                yield join(prefix, file_name)
+                yield join(root, file_name)
 
     def read(self):
         """Return directory tree as a list of paths of file resources."""
-        prefix = basename(self.path)
-        lines = [join(prefix, path) for path in self.read_tree()]
+        lines = [self.relative_filename(line) for line in self.read_tree()]
         return '\n'.join(lines)
 
     def render_tree(self, context):
@@ -107,10 +127,9 @@ class DirResource(Resource):
         Context may change for each resource.
 
         """
-        filename_prefix = basename(self.path)
         for resource_path in self.read_tree():
-            filename = self.render_filename(resource_path, context)
-            filename = join(filename_prefix, filename)
+            filename = self.relative_filename(resource_path)
+            filename = self.render_filename(filename, context)
             yield (resource_path, filename, context)
 
     def render(self, context):
