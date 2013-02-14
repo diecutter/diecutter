@@ -14,12 +14,20 @@ class MockEngine(object):
     def __init__(self, render_result=u'this is a mock', fail=None):
         self.render_result = render_result
         self.fail = fail
+        self.args = None
+        self.kwargs = None
 
     def render(self, *args, **kwargs):
-        """Return tuple (:py:attr:`render_result`, ``args``, ``kwargs``)."""
-        if self.fail:
+        """Return self.render_result + populates args and kwargs.
+
+        If self.fail is not None, then raises a TemplateError(self.fail).
+
+        """
+        if self.fail is not None:
             raise TemplateError(self.fail)
-        return (self.render_result, args, kwargs)
+        self.args = args
+        self.kwargs = kwargs
+        return self.render_result
 
 
 class ResourceTestCase(unittest.TestCase):
@@ -66,12 +74,11 @@ class ResourceTestCase(unittest.TestCase):
         engine = MockEngine(expected_output_filename)
         resource = resources.Resource(filename_engine=engine)
         # Render.
-        rendered = resource.render_filename(input_filename, context)
+        output_filename = resource.render_filename(input_filename, context)
         # Check.
-        (output_filename, args, kwargs) = rendered  # Extract from mock result.
         self.assertEqual(output_filename, expected_output_filename)
-        self.assertEqual(args, (input_filename, context))
-        self.assertEqual(kwargs, {})
+        self.assertEqual(engine.args, (input_filename, context))
+        self.assertEqual(engine.kwargs, {})
 
 
 class FileResourceTestCase(unittest.TestCase):
@@ -133,9 +140,9 @@ class FileResourceTestCase(unittest.TestCase):
             open(path, 'w').write(template.encode('utf8'))
             resource = resources.FileResource(path=path, engine=engine)
             result = resource.render(context)
-            self.assertEqual(result, (u'this is render result',  # Mock result.
-                                      (template, context),  # args.
-                                      {}))  # kwargs.
+            self.assertEqual(result, u'this is render result')
+            self.assertEqual(engine.args, (template, context))
+            self.assertEqual(engine.kwargs, {})
 
     def test_render_error(self):
         """FileResource.render() raises ``TemplateError`` in case of fail."""
