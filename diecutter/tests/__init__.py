@@ -31,6 +31,6 @@ class temporary_directory(object):
         self.path = tempfile.mkdtemp()
         return self.path
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type=None, exc_val=None, exc_tb=None):
         """Remove temporary directory recursively."""
         shutil.rmtree(self.path)
