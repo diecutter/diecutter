@@ -4,15 +4,23 @@ Changelog
 0.2 (unreleased)
 ----------------
 
+Maintenance release, big implementation refactoring.
+
+- Refactoring #22 - Added tests.
+- Bug #17 - Sort directories alphabetically.
+- Bug #13 - Fixed "diecutter.readonly" which was always ``True``.
 
 0.1 (2013-01-29)
 ----------------
- - #11 - On POST requests, handle empty content-type as
-    'application/x-www-form-urlencoded'.
- - #8 - Introduced support of INI files as input for POST requests
- - #2 - Added a 'readonly' option that, if set to 'True', forbids PUT
-    requests.
- - #1 - Add a diecutter context with diecutter.api_url,
-    diecutter.version and diecutter.now
- - Add directory support
- - Add file support
+
+Initial release.
+
+- Bug #11 - On POST requests, handle empty content-type as
+  "application/x-www-form-urlencoded".
+- Feature #8 - Support INI files as input for POST requests.
+- Feature #3 - Use a configuration file outside diecutter's code.
+- Feature #2 - If "readonly" option is ``True``, forbid PUT requests.
+- Feature #1 - Pass a "diecutter" context variable to templates, containing
+  data such as "diecutter.api_url", "diecutter.version" and "diecutter.now".
+- Feature - Diecutter service renders directories as ZIP archives.
+- Feature - Diecutter service renders files.
