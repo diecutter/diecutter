@@ -3,6 +3,7 @@
 from os import mkdir, sep
 from os.path import exists, isdir, isfile, join
 import unittest
+import zipfile
 
 from diecutter import resources
 from diecutter.engines.mock import MockEngine
@@ -130,7 +131,7 @@ class FileResourceTestCase(unittest.TestCase):
             path = join(template_dir, 'dummy')
             template = u'Tea or coffee'
             context = {'a': 1, 'b': 2}
-            engine = MockEngine(fail=u'This is an error message')
+            engine = MockEngine(fail=TemplateError('This is an error message'))
             open(path, 'w').write(template.encode('utf8'))
             resource = resources.FileResource(path=path, engine=engine)
             self.assertRaises(TemplateError, resource.render, context)
@@ -263,3 +264,51 @@ class DirResourceTestCase(unittest.TestCase):
                               (join(template_dir, 'dummy', 'b', 'two'),
                                'rendered/b/two',
                                context)])
+
+    def test_render(self):
+        """DirResource.render() returns an archive of rendered templates."""
+        with temporary_directory() as template_dir:
+            # Setup.
+            expected_filename = 'rendered-filename/{args[0]!s}'
+            filename_engine = MockEngine(expected_filename)
+            expected_content = u'rendered-content/{args[0]!s}'
+            content_engine = MockEngine(expected_content)
+            context = {'fake': 'fake-context'}
+            dir_path = join(template_dir, 'dir')
+            mkdir(dir_path)
+            dir_path += sep
+            file_path = join(dir_path, 'file')
+            open(file_path, 'w').write('data')
+            resource = resources.DirResource(path=dir_path,
+                                             engine=content_engine,
+                                             filename_engine=filename_engine)
+            # Render.
+            rendered = resource.render(context)
+            # Check result.
+            with open(join(template_dir, 'result.zip'), 'w') as zip_fd:
+                zip_fd.write(rendered)
+            self.assertTrue(zipfile.is_zipfile(zip_fd.name))
+            with zipfile.ZipFile(zip_fd.name) as zip_file:
+                self.assertEqual(zip_file.namelist(),
+                                 ['rendered-filename/file'])
+                self.assertEqual(zip_file.read('rendered-filename/file'),
+                                 u'rendered-content/data')
+                self.assertTrue(zip_file.testzip() is None)
+
+    def test_render_template_error(self):
+        with temporary_directory() as template_dir:
+            # Setup.
+            expected_filename = 'rendered-filename/{args[0]!s}'
+            filename_engine = MockEngine(expected_filename)
+            content_engine = MockEngine(fail=TemplateError('error!'))
+            context = {'fake': 'fake-context'}
+            dir_path = join(template_dir, 'dir')
+            mkdir(dir_path)
+            dir_path += sep
+            file_path = join(dir_path, 'file')
+            open(file_path, 'w').write('data')
+            resource = resources.DirResource(path=dir_path,
+                                             engine=content_engine,
+                                             filename_engine=filename_engine)
+            # Render.
+            self.assertRaises(TemplateError, resource.render, context)

@@ -26,7 +26,7 @@ class MockEngine(Engine):
     True
 
     You can use ``{args}`` and ``{kwargs}`` in mock result, because render()
-    uses str.format().
+    uses ``self.render_result.format(args=args, kwargs=kwargs)``.
     This feature is used by default:
 
     >>> mock = MockEngine()
@@ -34,6 +34,15 @@ class MockEngine(Engine):
     u'RENDER WITH ARGS={args!s} AND KWARGS={kwargs!s}'
     >>> mock.render()
     u'RENDER WITH ARGS=() AND KWARGS={}'
+
+    If you setup an exception as :py:attr:`fail` attribute,
+    then :py:meth:`render` will raise that exception.
+
+    >>> mock = MockEngine(fail=Exception('An error occured'))
+    >>> mock.render()  # Doctest: +ELLIPSIS
+    Traceback (most recent call last):
+    ...
+    Exception: An error occured
 
     """
     def __init__(self, render_result=default_render_result, fail=None):
@@ -57,7 +66,7 @@ class MockEngine(Engine):
 
         """
         if self.fail is not None:
-            raise TemplateError(self.fail)
+            raise self.fail
         self.args = args
         self.kwargs = kwargs
         return self.render_result.format(args=args, kwargs=kwargs)

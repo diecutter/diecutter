@@ -137,7 +137,7 @@ class DirResource(Resource):
         temp_file = StringIO()
         temp_zip = zipfile.ZipFile(temp_file, 'w',
                                    compression=zipfile.ZIP_DEFLATED)
-        for resource_path, filename, context in self.render_tree:
+        for resource_path, filename, context in self.render_tree(context):
             resource = FileResource(join(self.path, resource_path),
                                     self.engine)
             try:
