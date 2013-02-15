@@ -288,12 +288,15 @@ class DirResourceTestCase(unittest.TestCase):
             with open(join(template_dir, 'result.zip'), 'w') as zip_fd:
                 zip_fd.write(rendered)
             self.assertTrue(zipfile.is_zipfile(zip_fd.name))
-            with zipfile.ZipFile(zip_fd.name) as zip_file:
+            try:
+                zip_file = zipfile.ZipFile(zip_fd.name)
                 self.assertEqual(zip_file.namelist(),
                                  ['rendered-filename/file'])
                 self.assertEqual(zip_file.read('rendered-filename/file'),
                                  u'rendered-content/data')
                 self.assertTrue(zip_file.testzip() is None)
+            finally:
+                zip_file.close()
 
     def test_render_template_error(self):
         with temporary_directory() as template_dir:
