@@ -49,3 +49,7 @@ serve:
 test:
 	$(NOSE) --config=etc/nose.cfg
 	rm $(ROOT_DIR)/.coverage
+
+
+release:
+	$(BIN_DIR)/fullrelease

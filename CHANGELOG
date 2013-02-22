@@ -1,10 +1,10 @@
 Changelog
 =========
 
-0.2 (unreleased)
+0.2 (2013-02-22)
 ----------------
 
-Maintenance release, big implementation refactoring.
+Maintenance release, implementation refactoring, tests.
 
 - Refactoring #22 - Added tests.
 - Bug #17 - Sort directories alphabetically.
