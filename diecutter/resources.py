@@ -2,7 +2,7 @@
 """Resources exposed on APIs."""
 import json
 import os
-from os.path import basename, isdir, isfile, join, relpath
+from os.path import basename, isdir, isfile, join, normpath, relpath, sep
 import zipfile
 from cStringIO import StringIO
 
@@ -145,7 +145,12 @@ class DirResource(Resource):
 
     def get_file_resource(self, path):
         """Factory for internal FileResources."""
-        return FileResource(join(self.path, path), self.engine)
+        file_path = join(self.path, normpath(path))
+        if not file_path.startswith(self.path.rstrip(sep) + sep):
+            raise ValueError('File resource path is not relative to '
+                             'directory path. FILE: "{f}", DIR: "{d}"'
+                             .format(f=path, d=self.path))
+        return FileResource(file_path, self.engine)
 
     def render_file(self, template, context):
         """Render a file with context."""

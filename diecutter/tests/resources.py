@@ -309,6 +309,38 @@ class DirResourceTestCase(unittest.TestCase):
                                context)])
         self.assertFalse(filename_engine.called)
 
+    def test_render_dynamic_tree_relative_paths(self):
+        """Raises exception if .diecutter-tree contains some non relative path.
+
+        .. warning::
+
+           This is a security test!
+
+           Since dynamic tree templates can be defined by user, we have to
+           check templates path. We don't want users to be able to render
+           arbitrary locations on the filesystem.
+
+        """
+        content_engine = mock.MagicMock()
+        content_engine.render = lambda t, c: t
+        filename_engine = mock.MagicMock()
+        context = {'fake': 'fake-context'}
+        with temporary_directory() as template_dir:
+            dir_path = template_dir
+            directory_tree = [{'template': '../template_one.txt',
+                               'filename': '1.txt',
+                               'context': {}}]
+            open(join(dir_path, '.diecutter-tree'), 'w').write(
+                json.dumps(directory_tree))
+            dir_path += sep
+            resource = resources.DirResource(path=dir_path,
+                                             engine=content_engine,
+                                             filename_engine=filename_engine)
+            self.assertRaises(ValueError,
+                              resource.render,
+                              context)
+        self.assertFalse(filename_engine.called)
+
     def test_render(self):
         """DirResource.render() returns an archive of rendered templates."""
         with temporary_directory() as template_dir:
