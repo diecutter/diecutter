@@ -93,6 +93,16 @@ Dynamic directory trees templates
 
 **Directory trees can be computed from templates.**
 
+Some use cases: while rendering a directory...
+
+* skip some files based on variables ;
+
+* render a template several times with different output filename and different
+  input context data ;
+
+* in general, compute filenames, selected templates and alter context using
+  template engine's features: loops, conditions, gettext...
+
 When you POST to a directory, diecutter looks for special ".diecutter-tree"
 template in that directory. If present, it renders ".diecutter-tree" against
 context, decodes JSON, then iterates over items to actually render the
