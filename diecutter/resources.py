@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Resources exposed on APIs."""
+import json
 import os
-from os.path import basename, isdir, isfile, join, relpath
+from os.path import basename, isdir, isfile, join, normpath, relpath, sep
 import zipfile
 from cStringIO import StringIO
 
@@ -127,10 +128,51 @@ class DirResource(Resource):
         Context may change for each resource.
 
         """
-        for resource_path in self.read_tree():
-            filename = self.relative_filename(resource_path)
-            filename = self.render_filename(filename, context)
-            yield (resource_path, filename, context)
+        if self.has_tree_template():
+            tree_template = self.get_tree_template()
+            for result in self.render_tree_from_template(tree_template,
+                                                         context):
+                yield result
+        else:
+            for resource_path in self.read_tree():
+                filename = self.relative_filename(resource_path)
+                filename = self.render_filename(filename, context)
+                yield (resource_path, filename, context)
+
+    def has_tree_template(self):
+        """Return True if .diecutter-tree file exists."""
+        return isfile(join(self.path, '.diecutter-tree'))
+
+    def get_file_resource(self, path):
+        """Factory for internal FileResources."""
+        file_path = join(self.path, normpath(path))
+        if not file_path.startswith(self.path.rstrip(sep) + sep):
+            raise ValueError('File resource path is not relative to '
+                             'directory path. FILE: "{f}", DIR: "{d}"'
+                             .format(f=path, d=self.path))
+        return FileResource(file_path, self.engine)
+
+    def render_file(self, template, context):
+        """Render a file with context."""
+        try:
+            return template.render(context).encode('utf-8')
+        except (TemplateError, UnicodeDecodeError) as e:
+            raise TemplateError('%s: %s' % (template.path, e))
+
+    def get_tree_template(self):
+        """Return FileResource that holds directory tree."""
+        return self.get_file_resource('.diecutter-tree')
+
+    def render_tree_from_template(self, template, context):
+        """Generate directory tree from a template file resource."""
+        content = self.render_file(template, context)
+        tree = json.loads(content)
+        for item in iter(tree):
+            item_path = join(self.path, item['template'])
+            item_filename = item['filename']
+            item_context = context
+            item_context.update(item.get('context', {}))
+            yield (item_path, item_filename, item_context)
 
     def render(self, context):
         """Return archive of files in tree rendered against context."""
@@ -138,12 +180,8 @@ class DirResource(Resource):
         temp_zip = zipfile.ZipFile(temp_file, 'w',
                                    compression=zipfile.ZIP_DEFLATED)
         for resource_path, filename, context in self.render_tree(context):
-            resource = FileResource(join(self.path, resource_path),
-                                    self.engine)
-            try:
-                content = resource.render(context).encode('utf-8')
-            except (TemplateError, UnicodeDecodeError) as e:
-                raise TemplateError('%s: %s' % (resource_path, e))
+            resource = self.get_file_resource(resource_path)
+            content = self.render_file(resource, context)
             temp_zip.writestr(filename, content)
         temp_zip.close()
         return temp_file.getvalue()

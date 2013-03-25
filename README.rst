@@ -87,6 +87,90 @@ If you want to render the directory against a global context::
     1 directory, 3 files
 
 
+*********************************
+Dynamic directory trees templates
+*********************************
+
+**Directory trees can be computed from templates.**
+
+Some use cases: while rendering a directory...
+
+* skip some files based on variables ;
+
+* render a template several times with different output filename and different
+  input context data ;
+
+* in general, compute filenames, selected templates and alter context using
+  template engine's features: loops, conditions, gettext...
+
+When you POST to a directory, diecutter looks for special ".diecutter-tree"
+template in that directory. If present, it renders ".diecutter-tree" against
+context, decodes JSON, then iterates over items to actually render the
+directory.
+
+Let's explain this feature with an example...
+
+Consider the "dynamic-tree" folder in diecutter's demo:
+https://github.com/novagile/diecutter/tree/master/demo/dynamic-tree/
+
+.. code-block:: sh
+
+   curl -X GET http://localhost:8106/dynamic-tree/
+
+The directory holds two templates:
+
+* special ``.diecutter-tree`` ;
+* ``greeter.txt``, which accepts ``greeter`` and ``name`` variables.
+
+``greeter.txt`` is a very simple ``{{ greeter }} {{name}}!`` template:
+
+.. code-block:: sh
+
+   curl -X GET http://localhost:8106/dynamic-tree/greeter.txt
+   curl -X POST -d "greeter=Bonjour;name=Remy" http://localhost:8106/dynamic-tree/greeter.txt
+
+``.diecutter-tree`` is also a template.
+
+.. code-block:: sh
+
+   curl -X GET http://localhost:8106/dynamic-tree/.diecutter-tree
+   curl -X POST http://localhost:8106/dynamic-tree/.diecutter-tree
+
+POST to ``.diecutter-tree`` returns a JSON-encoded list, where items are
+dictionary with the following keys:
+
+* "template": relative path to a template, i.e. content to be rendered ;
+* "filename": filename to return to the client ;
+* "context": optional dictionary of context overrides.
+
+In our example, the JSON is:
+
+.. code-block:: json
+
+   [
+     {
+       "template": "greeter.txt",
+       "filename": "hello.txt",
+       "context": {"greeter": "hello"}
+     },
+     {
+       "template": "greeter.txt",
+       "filename": "goodbye.txt",
+       "context": {"greeter": "goodbye"}
+     }
+   ]
+
+This JSON means diecutter will produce an archive with two files: "hello.txt"
+and "goodbye.txt":
+
+.. code-block:: sh
+
+   curl -X POST -d "name=Remy" http://localhost:8106/dynamic-tree/ > greetings.zip
+
+Since ``.diecutter-tree`` is a template, you can manage it as any other
+template resource with diecutter API.
+
+
 ******************
 Posting input data
 ******************
