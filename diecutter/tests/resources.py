@@ -307,6 +307,7 @@ class DirResourceTestCase(unittest.TestCase):
                               (unicode(join(template_dir, 'template_two.txt')),
                                u'2.txt',
                                context)])
+        self.assertFalse(filename_engine.called)
 
     def test_render(self):
         """DirResource.render() returns an archive of rendered templates."""
