@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 """Tests around diecutter.resources."""
+import json
 from os import mkdir, sep
 from os.path import exists, isdir, isfile, join
 import unittest
+try:
+    from unittest import mock
+except:
+    import mock
 import zipfile
 
 from diecutter import resources
@@ -263,6 +268,44 @@ class DirResourceTestCase(unittest.TestCase):
                                context),
                               (join(template_dir, 'dummy', 'b', 'two'),
                                'rendered/b/two',
+                               context)])
+
+    def test_has_tree_template(self):
+        """DirResource.has_tree_template() checks if .diecutter-tree exists."""
+        with temporary_directory() as template_dir:
+            dir_path = template_dir
+            resource = resources.DirResource(path=dir_path)
+            self.assertFalse(resource.has_tree_template())
+            open(join(dir_path, '.diecutter-tree'), 'w')
+            self.assertTrue(resource.has_tree_template())
+
+    def test_render_dynamic_tree(self):
+        """DirResource.render_tree() uses .diecutter-tree template."""
+        content_engine = mock.MagicMock()
+        content_engine.render = lambda t, c: t
+        filename_engine = mock.MagicMock()
+        context = {'fake': 'fake-context'}
+        with temporary_directory() as template_dir:
+            dir_path = template_dir
+            directory_tree = [{'template': 'template_one.txt',
+                               'filename': '1.txt',
+                               'context': {}},
+                              {'template': 'template_two.txt',
+                               'filename': '2.txt',
+                               'context': {}}]
+            open(join(dir_path, '.diecutter-tree'), 'w').write(
+                json.dumps(directory_tree))
+            dir_path += sep
+            resource = resources.DirResource(path=dir_path,
+                                             engine=content_engine,
+                                             filename_engine=filename_engine)
+            rendered = list(resource.render_tree(context))
+            self.assertEqual(rendered,
+                             [(unicode(join(template_dir, 'template_one.txt')),
+                               u'1.txt',
+                               context),
+                              (unicode(join(template_dir, 'template_two.txt')),
+                               u'2.txt',
                                context)])
 
     def test_render(self):

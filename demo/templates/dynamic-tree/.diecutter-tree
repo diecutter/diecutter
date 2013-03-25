@@ -1,0 +1,9 @@
+[
+  {% for greeter in ['hello', 'goodbye'] %}
+    {
+      "template": "greeter.txt",
+      "filename": "{{ greeter }}.txt",
+      "context": {"greeter": "{{ greeter }}"}
+    }{% if not loop.last %},{% endif %}
+  {% endfor %}
+]
