@@ -1,6 +1,7 @@
 """Cornice services."""
 from datetime import datetime
 import json
+import logging
 from os import makedirs
 from os.path import join, abspath, dirname, exists, isdir, normpath
 
@@ -15,6 +16,9 @@ from diecutter import resources
 from diecutter.contextextractors import extract_context
 from diecutter.exceptions import TemplateError
 from diecutter.validators import token_validator
+
+
+logger = logging.getLogger(__name__)
 
 
 template_service = Service(name='template_service', path='/',
@@ -149,5 +153,6 @@ def post_conf_template(request):
         request.response.write(resource.render(context))
     except TemplateError as e:
         request.response.status_int = 500
+        logger.error('TemplateError caught: {error}'.format(error=e))
         request.response.write(json.dumps(str(e)))
     return request.response

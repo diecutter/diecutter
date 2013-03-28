@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests around diecutter.engines."""
+"""Tests around diecutter.engines.filename."""
 import unittest
 
 from diecutter.engines.filename import FilenameEngine
