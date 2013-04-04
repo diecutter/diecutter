@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Demo diecutter client for Sphinx documentation template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+<!-- Page content. -->
+<h1>Generate Sphinx documentation</h1>
+<div class="section">
+    <h2>Configure diecutter service</h2>
+    <form id="diecutter_form" class="form-horizontal">
+        <div class="control-group">
+            <label for="diecutter_resource" class="control-label">Service</label>
+            <div class="controls">
+                <input id="diecutter_service" name="service" type="text" placeholder="http://" value="http://localhost:8106" />
+                <span class="help-inline">URL to diecutter's API.</span>
+                <span id="diecutter_service_status" class="badge"><i class="icon-question-sign icon-white"></i></span>
+                <button id="diecutter_service_test"><span class="icon-refresh"></span> Test</button>
+            </div>
+        </div>
+        <div class="control-group">
+            <label for="diecutter_resource" class="control-label">Resource</label>
+            <div class="controls">
+                <input id="diecutter_resource" name="resource" type="text" value="/sphinx-docs/" />
+                <span class="help-inline">Path to resource relative to diecutter's service URL.</span>
+                <button id="diecutter_resource_get"><span class="icon-circle-arrow-down"></span> GET</button>
+            </div>
+        </div>
+    </form>
+    <form id="get_resource_form" method="GET" action=""></form>
+</div>
+<div class="section">
+    <h2>Configure Sphinx documentation</h2>
+    <form id="sphinx_form" action="" method="POST" class="form-horizontal">
+        <fieldset>
+            <legend>Project</legend>
+            <div class="control-group">
+                <label for="sphinx_project_name" class="control-label">Project name</label>
+                <div class="controls">
+                    <input id="sphinx_project_name" name="project_name" type="text" value="" />
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Meta information files</legend>
+            <p>Paths to standard project information files, relative to the root of the project's documentation.</p>
+            <div class="control-group">
+                <label for="sphinx_readme_file" class="control-label">Path to README</label>
+                <div class="controls">
+                    <input id="sphinx_readme_file" name="readme_file" type="text" value="../README" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="sphinx_license_file" class="control-label">Path to LICENSE</label>
+                <div class="controls">
+                    <input id="sphinx_license_file" name="license_file" type="text" value="../LICENSE" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="sphinx_authors_file" class="control-label">Path to AUTHORS</label>
+                <div class="controls">
+                    <input id="sphinx_authors_file" name="authors_file" type="text" value="../AUTHORS" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="sphinx_changelog_file" class="control-label">Path to CHANGELOG</label>
+                <div class="controls">
+                    <input id="sphinx_changelog_file" name="changelog_file" type="text" value="../CHANGELOG" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="sphinx_install_file" class="control-label">Path to INSTALL</label>
+                <div class="controls">
+                    <input id="sphinx_install_file" name="install_file" type="text" value="../INSTALL" />
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Demo</legend>
+            <p>
+                Do you provide a demonstration as part as development sources?
+                If you include examples in your documentation, it's a good
+                practice to take those examples from the (tested) demo project.
+            </p>
+            <div class="control-group">
+                <label for="sphinx_with_demo" class="control-label">With demo?</label>
+                <div class="controls">
+                    <input id="sphinx_with_demo" name="with_demo" type="checkbox" value="1" checked />
+                    <span class="help-inline">Options below will have no effect if you uncheck this.</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="sphinx_demo_readme" class="control-label">Path to demo's README</label>
+                <div class="controls">
+                    <input id="sphinx_demo_readme" name="demo_readme" type="text" value="../demo/README" />
+                    <span class="help-inline">Path to demo's README file, relative to the root of project's documentation.</span>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>API documentation</legend>
+            <p>
+                Do you want to include auto-generated API documentation?
+                API documentation generated from docstrings doesn't replace
+                narrative documentation, but it is a good complement:
+            </p>
+            <ul>
+                <li>You can reference modules, classes, methods in your documentation</li>
+                <li>It makes you take care of docstrings</li>
+                <li>Some readers appreciate to learn about API and internals without having to read implementation</li>
+                <li>Those who like diving into code still can!</li>
+            </ul>
+            <div class="control-group">
+                <label for="sphinx_with_api" class="control-label">With API documentation?</label>
+                <div class="controls">
+                    <input id="sphinx_with_api" name="with_api" type="checkbox" value="1" checked />
+                    <span class="help-inline">Options below will have no effect if you uncheck this.</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="sphinx_api_package" class="control-label">Package name</label>
+                <div class="controls">
+                    <input id="sphinx_api_package" name="api_package" type="text" value="" />
+                    <span class="help-inline">Python package name, i.e. the one used in ``import`` statements.</span>
+                </div>
+            </div>
+        </fieldset>
+        <div>
+            <a id="sphinx_submit" class="btn btn-primary">
+                <span class="icon-circle-arrow-down"> </span>            
+                POST data
+            </a>
+        </div>
+    </form>
+</div>
+<!-- End page content. -->
+            </div>
+        </div>
+    </div>
+    <!-- Scripts. -->
+    <script src="js/jquery-1.9.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/diecutter-sphinx.js"></script>
+</body>
+</html>

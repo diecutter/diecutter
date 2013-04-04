@@ -1,0 +1,79 @@
+(function ( $ ) {
+    var diecutter_form = null;
+    var data_form_prefix = 'sphinx_';
+    var data_form = null;
+
+    /* Return URL for resource. */
+    function diecutter_url( path ) {
+        if( path === undefined ) {
+            path = $('#diecutter_resource').val();
+        }
+        service = $('#diecutter_service').val();
+        url = service + path;
+        return url;
+    }
+
+    /* Set client form's "action" attribute to event's subject value. */
+    function update_form_action( event ) {
+        url = diecutter_url();
+        data_form.attr('action', url);
+    }
+
+    /* GET to diecutter service root. */
+    function get_diecutter_service_status( event ) {
+        url = diecutter_url( '/' );
+        $.ajax( url, {
+            type: 'GET',
+            dataType: 'json',
+            crossDomain: true,
+            processData: false,
+            error: function ( jqXHR, textStatus, errorThrown ) {
+                $( '#diecutter_service_status' )
+                    .removeClass( 'badge-success' )
+                    .addClass( 'badge-important' );
+                $( '#diecutter_service_status > i' )
+                    .removeClass( 'icon-question-sign' )
+                    .removeClass( 'icon-ok-circle' )
+                    .addClass( 'icon-warning-sign' );
+            },
+            success: function ( data, textStatus, jqXHR ) {
+                $( '#diecutter_service_status' )
+                    .removeClass( 'badge-important' )
+                    .addClass( 'badge-success' );
+                $( '#diecutter_service_status > i' )
+                    .removeClass( 'icon-question-sign' )
+                    .removeClass( 'icon-warning-sign' )
+                    .addClass( 'icon-ok-circle' );
+            }
+        });
+        return false;
+    }
+
+    /* GET diecutter resource. */
+    function get_diecutter_resource( event ) {
+        $( '#get_resource_form' ).attr( 'action', diecutter_url() );
+        $( '#get_resource_form' ).submit();
+        return false;
+    }
+
+    /* POST to diecutter resource. */
+    function post_diecutter( event ) {
+        data_form.submit();
+    }
+
+    $(document).ready(function() {
+        diecutter_form = $('#diecutter_form');
+        data_form = $('#' + data_form_prefix + 'form');
+
+        update_form_action();
+
+        // Event listeners.
+        $( '#diecutter_service_test' )
+            .on( 'click', get_diecutter_service_status );
+        $( '#diecutter_resource_get' )
+            .on( 'click', get_diecutter_resource );
+        $( '#diecutter_service' ).on( 'change', update_form_action );
+        $( '#diecutter_resource' ).on( 'change', update_form_action );
+        $( '#sphinx_submit' ).on( 'click', post_diecutter );
+    });
+})( jQuery );
