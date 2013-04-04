@@ -12,8 +12,8 @@ class Jinja2TestCase(unittest.TestCase):
         """Jinja2Engine's environment contains additional functions."""
         engine = Jinja2Engine()
         environment = engine.environment
-        self.assertIn('path_join', environment.globals)
-        self.assertIn('path_normalize', environment.globals)
+        self.assertTrue('path_join' in environment.globals)
+        self.assertTrue('path_normalize' in environment.globals)
 
     def test_render_noop(self):
         """Jinja2Engine correctly renders ``Hello world!`` template."""
