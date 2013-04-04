@@ -21,6 +21,11 @@
 
     /* GET to diecutter service root. */
     function get_diecutter_service_status( event ) {
+        // Disable button.
+        $( '#diecutter_service_test' ).attr('disabled', 'disabled');
+        // Display processing message in place of status.
+        $( '#diecutter_service_status' ).siblings('.loading').show();
+        // AJAX call.
         url = diecutter_url( '/' );
         $.ajax( url, {
             type: 'GET',
@@ -44,6 +49,10 @@
                     .removeClass( 'icon-question-sign' )
                     .removeClass( 'icon-warning-sign' )
                     .addClass( 'icon-ok-circle' );
+            },
+            complete: function ( jqXHR, textStatus ) {
+                $( '#diecutter_service_status' ).siblings('.loading').hide();
+                $( '#diecutter_service_test' ).removeAttr('disabled');
             }
         });
         return false;
@@ -66,6 +75,7 @@
         data_form = $('#' + data_form_prefix + 'form');
 
         update_form_action();
+        get_diecutter_service_status();
 
         // Event listeners.
         $( '#diecutter_service_test' )
