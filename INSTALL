@@ -1,0 +1,25 @@
+############
+Installation
+############
+
+This project is open-source, published under BSD license.
+See :doc:`/about/license` for details.
+
+If you want to install a development environment, you should go to :doc:`/dev`
+documentation.
+
+.. code-block:: sh
+
+   # Download and install (in a virtualenv if you like).
+   pip install diecutter
+   # Configure: adapt "YOUR_TEMPLATE_DIR"!
+   wget -O diecutter.ini --post-data "template_dir=YOUR_TEMPLATE_DIR" http://diecutter.alwaysdata.net/diecutter.ini
+   # Run the server.
+   pserve diecutter.ini --reload
+
+Check it works::
+
+.. code-block:: text
+
+   $ curl http://localhost:8106
+   {"diecutter": "Hello", "version": "0.1dev"}
