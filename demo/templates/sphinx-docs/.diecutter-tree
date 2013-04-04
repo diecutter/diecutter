@@ -1,0 +1,45 @@
+[
+  {# API -#}
+  {% if with_api -%}
+  {%- for template_name in ['api/index.txt'] %}
+  {
+    "template": "{{ template_name }}",
+    "filename": "{{ template_name }}"
+  },
+  {%- endfor %}
+  {%- endif %}
+
+  {# Demo -#}
+  {% if with_demo -%}
+  {
+    "template": "demo.txt",
+    "filename": "demo.txt"
+  },
+  {%- endif %}
+
+  {# Special files. -#}
+  {%- for template_name in ['Makefile', 'conf.py', 'make.bat'] %}
+  {
+    "template": "{{ template_name }}",
+    "filename": "{{ template_name }}"
+  },
+  {%- endfor %}
+
+  {# Regular files. -#}
+  {%- for template_name in ['faq.txt',
+			   'index.txt',
+			   'install.txt',
+			   'about/alternatives.txt',
+			   'about/authors.txt',
+			   'about/changelog.txt',
+			   'about/contact.txt',
+			   'about/index.txt',
+			   'about/license.txt',
+			   'about/vision.txt',
+			   'contribute/index.txt'] %}
+  {
+    "template": "{{ template_name }}",
+    "filename": "{{ template_name }}"
+  }{% if not loop.last %},{% endif %}
+  {%- endfor %}
+]

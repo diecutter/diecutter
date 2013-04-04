@@ -1,0 +1,1 @@
+.. include:: {{ path_join('..', authors_file) }}
