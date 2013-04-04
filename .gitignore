@@ -2,7 +2,8 @@
 /bin/
 
 # Local configuration.
-/etc/
+#/etc/
+/etc/diecutter.ini
 
 # Libraries (automatically installed).
 /lib/

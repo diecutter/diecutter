@@ -22,7 +22,8 @@ logger = logging.getLogger(__name__)
 
 
 template_service = Service(name='template_service', path='/',
-                           description="The template API")
+                           description="The template API",
+                           cors_origins=('*',))
 
 conf_template = Service(name='template', path='/{template_path:.+}',
                         description="Return the template render or raw")

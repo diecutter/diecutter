@@ -10,8 +10,6 @@ NOSE = $(BIN_DIR)/nosetests
 configure:
 	mkdir -p $(ROOT_DIR)/etc
 	wget -O etc/diecutter.ini --post-data "template_dir=$(ROOT_DIR)/demo/templates" $(DIECUTTER_PUBLIC_API)/diecutter.ini
-	wget -O etc/buildout.cfg --post-data "" $(DIECUTTER_PUBLIC_API)/buildout/buildout.cfg
-	wget -O etc/nose.cfg --post-data "package=diecutter" $(DIECUTTER_PUBLIC_API)/nose.cfg
 
 
 develop: buildout
