@@ -8,6 +8,13 @@ from diecutter.exceptions import TemplateError
 
 class Jinja2TestCase(unittest.TestCase):
     """Test diecutter.engines.jinja.Jinja2Engine."""
+    def test_environment(self):
+        """Jinja2Engine's environment contains additional functions."""
+        engine = Jinja2Engine()
+        environment = engine.environment
+        self.assertIn('path_join', environment.globals)
+        self.assertIn('path_normalize', environment.globals)
+
     def test_render_noop(self):
         """Jinja2Engine correctly renders ``Hello world!`` template."""
         engine = Jinja2Engine()
