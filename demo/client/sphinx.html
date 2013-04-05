@@ -46,6 +46,19 @@
                     <input id="sphinx_project_name" name="project_name" type="text" value="" />
                 </div>
             </div>
+            <div class="control-group">
+                <label for="sphinx_author" class="control-label">Author</label>
+                <div class="controls">
+                    <input id="sphinx_author" name="author" type="text" value="" placeholder="Author" />
+                    <span class="help-inline">Copyright holder.</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="sphinx_copyright_string" class="control-label">Copyright</label>
+                <div class="controls">
+                    <input id="sphinx_copyright" name="copyright" type="text" value="" placeholder="YYYY-YYYY, Author" />
+                </div>
+            </div>
         </fieldset>
         <fieldset>
             <legend>Meta information files</legend>
@@ -78,6 +91,12 @@
                 <label for="sphinx_install_file" class="control-label">Path to INSTALL</label>
                 <div class="controls">
                     <input id="sphinx_install_file" name="install_file" type="text" value="../INSTALL" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="sphinx_version_file" class="control-label">Path to VERSION</label>
+                <div class="controls">
+                    <input id="sphinx_version_file" name="version_file" type="text" value="../VERSION" />
                 </div>
             </div>
         </fieldset>
@@ -128,6 +147,23 @@
                 <div class="controls">
                     <input id="sphinx_api_package" name="api_package" type="text" value="" />
                     <span class="help-inline">Python package name, i.e. the one used in ``import`` statements.</span>
+                </div>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Build options</legend>
+            <div class="control-group">
+                <label for="sphinx_sphinx_build" class="control-label">Build command</label>
+                <div class="controls">
+                    <input id="sphinx_sphinx_build" name="sphinx_build" type="text" value="sphinx-build" />
+                    <span class="help-inline">Build command, particularly useful if "sphinx-build" is not in path.</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="sphinx_sphinx_build_dir" class="control-label">Build directory</label>
+                <div class="controls">
+                    <input id="sphinx_sphinx_build_dir" name="sphinx_build_dir" type="text" value="_build" />
+                    <span class="help-inline">Output directory for Sphinx builds, relative to the root of project's documentation.</span>
                 </div>
             </div>
         </fieldset>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""{{ project_name }} documentation build configuration file.
+"""diecutter documentation build configuration file.
 
-Created by diecutter on {{ now }}.
+Created by diecutter on .
 
 This file is execfile()d with the current directory set to its containing dir.
 
@@ -14,7 +14,6 @@ All configuration values have a default; values that are commented out
 serve to show the default.
 
 """
-{% raw -%}
 import os
 import re
 
@@ -31,10 +30,10 @@ import re
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = [{% endraw %}
+extensions = [
     'sphinx.ext.doctest',
-    {% if with_api %}'sphinx.ext.autodoc',{% endif %}
-{% raw %}]
+    'sphinx.ext.autodoc',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -49,10 +48,10 @@ source_suffix = '.txt'
 master_doc = 'index'
 
 # General information about the project.
-project = u'{% endraw %}{{ project_name }}{% raw %}'
+project = u'diecutter'
 project_slug = re.sub(r'([\w_.-]+)', u'-', project)
-copyright = u'{% endraw %}{{ copyright }}{% raw %}'
-author = u'{% endraw %}{{ author }}{% raw %}'
+copyright = u'2012-2013, Remy Hubscher'
+author = u'Remy Hubscher'
 author_slug = re.sub(r'([\w_.-]+)', u'-', author)
 
 # The version info for the project you're documenting, acts as replacement for
@@ -62,7 +61,7 @@ configuration_dir = os.path.dirname(__file__)
 documentation_dir = configuration_dir
 version_file = os.path.normpath(os.path.join(
     documentation_dir,
-    '{% endraw %}{{ path_normalize(version_file) }}{% raw %}'))
+    '../VERSION'))
 
 # The full version, including alpha/beta/rc tags.
 release = open(version_file).read().strip()
@@ -272,4 +271,3 @@ texinfo_documents = [
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
-{%- endraw %}

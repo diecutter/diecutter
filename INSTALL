@@ -5,8 +5,8 @@ Installation
 This project is open-source, published under BSD license.
 See :doc:`/about/license` for details.
 
-If you want to install a development environment, you should go to :doc:`/dev`
-documentation.
+If you want to install a development environment, you should go to
+:doc:`/contribute/index` documentation.
 
 .. code-block:: sh
 

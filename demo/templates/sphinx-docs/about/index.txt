@@ -8,5 +8,4 @@ About {{ project_name }}
    alternatives
    license
    authors
-   contact
    changelog

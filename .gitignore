@@ -8,6 +8,9 @@
 # Libraries (automatically installed).
 /lib/
 
+# Data files.
+/var/
+
 # Python files.
 *.pyc
 /*.egg-info/

@@ -1,4 +1,4 @@
-.. include:: {{ path_normalize(readme_file) }}
+.. include:: ../README
 
 
 ********
@@ -8,10 +8,10 @@ Contents
 .. toctree::
    :maxdepth: 2
 
-   {% if with_demo %}demo{% endif %}
+   
    faq
    install
-   {% if with_api %}api/index{% endif %}
+   api/index
    about/index
    contribute/index
 

@@ -51,9 +51,35 @@ serve:
 	$(BIN_DIR)/pserve $(ROOT_DIR)/etc/diecutter.ini --reload
 
 
-test:
-	$(NOSE) --config=etc/nose.cfg
+test: test-app test-documentation
+
+
+test-app:
+	$(NOSE) --config=etc/nose.cfg diecutter
 	rm $(ROOT_DIR)/.coverage
+
+
+test-documentation:
+	$(NOSE) -c $(ROOT_DIR)/etc/nose.cfg sphinxcontrib.testbuild.tests
+
+
+documentation: apidoc sphinx
+
+
+# Remove auto-generated API documentation files.
+# Files will be restored during sphinx-build, if "autosummary_generate" option
+# is set to True in Sphinx configuration file.
+apidoc-clean:
+	find docs/api/ -type f \! -name "index.txt" -delete
+
+
+apidoc: apidoc-clean
+	$(BIN_DIR)/sphinx-apidoc --suffix txt --output-dir $(ROOT_DIR)/docs/api $(PROJECT)
+
+
+sphinx:
+	if [ ! -d docs/_static ]; then mkdir docs/_static; fi
+	make --directory=docs clean html doctest
 
 
 release:
