@@ -1,0 +1,11 @@
+{% for i in range(0, project_name|count + "About "|count) %}#{% endfor %}
+About {{ project_name }}
+{% for i in range(0, project_name|count + "About "|count) %}#{% endfor %}
+
+.. toctree::
+
+   vision
+   alternatives
+   license
+   authors
+   changelog

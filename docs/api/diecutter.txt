@@ -1,0 +1,59 @@
+diecutter Package
+=================
+
+:mod:`diecutter` Package
+------------------------
+
+.. automodule:: diecutter.__init__
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`contextextractors` Module
+-------------------------------
+
+.. automodule:: diecutter.contextextractors
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`exceptions` Module
+------------------------
+
+.. automodule:: diecutter.exceptions
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`resources` Module
+-----------------------
+
+.. automodule:: diecutter.resources
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`validators` Module
+------------------------
+
+.. automodule:: diecutter.validators
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`views` Module
+-------------------
+
+.. automodule:: diecutter.views
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+    diecutter.engines
+    diecutter.tests
+

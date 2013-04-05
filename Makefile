@@ -16,6 +16,7 @@ BUILDOUT_BOOTSTRAP_ARGS = -c $(BUILDOUT_CFG) --version=$(BUILDOUT_VERSION) --dis
 BUILDOUT = $(BIN_DIR)/buildout
 BUILDOUT_ARGS = -N -c $(BUILDOUT_CFG) buildout:directory=$(ROOT_DIR)
 DIECUTTER_PUBLIC_API = http://diecutter.alwaysdata.net
+DIECUTTER_LOCAL_API = http://localhost:8106
 NOSE = $(BIN_DIR)/nosetests
 
 
@@ -51,9 +52,42 @@ serve:
 	$(BIN_DIR)/pserve $(ROOT_DIR)/etc/diecutter.ini --reload
 
 
-test:
-	$(NOSE) --config=etc/nose.cfg
+test: test-app test-documentation
+
+
+test-app:
+	$(NOSE) --config=etc/nose.cfg diecutter
 	rm $(ROOT_DIR)/.coverage
+
+
+test-documentation:
+	$(NOSE) -c $(ROOT_DIR)/etc/nose.cfg sphinxcontrib.testbuild.tests
+	rm $(ROOT_DIR)/.coverage
+
+
+documentation: apidoc sphinx
+
+
+# Remove auto-generated API documentation files.
+# Files will be restored during sphinx-build, if "autosummary_generate" option
+# is set to True in Sphinx configuration file.
+apidoc-clean:
+	find docs/api/ -type f \! -name "index.txt" -delete
+
+
+apidoc: apidoc-clean
+	$(BIN_DIR)/sphinx-apidoc --suffix txt --output-dir $(ROOT_DIR)/docs/api $(PROJECT)
+
+
+sphinx:
+	if [ ! -d docs/_static ]; then mkdir docs/_static; fi
+	make --directory=docs clean html doctest
+
+
+generate-documentation:
+	curl -X POST -H "Content-Type: text/plain" --data-binary "@demo/presets/sphinx-docs.cfg" $(DIECUTTER_LOCAL_API)/sphinx-docs/ > var/sphinx-docs.zip
+	unzip -d docs/ var/sphinx-docs.zip
+	rm var/sphinx-docs.zip
 
 
 release:

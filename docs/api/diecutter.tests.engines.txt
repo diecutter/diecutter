@@ -1,0 +1,27 @@
+engines Package
+===============
+
+:mod:`engines` Package
+----------------------
+
+.. automodule:: diecutter.tests.engines
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`filename` Module
+----------------------
+
+.. automodule:: diecutter.tests.engines.filename
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`jinja` Module
+-------------------
+
+.. automodule:: diecutter.tests.engines.jinja
+    :members:
+    :undoc-members:
+    :show-inheritance:
+

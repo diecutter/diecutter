@@ -1,0 +1,11 @@
+###############
+About diecutter
+###############
+
+.. toctree::
+
+   vision
+   alternatives
+   license
+   authors
+   changelog
