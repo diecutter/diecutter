@@ -17,7 +17,7 @@ If you want to install a development environment, you should go to
    # Run the server.
    pserve diecutter.ini --reload
 
-Check it works::
+Check it works:
 
 .. code-block:: text
 

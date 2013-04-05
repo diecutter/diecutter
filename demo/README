@@ -2,6 +2,22 @@
 Demo project
 ############
 
-This directory contains a diecutter demonstration.
+The :file:`demo/` directory in `diecutter's sourcecode`_ contains:
+
+* templates in :file:`templates/` folder.
+
+* some HTML-based client, specialized for the sphinx-docs template, in
+  :file:`client/` folder.
+
+* presets (input data) in :file:`presets` folder.
 
 Feel free to use it as a sandbox.
+
+This demo project is available online at http://diecutter.alwaysdata.net/.
+
+
+.. rubric:: References
+
+.. target-notes::
+
+.. _`diecutter's sourcecode`: https://github.com/novagile/diecutter/
