@@ -15,7 +15,9 @@ REQUIREMENTS = ['setuptools',
                 'PasteScript',
                 'PasteDeploy',
                 'waitress',
-                'jinja2']
+                'jinja2',
+                'mock',
+                'webtest']
 
 
 if __name__ == '__main__':  # Don't run setup() when we import this module.
