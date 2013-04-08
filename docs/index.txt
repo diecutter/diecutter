@@ -7,13 +7,15 @@ Contents
 
 .. toctree::
    :maxdepth: 2
+   :titlesonly:
 
    demo
-   faq
-   install
-   api/index
-   about/index
+   client/index
+   server/index
+   framework/index
    contribute/index
+   about/index
+   faq
 
 
 ******************

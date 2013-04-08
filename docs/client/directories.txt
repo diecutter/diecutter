@@ -1,0 +1,87 @@
+###########
+Directories
+###########
+
+Directories are the second type of template resource. They are collections of
+files and directories resources.
+
+Here is service's API overview:
+
+* `PUT`_: directories are automatically created when you PUT a file in it.
+  There is currently no way to create a whole directory with one request
+  (uploading an archive as an example).
+
+* `GET`_: list files in directory.
+* `POST`_: render templates in directory against context, as an archive.
+* other HTTP verbs aren't implemented yet.
+
+.. note::
+
+   In the examples below, we'll consider that a diecutter service is running
+   at http://localhost:8106.
+
+
+***
+PUT
+***
+
+Let's create some "greetings" directory with "hello.txt" and "goodbye.txt"
+inside:
+    
+.. code-block:: text
+
+   $ echo "Hello {{ name }}!" | curl -X PUT  -F "file=@-" http://localhost:8106/greetings/hello.txt
+   {"diecutter": "Ok"}
+
+   $ echo "Good bye {{ name }}!" | curl -X PUT  -F "file=@-" http://localhost:8106/greetings/goodbye.txt
+   {"diecutter": "Ok"}
+
+
+***
+GET
+***
+
+GET lists files in directory:
+
+.. code-block:: text
+
+   $ curl http://localhost:8106/greetings/
+   hello.txt
+   goodbye.txt 
+
+Notice that, if you don't set the trailing slash, you get the same list with
+folder name as prefix:
+
+.. code-block:: text
+
+   $ curl http://localhost:8106/greetings
+   greetings/hello.txt
+   greetings/goodbye.txt 
+
+
+****
+POST
+****
+
+POST renders directory against a context:
+
+.. code-block:: text
+
+   $ curl -X POST -d name="world" http://localhost:8106/greetings > greetings.zip
+   $ unzip greetings.zip
+   $ tree greetings
+   greetings
+   ├── hello.txt
+   └── goodbye.txt
+
+   0 directory, 2 files
+
+   $ cat hello.txt
+   Hello world!
+   $ cat goodbye.txt
+   Goodbye world!
+
+All files in directory are rendered with the same context data.
+
+Like with `GET`_, the trailing slash affects filenames: without trailing slash,
+filenames are prefixed with directory name.

@@ -72,11 +72,11 @@ documentation: apidoc sphinx
 # Files will be restored during sphinx-build, if "autosummary_generate" option
 # is set to True in Sphinx configuration file.
 apidoc-clean:
-	find docs/api/ -type f \! -name "index.txt" -delete
+	find docs/framework/api/ -type f \! -name "index.txt" -delete
 
 
 apidoc: apidoc-clean
-	$(BIN_DIR)/sphinx-apidoc --suffix txt --output-dir $(ROOT_DIR)/docs/api $(PROJECT)
+	$(BIN_DIR)/sphinx-apidoc --suffix txt --output-dir $(ROOT_DIR)/docs/framework/api $(PROJECT)
 
 
 sphinx:

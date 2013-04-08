@@ -1,0 +1,37 @@
+###############################
+Variable-based output filenames
+###############################
+
+When rendering a directory, it is sometimes useful to use variables in the
+filenames to output.
+
+.. note::
+
+   This is useless for single files, since most clients allow you to choose the
+   name of the output file.
+
+Setup templates with ``+variable+`` in the filename:
+
+.. code-block:: sh
+
+   echo "Focus on filename" | curl -X PUT -F "file=@-" http://localhost:8106/foo/+bar+.txt
+ 
+The variables within ``+`` will be resolved and replaced by their value:
+
+.. code-block:: text
+
+   $ curl -X POST -d bar=baz http://localhost:8106/foo > foo.zip
+   $ unzip foo.zip
+   $ tree foo
+   foo
+   └── baz.txt
+
+   0 directories, 1 file
+
+.. note::
+
+   This behaviour is disabled when using the :doc:`template tree template
+   <dynamic-trees>`.
+
+**This feature is meant for simple cases**. If you need advanced things for
+filenames, use the :doc:`template tree template <dynamic-trees>`.

@@ -1,0 +1,15 @@
+************
+Client howto
+************
+
+This section focus on usage of diecutter service API, i.e. usage of diecutter
+from client's point of view.
+
+.. toctree::
+   :maxdepth: 2
+
+   files
+   directories
+   input-context-data
+   output-filenames
+   dynamic-trees

@@ -1,6 +1,6 @@
-############
-Installation
-############
+#######################
+Install, configure, run
+#######################
 
 This project is open-source, published under BSD license.
 See :doc:`/about/license` for details.
@@ -8,18 +8,66 @@ See :doc:`/about/license` for details.
 If you want to install a development environment, you should go to
 :doc:`/contribute/index` documentation.
 
+
+*************
+Prerequisites
+*************
+
+* `Python`_ version 2.6 or 2.7.
+
+
+*******
+Install
+*******
+
+Install "diecutter" package with your favorite tool. As an example with `pip`_:
+
 .. code-block:: sh
 
-   # Download and install (in a virtualenv if you like).
    pip install diecutter
-   # Configure: adapt "YOUR_TEMPLATE_DIR"!
+
+
+*********
+Configure
+*********
+
+Use `diecutter's online demo`_ to generate your local diecutter configuration:
+
+.. code-block:: sh
+
+   # Adapt "YOUR_TEMPLATE_DIR"!
    wget -O diecutter.ini --post-data "template_dir=YOUR_TEMPLATE_DIR" http://diecutter.alwaysdata.net/diecutter.ini
-   # Run the server.
+
+
+***
+Run
+***
+
+``pserve`` (paster's server) should have been installed automatically as part
+of diecutter's dependencies. Use it to run the service:
+
+.. code-block:: sh
+
    pserve diecutter.ini --reload
+
+
+*****
+Check
+*****
 
 Check it works:
 
-.. code-block:: text
+.. code-block:: sh
 
-   $ curl http://localhost:8106
-   {"diecutter": "Hello", "version": "0.1dev"}
+   curl http://localhost:8106
+
+You should get an "hello" with diecutter's version.
+
+
+.. rubric:: References
+
+.. target-notes::
+
+.. _`Python`: http://python.org
+.. _`pip`: https://pypi.python.org/pypi/pip/
+.. _`diecutter's online demo`: http://diecutter.alwaysdata.net/

@@ -1,0 +1,10 @@
+************
+Server howto
+************
+
+This section explains how to setup, configure and run a diecutter server.
+
+.. toctree::
+   :maxdepth: 2
+
+   install  

@@ -2,277 +2,43 @@
 Diecutter
 #########
 
-An API service that will give you back a configuration file from a template and variables.
+Templates as a service.
 
-The project is at a really early stage, but you can try it already.
+``diecutter`` exposes an API where you manage templates as resources.
+The most common operation is to **POST data to templates in order to retrieve
+generated files**.
+
+Files and directories are supported. Directories are rendered as archives.
 
 
 *******
-Install
+Example
 *******
 
-Install diecutter from Github, configure it then run the server:
+GET raw content of a template:
 
-.. code-block:: sh
+.. code-block:: text
 
-   # Download and install (in a virtualenv if you like).
-   pip install -e git+git@github.com:novagile/diecutter.git#egg=diecutter
-   # Configure: adapt "YOUR_TEMPLATE_DIR"!
-   wget -O diecutter.ini --post-data "template_dir=YOUR_TEMPLATE_DIR" http://diecutter.alwaysdata.net/diecutter.ini
-   # Run the server.
-   pserve diecutter.ini --reload
+   $ curl -X GET http://diecutter.alwaysdata.net/greetings.txt
+   {{ greetings|default('Hello') }} {{ name }}!
 
-Check it works::
+POST data to the template and retrieve generated content:
 
-    $ curl http://localhost:8106
-    {"diecutter": "Hello", "version": "0.1dev"}
+.. code-block:: text
 
+   $ curl -X POST -d name=world http://diecutter.alwaysdata.net/greetings.txt
+   Hello world!
 
-*****
-Files
-*****
+More examples in :doc:`demo` and :doc:`client/index`!
 
-Put your template in the service templates directory or use the API::
 
-    $ echo "Hello {{ who }}" | curl -X PUT http://localhost:8106/hello -F "file=@-"
-    {"diecutter": "Ok"}
+**********
+Ressources
+**********
 
-Then we can get the raw template we just created::
-
-    $ curl http://localhost:8106/hello
-    Hello {{ who }}
-
-And we can render the template against some variables::
-
-    $ curl -X POST http://localhost:8106/hello -d 'who=world'
-    Hello world
-
-
-***********
-Directories
-***********
-
-You can also get directories::
-    
-    $ echo "circus.ini" | curl -X PUT http://localhost:8106/circus/circus.ini -F "file=@-"
-    {"diecutter": "Ok"}
-    
-    $ echo "circus_django.ini" | curl -X PUT http://localhost:8106/circus/circus_django.ini -F "file=@-"
-    {"diecutter": "Ok"}
-
-    $ curl http://localhost:8106/circus
-    circus/circus.ini
-    circus/circus_django.ini
-
-    $ curl http://localhost:8106/circus/
-    circus.ini
-    circus_django.ini
-
-If you want to render the directory against a global context::
-
-    $ curl -X POST http://localhost:8106/circus
-    /-- Get a ZIP archive with all the files listed below rendered against the context --/
-
-    $ mkdir -p ~/sandbox/
-    $ cd ~/sandbox/
-    $ curl -X POST http://localhost:8106/circus > circus.zip
-    $ unzip circus.zip
-    $ tree .
-    .
-    ├── circus
-    │   ├── circus_django.ini
-    │   └── circus.ini
-    └── circus.zip
-    
-    1 directory, 3 files
-
-
-*********************************
-Dynamic directory trees templates
-*********************************
-
-**Directory trees can be computed from templates.**
-
-Some use cases: while rendering a directory...
-
-* skip some files based on variables ;
-
-* render a template several times with different output filename and different
-  input context data ;
-
-* in general, compute filenames, selected templates and alter context using
-  template engine's features: loops, conditions, gettext...
-
-When you POST to a directory, diecutter looks for special ".diecutter-tree"
-template in that directory. If present, it renders ".diecutter-tree" against
-context, decodes JSON, then iterates over items to actually render the
-directory.
-
-Let's explain this feature with an example...
-
-Consider the "dynamic-tree" folder in diecutter's demo:
-https://github.com/novagile/diecutter/tree/master/demo/dynamic-tree/
-
-.. code-block:: sh
-
-   curl -X GET http://localhost:8106/dynamic-tree/
-
-The directory holds two templates:
-
-* special ``.diecutter-tree`` ;
-* ``greeter.txt``, which accepts ``greeter`` and ``name`` variables.
-
-``greeter.txt`` is a very simple ``{{ greeter }} {{name}}!`` template:
-
-.. code-block:: sh
-
-   curl -X GET http://localhost:8106/dynamic-tree/greeter.txt
-   curl -X POST -d "greeter=Bonjour;name=Remy" http://localhost:8106/dynamic-tree/greeter.txt
-
-``.diecutter-tree`` is also a template.
-
-.. code-block:: sh
-
-   curl -X GET http://localhost:8106/dynamic-tree/.diecutter-tree
-   curl -X POST http://localhost:8106/dynamic-tree/.diecutter-tree
-
-POST to ``.diecutter-tree`` returns a JSON-encoded list, where items are
-dictionary with the following keys:
-
-* "template": relative path to a template, i.e. content to be rendered ;
-* "filename": filename to return to the client ;
-* "context": optional dictionary of context overrides.
-
-In our example, the JSON is:
-
-.. code-block:: json
-
-   [
-     {
-       "template": "greeter.txt",
-       "filename": "hello.txt",
-       "context": {"greeter": "hello"}
-     },
-     {
-       "template": "greeter.txt",
-       "filename": "goodbye.txt",
-       "context": {"greeter": "goodbye"}
-     }
-   ]
-
-This JSON means diecutter will produce an archive with two files: "hello.txt"
-and "goodbye.txt":
-
-.. code-block:: sh
-
-   curl -X POST -d "name=Remy" http://localhost:8106/dynamic-tree/ > greetings.zip
-
-Since ``.diecutter-tree`` is a template, you can manage it as any other
-template resource with diecutter API.
-
-
-******************
-Posting input data
-******************
-
-When you perform POST requests on resources, you provide a context, i.e.
-variables and values.
-
-Diecutter has builtin support for the following input content-types:
-
-* "application/x-www-form-urlencoded": the default when you perform POST
-  requests with ``wget`` or ``curl``.
-  See http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1
-
-* "application/json": JSON encoded data. See http://json.org/.
-
-* "text/plain": INI-style plain text files. See
-  https://en.wikipedia.org/wiki/INI_file and
-  http://docs.python.org/2.7/library/configparser.html.
-
-Diecutter expects data to be provided as the body of the request.
-"multipart/form-data" requests aren't supported currently.
-
-Here are "flat" examples using ``curl``.
-
-.. code-block:: sh
-
-   # All examples below return the same result.
-
-   # Default (implicit application/x-www-form-urlencoded content type).
-   curl -X POST -d 'who=world' http://localhost:8106/hello
-
-   # Explicit "application/x-www-form-urlencoded" content-type.
-   curl -X POST -d 'who=world' -H "Content-Type: application/x-www-form-urlencoded" http://localhost:8106/hello
-
-   # JSON.
-   curl -X POST -d '{"who": "world"}' -H "Content-Type: application/json" http://localhost:8106/hello
-
-   # INI.
-   curl -X POST -d 'who=world' -H "Content-Type: text/plain" http://localhost:8106/hello
-
-.. note:: Pass content of a file using ``@`` in curl's ``-d`` option.
-
-INI content-type allows you to provide 2 levels of data:
-
-.. code-block:: sh
-
-   cat > input.ini <<EOF
-   hello = world
-   [foo]
-   bar = baz
-   EOF
-   curl -X POST --data-binary '@input.ini' -H "Content-Type: text/plain" http://localhost:8106/hello
-   # Templates can use variables like {{ hello }} and {{ foo.bar }}.
-
-JSON allows you to provide multiple levels of data.
-
-
-*****************
-Render file names
-*****************
-
-Sometimes you want to define names from the context.
-
-You just add to put ``+context_name+`` it will match automatically::
-
-     $ echo "[watcher:{{ watcher_name }}]" | curl -X PUT http://localhost:8106/circus/circus_+watcher_name+.ini -F "file=@-"
-     {"diecutter": "Ok"}
- 
-     $ curl http://localhost:8106/circus
-     circus/circus.ini
-     circus/circus_django.ini
-     circus/circus_+watcher_name+.ini
- 
-    $ curl http://localhost:8106/circus -d 'watcher_name=diecutter' > circus.zip
-    $ unzip -l circus.zip
-    Archive:  circus.zip
-      Length      Date    Time    Name
-    ---------  ---------- -----   ----
-           10  2012-12-24 12:02   circus/circus.ini
-           19  2012-12-24 12:02   circus/circus_diecutter.ini
-           17  2012-12-24 12:02   circus/circus_django.ini
-    ---------                     -------
-           46                     3 files
-    $ cat circus/circus_diecutter.ini
-    [watcher:diecutter]
-
-
-***********************************************************
-A full example : the diecutter django_admin.py startproject
-***********************************************************
-
-As an example, we added a +django_project+ template that you can use like this::
-
-    $ curl http://localhost:8106/+django_project+ -d 'django_project=diecutter_demo' > diecutter_demo.zip
-    $ unzip -l diecutter_demo.zip
-    Archive:  diecutter_demo.zip
-      Length      Date    Time    Name
-    ---------  ---------- -----   ----
-          256  2012-12-24 12:08   diecutter_demo/manage.py
-            0  2012-12-24 12:08   diecutter_demo/diecutter_demo/__init__.py
-         5239  2012-12-24 12:08   diecutter_demo/diecutter_demo/settings.py
-          579  2012-12-24 12:08   diecutter_demo/diecutter_demo/urls.py
-         1149  2012-12-24 12:08   diecutter_demo/diecutter_demo/wsgi.py
-    ---------                     -------
-         7223                     5 files
+* Documentation: http://diecutter.readthedocs.org
+* Online demo: http://diecutter.alwaysdata.net
+* PyPI page: http://pypi.python.org/pypi/diecutter
+* Code repository: https://github.com/novagile/diecutter
+* Bugtracker: https://github.com/novagile/diecutter/issues
+* Continuous integration: https://travis-ci.org/novagile/diecutter

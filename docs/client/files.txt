@@ -1,0 +1,63 @@
+#####
+Files
+#####
+
+Files are the main type of template resource.
+
+Here is service's API overview:
+
+* `PUT`_: upload template file from client to server.
+* `GET`_: retrieve raw template content.
+* `POST`_: render single template file against context.
+* other HTTP verbs aren't implemented yet.
+
+.. note::
+
+   In the examples below, we'll consider that a diecutter service is running
+   at http://localhost:8106.
+
+
+***
+PUT
+***
+
+Put your template to the service:
+
+.. code-block:: text
+
+   $ echo "Hello {{ name }}" | curl -X PUT -F "file=@-" http://localhost:8106/hello.txt
+   {"diecutter": "Ok"}
+
+.. warning::
+
+   Sometimes, you don't want users to be able to PUT files on your server.
+   That's why diecutter service can be configured as "read only".
+   In that case, it is up to you to manage files that live in diecutter's
+   template directory (which is just a directory in the filesystem).
+
+   As an example, diecutter's online demo is readonly, and templates are
+   synchronized with source code on project's repository.
+
+
+***
+GET
+***
+
+We can get the raw template we just created via `PUT`_:
+
+.. code-block:: text
+
+   $ curl http://localhost:8106/hello.txt
+   Hello {{ name }}
+
+
+****
+POST
+****
+
+And we can render the template against some variables:
+
+.. code-block:: text
+
+   $ curl -X POST -d name=world http://localhost:8106/hello.txt
+   Hello world

@@ -29,7 +29,8 @@ if __name__ == '__main__':  # Don't run setup() when we import this module.
                        "Topic :: Internet :: WWW/HTTP",
                        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
                        ],
-          keywords="web services, templates, template",
+          keywords="'web services' templates template configuration "
+                   "'code generator'",
           author=u'Rémy HUBSCHER',
           author_email='hubscher.remy@gmail.com',
           url='https://github.com/novagile/diecutter',

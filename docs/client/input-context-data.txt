@@ -1,0 +1,76 @@
+##########################
+Posting input context data
+##########################
+
+When you perform POST requests on resources, you provide context data, i.e.
+variables and values.
+
+Diecutter has builtin support for the following input content-types:
+
+* `application/x-www-form-urlencoded`_: the default when you perform POST
+  requests with ``wget`` or ``curl`` ;
+
+* `application/json`_: JSON encoded data ;
+
+* text/plain: `INI-style plain text files`_.
+
+Diecutter expects data to be provided as the body of the request.
+"multipart/form-data" requests aren't supported currently.
+
+
+***********
+URL-encoded
+***********
+
+.. code-block:: sh
+
+   # Default (implicit application/x-www-form-urlencoded content type).
+   curl -X POST -d 'who=world' http://localhost:8106/hello
+
+   # Explicit "application/x-www-form-urlencoded" content-type.
+   curl -X POST -d 'who=world' -H "Content-Type: application/x-www-form-urlencoded" http://localhost:8106/hello
+
+
+****
+JSON
+****
+
+.. code-block:: sh
+
+   curl -X POST -d '{"who": "world"}' -H "Content-Type: application/json" http://localhost:8106/hello
+
+
+***
+INI
+***
+
+.. code-block:: sh
+
+   # Flat.
+   curl -X POST -d 'who=world' -H "Content-Type: text/plain" http://localhost:8106/hello
+
+   # With sections.
+   cat > input.ini <<EOF
+   hello = world
+   [foo]
+   bar = baz
+   EOF
+   curl -X POST --data-binary '@input.ini' -H "Content-Type: text/plain" http://localhost:8106/foo
+
+
+*********
+curl tips
+*********
+
+* Pass content of a file using ``@``.
+* Pass content from standard input using ``@-``.
+* When posting `JSON`_ or `INI`_, use ``--data-binary``.
+
+.. rubric:: References
+
+.. target-notes::
+
+.. _`application/x-www-form-urlencoded`:
+   http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1
+.. _`application/json`: http://json.org/
+.. _`INI-style plain text files`: https://en.wikipedia.org/wiki/INI_file
