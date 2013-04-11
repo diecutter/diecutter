@@ -3,13 +3,25 @@
     var data_form_prefix = 'sphinx_';
     var data_form = null;
 
-    /* Return URL for resource. */
+    /* Return URL for resource.
+     *
+     * Path is built with the following values:
+     *
+     * - value of the input with id="diecutter_service"
+     * - "/sphinx-docs" string
+     * - value of the input with id="diecutter_resource"
+     *
+     */
     function diecutter_url( path ) {
         if( path === undefined ) {
             path = $('#diecutter_resource').val();
+            if( path !== '' && path[0] != '/') {
+                path = '/' + path;
+                $('#diecutter_resource').val(path);
+            }
         }
         service = $('#diecutter_service').val();
-        url = service + path;
+        url = service + '/sphinx-docs' + path;
         return url;
     }
 
@@ -78,6 +90,8 @@
         get_diecutter_service_status();
 
         // Event listeners.
+        $( '#diecutter_service' )
+            .on( 'change', get_diecutter_service_status );
         $( '#diecutter_service_test' )
             .on( 'click', get_diecutter_service_status );
         $( '#diecutter_resource_get' )
