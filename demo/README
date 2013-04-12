@@ -75,6 +75,26 @@ Examples
 The following examples use the `Local demo server`_. But you should be able
 to execute most of them on the `online demo`_ too.
 
+The following examples are `doctested`_, using Python's `WebTest`_ to run a
+diecutter server. Adapt the following setup to your needs:
+
+.. testsetup::
+
+   import diecutter.tests
+
+   template_dir = diecutter.tests.demo_template_dir()
+   settings = diecutter.tests.settings(template_dir)
+   application = diecutter.tests.wsgi_application(settings)
+   diecutter_server = diecutter.tests.wsgi_server(application)
+
+.. testcleanup::
+
+   diecutter_server.shutdown()
+
+.. doctest::
+
+   >>> diecutter_url = diecutter_server.application_url
+
 In the following examples, we use Python's `requests`_ as HTTP client.
 
 .. doctest::
@@ -88,7 +108,7 @@ Let's work on file resource :file:`greetings.txt`.
 
 .. doctest::
 
-   >>> greetings_url = u'http://localhost:8106/greetings.txt'
+   >>> greetings_url = diecutter_url + 'greetings.txt'
 
 GET raw content of a template:
 
@@ -121,7 +141,7 @@ Let's work on directory resource :file:`+django_project+/`.
 
 .. doctest::
 
-   >>> django_project_url = u'http://localhost:8106/+django_project+'
+   >>> django_project_url = diecutter_url + '+django_project+'
 
 It's a directory.
 GET lists the templates it contains:
@@ -164,7 +184,7 @@ Let's try the same requests with a trailing slash:
 
 .. doctest::
 
-   >>> django_project_url = u'http://localhost:8106/+django_project+/'
+   >>> django_project_url = diecutter_url + '+django_project+/'
 
    >>> response = requests.get(django_project_url)
    >>> print response.content
@@ -194,7 +214,7 @@ Let's work on directory resource :file:`dynamic-tree/`.
 
 .. doctest::
 
-   >>> dynamic_tree_url = u'http://localhost:8106/dynamic-tree/'
+   >>> dynamic_tree_url = diecutter_url + 'dynamic-tree/'
 
 It's a directory.
 GET lists the templates it contains:
@@ -286,4 +306,6 @@ See :doc:`/client/dynamic-trees` for details about dynamic tree templates.
 .. _`diecutter's sourcecode`: https://github.com/novagile/diecutter/
 .. _`Python`: http://python.org
 .. _`Virtualenv`: http://virtualenv.org
+.. _`doctested`: http://sphinx-doc.org/ext/doctest.html
+.. _`WebTest`: https://pypi.python.org/pypi/WebTest
 .. _`requests`: https://pypi.python.org/pypi/requests
