@@ -19,9 +19,10 @@
                 path = '/' + path;
                 $('#diecutter_resource').val(path);
             }
+            path = '/sphinx-docs' + path;
         }
         service = $('#diecutter_service').val();
-        url = service + '/sphinx-docs' + path;
+        url = service + path;
         return url;
     }
 
