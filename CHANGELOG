@@ -4,7 +4,17 @@ Changelog
 0.3 (unreleased)
 ----------------
 
-Nothing changed yet.
+New features, documentation, bugfixes.
+
+- Bug #44 - Accepted arrays in URL-encoded POST.
+- Bug #40 - Setup CORS to allow AJAX requests on diecutter's API.
+- Refactoring #37 - Used Jinja's environment.
+- Bug #34 - Frozen buildout configuration file for development environment.
+- Features #31 and #43 - Published diecutter's demo online. Online API URL
+  changed.
+- Feature #24 - Added Sphinx documentation template in diecutter's demo.
+- Feature #23 - Added diecutter's Sphinx documentation.
+- Feature #10 - Added dynamic tree template.
 
 0.2 (2013-02-22)
 ----------------
