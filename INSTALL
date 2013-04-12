@@ -36,7 +36,7 @@ Use `diecutter's online demo`_ to generate your local diecutter configuration:
 .. code-block:: sh
 
    # Adapt "YOUR_TEMPLATE_DIR"!
-   wget -O diecutter.ini --post-data "template_dir=YOUR_TEMPLATE_DIR" http://diecutter.alwaysdata.net/diecutter.ini
+   wget -O diecutter.ini --post-data "template_dir=YOUR_TEMPLATE_DIR" http://diecutter.alwaysdata.net/api/diecutter.ini
 
 
 ***

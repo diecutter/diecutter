@@ -15,7 +15,7 @@ BUILDOUT_BOOTSTRAP = $(BUILDOUT_DIR)/bootstrap.py
 BUILDOUT_BOOTSTRAP_ARGS = -c $(BUILDOUT_CFG) --version=$(BUILDOUT_VERSION) --distribute buildout:directory=$(ROOT_DIR)
 BUILDOUT = $(BIN_DIR)/buildout
 BUILDOUT_ARGS = -N -c $(BUILDOUT_CFG) buildout:directory=$(ROOT_DIR)
-DIECUTTER_PUBLIC_API = http://diecutter.alwaysdata.net
+DIECUTTER_PUBLIC_API = http://diecutter.alwaysdata.net/api
 DIECUTTER_LOCAL_API = http://localhost:8106
 NOSE = $(BIN_DIR)/nosetests
 
