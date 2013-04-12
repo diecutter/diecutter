@@ -69,7 +69,7 @@ POST to ``.diecutter-tree`` returns a JSON-encoded list:
 
 .. code-block:: sh
 
-   curl -X POST -d greetings[0]=hello -d greetings[1]=goodbye http://localhost:8106/dynamic-greetings/.diecutter-tree
+   curl -X POST -d greetings=hello -d greetings=goodbye http://localhost:8106/dynamic-greetings/.diecutter-tree
 
 .. code-block:: json
 
@@ -97,7 +97,7 @@ Now let's render the directory as an archive:
 .. code-block:: text
 
    $ curl -X POST \
-          -d name=Remy -d greetings[0]=hello -d greetings[1]=goodbye \
+          -d name=Remy -d greetings=hello -d greetings=goodbye \
           http://localhost:8106/dynamic-greetings \
           > dynamic-greetings.zip
    $ unzip dynamic-greetings.zip

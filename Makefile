@@ -15,7 +15,7 @@ BUILDOUT_BOOTSTRAP = $(BUILDOUT_DIR)/bootstrap.py
 BUILDOUT_BOOTSTRAP_ARGS = -c $(BUILDOUT_CFG) --version=$(BUILDOUT_VERSION) --distribute buildout:directory=$(ROOT_DIR)
 BUILDOUT = $(BIN_DIR)/buildout
 BUILDOUT_ARGS = -N -c $(BUILDOUT_CFG) buildout:directory=$(ROOT_DIR)
-DIECUTTER_PUBLIC_API = http://diecutter.alwaysdata.net
+DIECUTTER_PUBLIC_API = http://diecutter.alwaysdata.net/api
 DIECUTTER_LOCAL_API = http://localhost:8106
 NOSE = $(BIN_DIR)/nosetests
 
@@ -65,21 +65,21 @@ test-documentation:
 	rm $(ROOT_DIR)/.coverage
 
 
-documentation: apidoc sphinx
+documentation: sphinx-apidoc sphinx-html
 
 
 # Remove auto-generated API documentation files.
 # Files will be restored during sphinx-build, if "autosummary_generate" option
 # is set to True in Sphinx configuration file.
-apidoc-clean:
+sphinx-apidoc-clean:
 	find docs/framework/api/ -type f \! -name "index.txt" -delete
 
 
-apidoc: apidoc-clean
+sphinx-apidoc: sphinx-apidoc-clean
 	$(BIN_DIR)/sphinx-apidoc --suffix txt --output-dir $(ROOT_DIR)/docs/framework/api $(PROJECT)
 
 
-sphinx:
+sphinx-html:
 	if [ ! -d docs/_static ]; then mkdir docs/_static; fi
 	make --directory=docs clean html doctest
 

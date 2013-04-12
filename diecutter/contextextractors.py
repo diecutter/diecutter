@@ -5,7 +5,13 @@ from diecutter import exceptions
 
 def extract_post_context(request):
     """Extract and return context from a standard POST request."""
-    return request.POST.copy()
+    data = {}
+    for key in request.POST.iterkeys():
+        try:
+            data[key] = request.POST.getone(key)
+        except KeyError:
+            data[key] = request.POST.getall(key)
+    return data
 
 
 def extract_json_context(request):

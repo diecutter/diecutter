@@ -3,6 +3,7 @@
 import unittest
 
 from pyramid import testing
+from webob.multidict import MultiDict
 
 from diecutter import contextextractors
 from diecutter import exceptions
@@ -14,7 +15,7 @@ class PostTestCase(unittest.TestCase):
         """Return mock request instance."""
         class MockRequest(object):
             def __init__(self, data={}):
-                self.POST = data
+                self.POST = MultiDict(data)
         return MockRequest(data)
 
     def test_data(self):
@@ -36,6 +37,12 @@ class PostTestCase(unittest.TestCase):
         del context['dummy']
         self.assertEqual(context, {})
         self.assertTrue('dummy' in request.POST)
+
+    def test_multiple_values(self):
+        """extract_post_request() handles lists."""
+        request = self.request_factory({'dummy': [u'1', u'2', u'3']})
+        context = contextextractors.extract_post_context(request)
+        self.assertEqual(context, {'dummy': [u'1', u'2', u'3']})
 
 
 class JsonTestCase(unittest.TestCase):
