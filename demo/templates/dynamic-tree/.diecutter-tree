@@ -1,5 +1,5 @@
 [
-  {% for greeter in ['hello', 'goodbye'] %}
+  {% for greeter in greeting_list|default(['hello', 'goodbye']) %}
     {
       "template": "greeter.txt",
       "filename": "{{ greeter }}.txt",

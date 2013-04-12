@@ -2,6 +2,25 @@
 Demo
 ####
 
+Let's try diecutter!
+
+
+***********
+Online demo
+***********
+
+There is an online server hosting diecutter's demo:
+
+* index page: http://diecutter.alwaysdata.net/
+* API: http://diecutter.alwaysdata.net/api/
+* demo client for Sphinx documentation template:
+  http://diecutter.alwaysdata.net/sphinx-docs.html
+
+
+*************
+In sourcecode
+*************
+
 The :file:`demo/` directory in `diecutter's sourcecode`_ contains:
 
 * templates in :file:`templates/` folder.
@@ -13,7 +32,251 @@ The :file:`demo/` directory in `diecutter's sourcecode`_ contains:
 
 Feel free to use it as a sandbox.
 
-This demo project is available online at http://diecutter.alwaysdata.net/.
+.. note:: the `online demo`_ uses templates from the source code!
+
+
+*****************
+Local demo server
+*****************
+
+System requirements:
+
+* `Python`_ version 2.6 or 2.7, available as ``python`` command.
+
+  .. note::
+
+     You may use `Virtualenv`_ to make sure the active ``python`` is the right
+     one.
+
+* make and wget to use the provided :file:`Makefile`.
+
+Execute:
+
+.. code-block:: sh
+
+   git clone git@github.com:novagile/diecutter.git
+   cd diecutter/
+   make develop
+   make serve
+
+The last command runs diecutter service on localhost, port 8106.
+Check it at http://localhost:8106/
+
+.. tip::
+
+   If you cannot execute the :file:`Makefile`, read it and adapt the few
+   commands it contains to your needs.
+
+
+********
+Examples
+********
+
+The following examples use the `Local demo server`_. But you should be able
+to execute most of them on the `online demo`_ too.
+
+In the following examples, we use Python's `requests`_ as HTTP client.
+
+.. doctest::
+
+   >>> import requests
+
+greetings.txt
+=============
+
+Let's work on file resource :file:`greetings.txt`.
+
+.. doctest::
+
+   >>> greetings_url = u'http://localhost:8106/greetings.txt'
+
+GET raw content of a template:
+
+.. doctest::
+
+   >>> response = requests.get(greetings_url)
+   >>> print response.content
+   {{ greetings|default('Hello') }} {{ name }}!
+   <BLANKLINE>
+
+POST data to the template and retrieve generated content:
+
+.. doctest::
+
+   >>> response = requests.post(greetings_url, {'name': u'world'})
+   >>> print response.content
+   Hello world!
+
+   >>> response = requests.post(greetings_url, {'greetings': u'Greetings',
+   ...                                          'name': u'professor Falken'})
+   >>> print response.content
+   Greetings professor Falken!
+
+See :doc:`/client/files` for details about working with file resources.
+
+django_admin.py startproject
+============================
+
+Let's work on directory resource :file:`+django_project+/`.
+
+.. doctest::
+
+   >>> django_project_url = u'http://localhost:8106/+django_project+'
+
+It's a directory.
+GET lists the templates it contains:
+
+.. doctest::
+
+   >>> response = requests.get(django_project_url)
+   >>> print response.content
+   +django_project+/manage.py
+   +django_project+/+django_project+/__init__.py
+   +django_project+/+django_project+/settings.py
+   +django_project+/+django_project+/urls.py
+   +django_project+/+django_project+/wsgi.py
+
+Every template in a directory can be handled as a single file. But let's focus
+on the directory feature...
+
+POST returns a ZIP archive:
+
+.. doctest::
+
+   >>> from StringIO import StringIO
+   >>> from zipfile import ZipFile
+
+   >>> response = requests.post(django_project_url,
+   ...                          {'django_project': u'diecutter_demo'})
+   >>> print response.headers['Content-Type']
+   application/zip; charset=UTF-8
+   >>> zip_file = ZipFile(StringIO(response.content))
+   >>> print '\n'.join(zip_file.namelist())
+   diecutter_demo/manage.py
+   diecutter_demo/diecutter_demo/__init__.py
+   diecutter_demo/diecutter_demo/settings.py
+   diecutter_demo/diecutter_demo/urls.py
+   diecutter_demo/diecutter_demo/wsgi.py
+   >>> zip_file.close()
+
+Without trailing slash, directory name is used as a prefix for filenames.
+Let's try the same requests with a trailing slash:
+
+.. doctest::
+
+   >>> django_project_url = u'http://localhost:8106/+django_project+/'
+
+   >>> response = requests.get(django_project_url)
+   >>> print response.content
+   manage.py
+   +django_project+/__init__.py
+   +django_project+/settings.py
+   +django_project+/urls.py
+   +django_project+/wsgi.py
+
+   >>> response = requests.post(django_project_url,
+   ...                          {'django_project': u'diecutter_demo'})
+   >>> zip_file = ZipFile(StringIO(response.content))
+   >>> print '\n'.join(zip_file.namelist())
+   manage.py
+   diecutter_demo/__init__.py
+   diecutter_demo/settings.py
+   diecutter_demo/urls.py
+   diecutter_demo/wsgi.py
+   >>> zip_file.close()
+
+See :doc:`/client/directories` for details about directory resources.
+
+Dynamic tree template
+=====================
+
+Let's work on directory resource :file:`dynamic-tree/`.
+
+.. doctest::
+
+   >>> dynamic_tree_url = u'http://localhost:8106/dynamic-tree/'
+
+It's a directory.
+GET lists the templates it contains:
+
+.. doctest::
+
+   >>> response = requests.get(dynamic_tree_url)
+   >>> print response.content
+   .diecutter-tree
+   greeter.txt
+
+:file:`greeter.txt` is the same as `greetings.txt`_ example above:
+
+.. doctest::
+
+   >>> response = requests.get(dynamic_tree_url + 'greeter.txt')
+   >>> print response.content
+   {{ greeter|default('Hello') }} {{ name|default('world') }}!
+   <BLANKLINE>
+
+:file:`diecutter-tree` is a normal template, with a special name:
+
+.. doctest::
+
+   >>> response = requests.get(dynamic_tree_url + '.diecutter-tree')
+   >>> print response.content
+   [
+     {% for greeter in greeting_list|default(['hello', 'goodbye']) %}
+       {
+         "template": "greeter.txt",
+         "filename": "{{ greeter }}.txt",
+         "context": {"greeter": "{{ greeter }}"}
+       }{% if not loop.last %},{% endif %}
+     {% endfor %}
+   ]
+   <BLANKLINE>
+
+It renders a list of templates, in JSON:
+
+.. doctest::
+
+   >>> response = requests.post(dynamic_tree_url + '.diecutter-tree',
+   ...                          {'greeting_list': [u'bonjour', u'bonsoir']})
+   >>> print response.content
+   [
+   <BLANKLINE>
+       {
+         "template": "greeter.txt",
+         "filename": "bonjour.txt",
+         "context": {"greeter": "bonjour"}
+       },
+   <BLANKLINE>
+       {
+         "template": "greeter.txt",
+         "filename": "bonsoir.txt",
+         "context": {"greeter": "bonsoir"}
+       }
+   <BLANKLINE>
+   ]
+
+And guess what, this list of templates is used to render the directory
+resource:
+
+.. doctest::
+
+   >>> response = requests.post(dynamic_tree_url,
+   ...                          {'name': u'Remy',
+   ...                           'greeting_list': [u'bonjour', u'bonsoir']})
+   >>> zip_file = ZipFile(StringIO(response.content))
+   >>> print '\n'.join(zip_file.namelist())
+   bonjour.txt
+   bonsoir.txt
+   >>> print zip_file.read('bonjour.txt')
+   bonjour Remy!
+   >>> print zip_file.read('bonsoir.txt')
+   bonsoir Remy!
+   >>> zip_file.close()
+
+Here, the :file:`greeter.txt` template has been rendered several times, with
+different context data.
+
+See :doc:`/client/dynamic-trees` for details about dynamic tree templates.
 
 
 .. rubric:: References
@@ -21,25 +284,6 @@ This demo project is available online at http://diecutter.alwaysdata.net/.
 .. target-notes::
 
 .. _`diecutter's sourcecode`: https://github.com/novagile/diecutter/
-
-
-***********************************************************
-A full example : the diecutter django_admin.py startproject
-***********************************************************
-
-As an example, we added a +django_project+ template that you can use like this:
-
-.. code-block:: text
-
-   $ curl http://localhost:8106/+django_project+ -d 'django_project=diecutter_demo' > diecutter_demo.zip
-   $ unzip -l diecutter_demo.zip
-   Archive:  diecutter_demo.zip
-     Length      Date    Time    Name
-   ---------  ---------- -----   ----
-         256  2012-12-24 12:08   diecutter_demo/manage.py
-           0  2012-12-24 12:08   diecutter_demo/diecutter_demo/__init__.py
-        5239  2012-12-24 12:08   diecutter_demo/diecutter_demo/settings.py
-         579  2012-12-24 12:08   diecutter_demo/diecutter_demo/urls.py
-        1149  2012-12-24 12:08   diecutter_demo/diecutter_demo/wsgi.py
-   ---------                     -------
-        7223                     5 files
+.. _`Python`: http://python.org
+.. _`Virtualenv`: http://virtualenv.org
+.. _`requests`: https://pypi.python.org/pypi/requests
