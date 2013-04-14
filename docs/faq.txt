@@ -2,4 +2,29 @@
 FAQ
 ###
 
-Here are frequently asked questions.
+Here are some frequently asked questions...
+
+
+*********************
+Why "diecutter" name?
+*********************
+
+A "die cutter" is a machine that cuts materials to produce shapes, from molds.
+
+Here, the diecutter web service produces files from data and templates.
+
+
+*****************************************************
+Does it replaces my web framework (Django) templates?
+*****************************************************
+
+**diecutter is not meant to replace web framework's template engines!**
+Diecutter is meant to replace file generators for configuration or scaffolding
+use cases.
+
+Even if processes are really close, environment and needs aren't.
+As an example, diecutter service won't be as efficient as web frameworks
+internal templating systems.
+
+So, even if, in theory, you could use diecutter as a template engine to render
+pages of a website, it is discouraged.

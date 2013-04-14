@@ -1,3 +1,46 @@
 ######
 Vision
 ######
+
+Diecutter is about file generation. Its primary goal is to provide an easy way
+to render templates against data.
+
+Some leitmotivs:
+
+* focus on file generation.
+
+* in most use cases, don't bother users with software installation and
+  configuration.
+
+* when users have specific needs, they can easily setup a custom service.
+
+
+***
+API
+***
+
+API design drives diecutter's development.
+
+
+***************
+Server software
+***************
+
+Diecutter provides a default implementation of the service, built with Python.
+
+
+*********
+Framework
+*********
+
+Diecutter is a framework.
+It must provide material that makes it easy to connect to other tools and easy
+to extend.
+
+
+*************
+SAAS platform
+*************
+
+Diecutter is developed with SAAS in mind.
+The :doc:`online demo </demo>` is a draft.
