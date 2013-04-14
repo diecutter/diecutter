@@ -5,7 +5,121 @@ Alternatives and related projects
 This document presents other projects that provide similar or complementary
 functionalities. It focuses on differences with diecutter.
 
+.. note::
+
+   This document reflects diecutter's authors point of view, which is,
+   inherently, a partial one. :doc:`Contact authors <authors>` if you feel
+   something is wrong.
+
+
+*************
+paster create
+*************
+
+`PasteScript`_ provides a ``paster create`` command to generate files from
+templates.
+
+Diecutter's authors tried PasteScript, and found it too complicated for most
+use cases. They felt that the more they generated files with PasteScript, the
+more they spent time on PasteScript's specific stuff. With diecutter, they
+tried to focus on using templates to generate files.
+
+Let's highlight some differences between PasteScript and diecutter:
+
++--------------------------------------+--------------------------------------+
+| PasteScript                          | diecutter                            |
++======================================+======================================+
+| ``paster create`` is a command.      | Diecutter is a web service. You can  |
+| Runs on local machine.               | use a shared diecutter server, but   |
+| You need PasteScript installed on    | it is also easy to deploy on a local |
+| every computer (or project) where    | machine.                             |
+| you use templates.                   |                                      |
++--------------------------------------+--------------------------------------+
+| You have to register templates:      | You PUT files just like in a         |
+|                                      | filesystem.                          |
+|  * create template class             |                                      |
+|    (Cheetah's ``Template``),         |                                      |
+|  * update template package's entry   |                                      |
+|    points (:file:`setup.py`),        |                                      |
+|  * update your environment           |                                      |
+|    (``setup.py install``).           |                                      |
++--------------------------------------+--------------------------------------+
+| You distribute templates in Python   | You carry templates (folders and     |
+| packages.                            | files) as you like. No packaging.    |
++--------------------------------------+--------------------------------------+
+| Can collect input data via           | No builtin client (that's part of    |
+| interactive shell prompts.           | the :doc:`vision`).                  |
+|                                      | Listing variables isn't implemented  |
+|                                      | yet (that's part of the plans).      |
++--------------------------------------+--------------------------------------+
+| You declare sets of templates. You   | You can render a directory as a set, |
+| can't render only some part of it,   | but you can also render any single   |
+| you have to render the whole set.    | part of it, individually.            |
++--------------------------------------+--------------------------------------+
+| Templates are Python classes.        | Uses only templates.                 |
+| That allows developers to implement  | Even to :doc:`dynamically generate   |
+| various tasks in hooks.              | folders </client/dynamic-trees>`.    |
++--------------------------------------+--------------------------------------+
+| Asks you whether to ovewrite files   | That's not a job for diecutter.      |
+| in output directory, and even shows  | You can do that (better) with Git,   |
+| you the diff!                        | Mercurial and many other tools.      |
++--------------------------------------+--------------------------------------+
+| Uses `Cheetah`_ template engine.     | Currently uses `Jinja`_.             |
+|                                      | Later, diecutter will support        |
+|                                      | several template engines.            |
++--------------------------------------+--------------------------------------+
+| Not only about generating files.     | Focuses on generating files.         |
+| PasteScript is a big project that    |                                      |
+| does several things.                 |                                      |
++--------------------------------------+--------------------------------------+
+
+
+*****************************
+collective.generic.webbuilder
+*****************************
+
+`collective.generic.webbuilder`_ is a file generation service, built on top of
+`paster create`_. It is a web interface to ``paster create``.
+
+Thus, some differences are directly related to `paster create`_, such as you
+define sets of templates, or have to register templates
+(collective.generic.webbuilder uses `ZCML`_).
+
+Collective.generic.webbuilder inspired diecutter.
+
+Diecutter's authors felt that collective.generic.webbuilder is a tool made by
+paster users, for paster users. Mostly developers. With diecutter, they tried
+to make things easy for most users, but flexible for users who have specific
+needs.
+
+
+***********************************
+Puppet, Chef and other provisioners
+***********************************
+
+Provisioning tools, such as Puppet, Chef or Salt (just to name a few), use
+templates to generate configuration. They also do many other things.
+
+Diecutter only deals with templates and file generation.
+
+Templates and file generation aren't only a matter of provisioning. There are
+many situations where you need templates, and where provisioners would be
+overkill.
+
+Diecutter also tries to make it easier to migrate from one provisioner to
+another. Provisioners are often tied to one template engine, one layout and
+one deployment process. Those items differ from one provisioner to another.
+With diecutter, which plans to support several template engines, you could
+easily use the same templates whatever the provisioner or deployment procedure.
+
 
 .. rubric:: References
 
 .. target-notes::
+
+.. _`PasteScript`: https://pypi.python.org/pypi/PasteScript/
+.. _`Cheetah`: http://www.cheetahtemplate.org/
+.. _`Jinja`: http://jinja.pocoo.org/
+.. _`collective.generic.webbuilder`:
+   https://pypi.python.org/pypi/collective.generic.webbuilder/
+.. _`ZCML`: http://docs.zope.org/zope.component/zcml.html
