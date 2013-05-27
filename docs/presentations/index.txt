@@ -8,3 +8,4 @@ Here are some presentations (mostly slides) about diecutter.
    :titlesonly:
 
    Lightning talk, at an Afpy event, Paris, march 2013 <2013-afpy-lightning-talk/index>
+   Poster, at EuroPython, Florence, july 2013 <2013-europython-poster/index>

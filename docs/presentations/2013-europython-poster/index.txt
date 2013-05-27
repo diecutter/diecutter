@@ -1,0 +1,42 @@
+#################################
+diecutter: templates as a service
+#################################
+
+This is a draft for diecutter poster session at `EuroPython 2013
+<https://ep2013.europython.eu/>`_, Florence.
+
+Here is the poster:
+
+.. image:: poster.svg
+   :height: 400
+
+
+*****
+Ideas
+*****
+
+* diecutter is simple
+* user posts data to template => file
+* user posts data to directory => archive
+* diecutter is a framework
+* user => client =(http)=> diecutter
+* user => validation => diecutter
+* user => diecutter => writers
+* readers: user => bitbucket|github|gist => diecutter
+* scaffolding (``paster create`` is complicated)
+* configuration, provisioning (provisioners are overkill + provisioners are
+  specific)
+* content composition? ESI?
+
+
+****************
+Credits, license
+****************
+
+Poster by Rémy Hubscher and Benoît Bryon.
+
+Content available on `http://diecutter.readthedocs.org
+<http://diecutter.readthedocs.org/en/latest/presentations/2013-europython-poster/index.html>`_
+
+This presentation is published under `CC BY 3.0
+<http://creativecommons.org/licenses/by/3.0/>`_
