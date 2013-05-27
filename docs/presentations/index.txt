@@ -1,0 +1,10 @@
+#############
+Presentations
+#############
+
+Here are some presentations (mostly slides) about diecutter.
+
+.. toctree::
+   :titlesonly:
+
+   Lightning talk, at an Afpy event, Paris, march 2013 <2013-afpy-lightning-talk/index>

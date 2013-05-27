@@ -15,6 +15,7 @@ Contents
    framework/index
    contribute/index
    about/index
+   presentations/index
    faq
 
 
