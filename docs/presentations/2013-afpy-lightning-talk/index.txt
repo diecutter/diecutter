@@ -17,7 +17,7 @@ This presentation is published under `CC BY 3.0
 Render templates
 ================
 
-.. image:: overview-file.png
+.. image:: /_static/overview-file.svg
    :alt: Client posts DATA to TEMPLATE which returns FILE
 
 -------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ Render templates
 Render directories
 ==================
 
-.. image:: overview-directory.png
+.. image:: /_static/overview-directory.svg
    :alt: Client posts DATA to DIRECTORY which returns ARCHIVE
 
 -------------------------------------------------------------------------------
