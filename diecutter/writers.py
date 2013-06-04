@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def file_response(request, resource, context):
-    """Render file resource against context and return response."""
+    """Render file resource against context, return plain text response."""
     request.response.content_type = 'text/plain'
     try:
         file_generator = resource.render(context)
@@ -27,19 +27,25 @@ def file_response(request, resource, context):
     return request.response
 
 
-def zip_directory(directory_generator):
-    """Return a zip file built from generator ``template_output``."""
+def zip_directory(directory_content):
+    """Return a zip file built from iterable ``directory_contents``.
+
+    ``directory_content`` has the same format as
+    :py:meth:`diecutter.resources.DirResource.render` output.
+
+    """
     temp_file = StringIO()
     temp_zip = zipfile.ZipFile(temp_file, 'w',
                                compression=zipfile.ZIP_DEFLATED)
-    for filename, file_generator in directory_generator:
-        content = ''.join(file_generator)
-        temp_zip.writestr(filename, content)
+    for filename, file_generator in directory_content:
+        file_content = ''.join(file_generator)
+        temp_zip.writestr(filename, file_content)
     temp_zip.close()
     return temp_file.getvalue()
 
 
 def zip_directory_response(request, resource, context):
+    """Render dir resource against context, return result as zip response."""
     request.response.content_type = 'application/zip'
     try:
         directory_generator = resource.render(context)
@@ -52,22 +58,30 @@ def zip_directory_response(request, resource, context):
     return request.response
 
 
-def targz_directory(directory_generator):
-    """Return a zip file built from generator ``template_output``."""
+def targz_directory(directory_content):
+    """Return a tar.gz file built from iterable ``directory_content``.
+
+    ``directory_content`` has the same format as
+    :py:meth:`diecutter.resources.DirResource.render` output.
+
+    """
     with tempfile.TemporaryFile() as temporary_file:
         with tarfile.open(mode='w|gz', fileobj=temporary_file) as archive:
-            for filename, file_generator in directory_generator:
-                content = ''.join(file_generator)
-                content_file = StringIO(content)
+            for filename, file_generator in directory_content:
+                content_text = u''.join(file_generator)
+                content_file = StringIO(content_text)
                 content_file.seek(0)
                 info = tarfile.TarInfo(name=filename)
-                info.size = len(content)
+                info.size = len(content_text)
                 archive.addfile(tarinfo=info, fileobj=content_file)
         temporary_file.seek(0)
         return temporary_file.read()
 
 
 def targz_directory_response(request, resource, context):
+    """Render dir resource against context, return result as tar.gz response.
+
+    """
     request.response.content_type = 'application/gzip'
     try:
         directory_generator = resource.render(context)
