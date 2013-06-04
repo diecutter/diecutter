@@ -142,13 +142,20 @@ def get_accepted_types(request):
 
 def get_writers(request, resource, context):
     """Return iterable of writers."""
-    from diecutter.writers import zip_directory_response, file_response
+    from diecutter.writers import (zip_directory_response, file_response,
+                                   targz_directory_response)
     if resource.is_file:
         return [file_response]
     else:
         accepted_mime_types = get_accepted_types(request)
-        mime_type_map = {'application/zip': [zip_directory_response]}
-        mime_type_map['*/*'] = mime_type_map['application/zip']  # Fallback.
+        # Reference.
+        mime_type_map = {'application/zip': [zip_directory_response],
+                         'application/gzip': [targz_directory_response],
+                         }
+        # Aliases.
+        mime_type_map['application/x-gzip'] = mime_type_map['application/gzip']
+        # Fallback.
+        mime_type_map['*/*'] = mime_type_map['application/zip']
         for accepted_mime_type in accepted_mime_types:
             try:
                 return mime_type_map[accepted_mime_type]

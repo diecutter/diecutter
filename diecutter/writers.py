@@ -2,8 +2,10 @@
 """Writers: utilities that write template output as response, files..."""
 import json
 import logging
-import zipfile
 from cStringIO import StringIO
+import tarfile
+import tempfile
+import zipfile
 
 from diecutter.exceptions import TemplateError
 
@@ -47,4 +49,32 @@ def zip_directory_response(request, resource, context):
         logger.error('TemplateError caught: {error}'.format(error=e))
         request.response.write(json.dumps(str(e)))
     request.response.write(zip_content)
+    return request.response
+
+
+def targz_directory(directory_generator):
+    """Return a zip file built from generator ``template_output``."""
+    with tempfile.TemporaryFile() as temporary_file:
+        with tarfile.open(mode='w|gz', fileobj=temporary_file) as archive:
+            for filename, file_generator in directory_generator:
+                content = ''.join(file_generator)
+                content_file = StringIO(content)
+                content_file.seek(0)
+                info = tarfile.TarInfo(name=filename)
+                info.size = len(content)
+                archive.addfile(tarinfo=info, fileobj=content_file)
+        temporary_file.seek(0)
+        return temporary_file.read()
+
+
+def targz_directory_response(request, resource, context):
+    request.response.content_type = 'application/gzip'
+    try:
+        directory_generator = resource.render(context)
+        content = targz_directory(directory_generator)
+    except TemplateError as e:
+        request.response.status_int = 500
+        logger.error('TemplateError caught: {error}'.format(error=e))
+        request.response.write(json.dumps(str(e)))
+    request.response.write(content)
     return request.response
