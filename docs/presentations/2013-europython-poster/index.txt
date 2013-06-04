@@ -11,32 +11,87 @@ Here is the poster:
    :height: 400
 
 
-*****
-Ideas
-*****
+************************************
+POST data returns rendered templates
+************************************
 
-* diecutter is simple
-* user posts data to template => file
-* user posts data to directory => archive
-* diecutter is a framework
-* user => client =(http)=> diecutter
-* user => validation => diecutter
-* user => diecutter => writers
-* readers: user => bitbucket|github|gist => diecutter
-* scaffolding (``paster create`` is complicated)
-* configuration, provisioning (provisioners are overkill + provisioners are
-  specific)
-* content composition? ESI?
+files = post(template_url, data)
+
+Render files
+============
+
+.. image:: /_static/overview_files.svg
+
+Render directories
+==================
+
+.. image:: /_static/overview_directories.svg
+
+
+*************
+Configuration
+*************
+
+
+
+***************
+Code generation
+***************
+
+Your Django startproject and startapp
+=====================================
+
+Run:
+
+.. code:: sh
+
+   curl -X POST  \
+        -d django_project=demo  \
+        -H accept:application/gzip  \
+        http://diecutter.alwaysdata.net/api/+django_project+/  \
+        | tar -zxv
+
+You got:
+
+.. code:: text
+
+   .
+   ├── demo/
+   │   ├── __init__.py
+   │   ├── settings.py
+   │   ├── urls.py
+   │   └── wsgi.py
+   └── manage.py
+
+Enhanced sphinx-quickstart
+==========================
+
+Run Write the docs template for Sphinx.
+
+You got:
+
+
+.. note:: The "demo/" folder is not returned if "with_demo" is false.
+
+
+*********************
+Flexible architecture
+*********************
+
+* multiple template engines
+* template loaders can read remote files (github, bitbucket, ...)
+* simple REST API
+* writers return HTTP responses or trigger custom actions
+* open source, deploy your own
 
 
 ****************
 Credits, license
 ****************
 
-Poster by Rémy Hubscher and Benoît Bryon.
+diecutter is licensed under BSD
 
-Content available on `http://diecutter.readthedocs.org
-<http://diecutter.readthedocs.org/en/latest/presentations/2013-europython-poster/index.html>`_
-
-This presentation is published under `CC BY 3.0
+poster published under `CC BY 3.0
 <http://creativecommons.org/licenses/by/3.0/>`_
+
+(c) Benoît Bryon & Rémy Hubscher
