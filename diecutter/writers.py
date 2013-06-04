@@ -66,7 +66,8 @@ def targz_directory(directory_content):
 
     """
     with tempfile.TemporaryFile() as temporary_file:
-        with tarfile.open(mode='w|gz', fileobj=temporary_file) as archive:
+        try:
+            archive = tarfile.open(mode='w|gz', fileobj=temporary_file)
             for filename, file_generator in directory_content:
                 content_text = u''.join(file_generator)
                 content_file = StringIO(content_text)
@@ -74,6 +75,8 @@ def targz_directory(directory_content):
                 info = tarfile.TarInfo(name=filename)
                 info.size = len(content_text)
                 archive.addfile(tarinfo=info, fileobj=content_file)
+        finally:
+            archive.close()
         temporary_file.seek(0)
         return temporary_file.read()
 
