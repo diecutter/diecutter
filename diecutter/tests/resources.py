@@ -117,7 +117,11 @@ class FileResourceTestCase(unittest.TestCase):
             self.assertEqual(resource.read(), content)
 
     def test_render(self):
-        """FileResource.render() renders template against context."""
+        """FileResource.render() generates rendered template against context.
+
+        It returns an iteratable or generator.
+
+        """
         with temporary_directory() as template_dir:
             path = join(template_dir, 'dummy')
             template = u'Tea or coffee'
@@ -126,6 +130,7 @@ class FileResourceTestCase(unittest.TestCase):
             open(path, 'w').write(template.encode('utf8'))
             resource = resources.FileResource(path=path, engine=engine)
             result = resource.render(context)
+            result = ''.join(result)
             self.assertEqual(result, u'this is render result')
             self.assertEqual(engine.args, (template, context))
             self.assertEqual(engine.kwargs, {})
@@ -336,13 +341,14 @@ class DirResourceTestCase(unittest.TestCase):
             resource = resources.DirResource(path=dir_path,
                                              engine=content_engine,
                                              filename_engine=filename_engine)
-            self.assertRaises(ValueError,
-                              resource.render,
-                              context)
+            generate_content = lambda: [(filename, ''.join(content))
+                                        for (filename, content)
+                                        in resource.render(context)]
+            self.assertRaises(ValueError, generate_content)
         self.assertFalse(filename_engine.called)
 
     def test_render(self):
-        """DirResource.render() returns an archive of rendered templates."""
+        """DirResource.render() returns an iterable of rendered templates."""
         with temporary_directory() as template_dir:
             # Setup.
             expected_filename = 'rendered-filename/{args[0]!s}'
@@ -361,18 +367,13 @@ class DirResourceTestCase(unittest.TestCase):
             # Render.
             rendered = resource.render(context)
             # Check result.
-            with open(join(template_dir, 'result.zip'), 'w') as zip_fd:
-                zip_fd.write(rendered)
-            self.assertTrue(zipfile.is_zipfile(zip_fd.name))
-            try:
-                zip_file = zipfile.ZipFile(zip_fd.name)
-                self.assertEqual(zip_file.namelist(),
-                                 ['rendered-filename/file'])
-                self.assertEqual(zip_file.read('rendered-filename/file'),
-                                 u'rendered-content/data')
-                self.assertTrue(zip_file.testzip() is None)
-            finally:
-                zip_file.close()
+            rendered = [part for part in rendered]
+            self.assertEqual(len(rendered), 1)  # One file rendered.
+            self.assertEqual(len(rendered[0]), 2)  # filename, content.
+            self.assertEqual(rendered[0][0], 'rendered-filename/file')
+
+            self.assertEqual(u''.join(rendered[0][1]),
+                             u'rendered-content/data')
 
     def test_render_template_error(self):
         with temporary_directory() as template_dir:
@@ -390,4 +391,7 @@ class DirResourceTestCase(unittest.TestCase):
                                              engine=content_engine,
                                              filename_engine=filename_engine)
             # Render.
-            self.assertRaises(TemplateError, resource.render, context)
+            generate_content = lambda: [(filename, ''.join(content))
+                                        for (filename, content)
+                                        in resource.render(context)]
+            self.assertRaises(TemplateError, generate_content)
