@@ -159,7 +159,7 @@ GET lists the templates it contains:
 Every template in a directory can be handled as a single file. But let's focus
 on the directory feature...
 
-POST returns a ZIP archive:
+POST returns an archive, with ZIP format by default:
 
 .. doctest::
 
@@ -167,16 +167,16 @@ POST returns a ZIP archive:
    >>> from zipfile import ZipFile
 
    >>> response = requests.post(django_project_url,
-   ...                          {'django_project': u'diecutter_demo'})
+   ...                          {'django_project': u'demo'})
    >>> print response.headers['Content-Type']
    application/zip; charset=UTF-8
    >>> zip_file = ZipFile(StringIO(response.content))
    >>> print '\n'.join(zip_file.namelist())
-   diecutter_demo/manage.py
-   diecutter_demo/diecutter_demo/__init__.py
-   diecutter_demo/diecutter_demo/settings.py
-   diecutter_demo/diecutter_demo/urls.py
-   diecutter_demo/diecutter_demo/wsgi.py
+   demo/manage.py
+   demo/demo/__init__.py
+   demo/demo/settings.py
+   demo/demo/urls.py
+   demo/demo/wsgi.py
    >>> zip_file.close()
 
 Without trailing slash, directory name is used as a prefix for filenames.
@@ -195,15 +195,59 @@ Let's try the same requests with a trailing slash:
    +django_project+/wsgi.py
 
    >>> response = requests.post(django_project_url,
-   ...                          {'django_project': u'diecutter_demo'})
+   ...                          {'django_project': u'demo'})
    >>> zip_file = ZipFile(StringIO(response.content))
    >>> print '\n'.join(zip_file.namelist())
    manage.py
-   diecutter_demo/__init__.py
-   diecutter_demo/settings.py
-   diecutter_demo/urls.py
-   diecutter_demo/wsgi.py
+   demo/__init__.py
+   demo/settings.py
+   demo/urls.py
+   demo/wsgi.py
    >>> zip_file.close()
+
+You can get the content as a tar.gz archive instead with the "accept" header:
+
+.. doctest::
+
+   >>> import tarfile
+   >>> response = requests.post(django_project_url,
+   ...                          {'django_project': u'demo'},
+   ...                          headers={'accept': 'application/gzip'})
+   >>> response.headers['Content-Type']
+   'application/gzip; charset=UTF-8'
+   >>> response_file = StringIO(response.content)
+   >>> try:
+   ...     archive = tarfile.open(fileobj=response_file, mode='r|gz')
+   ...     print '\n'.join(archive.getnames())
+   ... finally:
+   ...     archive.close()
+   manage.py
+   demo/__init__.py
+   demo/settings.py
+   demo/urls.py
+   demo/wsgi.py
+
+.. tip::
+
+   You can see all supported "accept" headers by requesting an unknown mime
+   type:
+
+   .. doctest::
+
+      >>> response = requests.post(django_project_url,
+      ...                          {'django_project': u'demo'},
+      ...                          headers={'accept': 'fake/mime-type'})
+      >>> response.status_code
+      406
+      >>> print response.content
+      406 Not Acceptable
+      <BLANKLINE>
+      The server could not comply with the request since it is either malformed or otherwise incorrect.
+      <BLANKLINE>
+      <BLANKLINE>
+      Supported mime types: */*, application/gzip, application/x-gzip, application/zip
+      <BLANKLINE>
+      <BLANKLINE>
 
 See :doc:`/client/directories` for details about directory resources.
 

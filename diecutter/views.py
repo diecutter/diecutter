@@ -1,20 +1,19 @@
 """Cornice services."""
 from datetime import datetime
-import json
 import logging
 from os import makedirs
 from os.path import join, abspath, dirname, exists, isdir, normpath
 
 from cornice import Service
 from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
-from pyramid.httpexceptions import HTTPNotImplemented
+from pyramid.httpexceptions import HTTPNotImplemented, HTTPNotAcceptable
+from webob.acceptparse import MIMENilAccept
 
 from diecutter import __version__ as VERSION
 from diecutter.engines.filename import FilenameEngine
 from diecutter.engines.jinja import Jinja2Engine
 from diecutter import resources
 from diecutter.contextextractors import extract_context
-from diecutter.exceptions import TemplateError
 from diecutter.validators import token_validator
 
 
@@ -73,7 +72,6 @@ def get_resource(request):
     else:
         resource = resources.FileResource(path=path, engine=engine,
                                           filename_engine=filename_engine)
-
     return resource
 
 
@@ -135,6 +133,56 @@ def get_conf_template(request):
     return request.response
 
 
+def get_accepted_types(request):
+    """Return list of accepted content types from request's 'accept' header."""
+    if isinstance(request.accept, MIMENilAccept):  # Not explicitely requested.
+        return ['*/*']  # Default.
+    return [item for item in request.accept]
+
+
+def get_writers(request, resource, context):
+    """Return iterable of writers."""
+    from diecutter.writers import (zip_directory_response, file_response,
+                                   targz_directory_response)
+    if resource.is_file:
+        return [file_response]
+    else:
+        accepted_mime_types = get_accepted_types(request)
+        # Reference.
+        mime_type_map = {'application/zip': [zip_directory_response],
+                         'application/gzip': [targz_directory_response],
+                         }
+        # Aliases.
+        mime_type_map['application/x-gzip'] = mime_type_map['application/gzip']
+        # Fallback.
+        mime_type_map['*/*'] = mime_type_map['application/zip']
+        for accepted_mime_type in accepted_mime_types:
+            try:
+                return mime_type_map[accepted_mime_type]
+            except KeyError:
+                pass
+        raise HTTPNotAcceptable('Supported mime types: %s'
+                                % ', '.join(sorted(mime_type_map.keys())))
+
+
+def get_dispatcher(request, resource, context, writers):
+    """Return simple dispatcher (later, would read configuration)."""
+    return FirstResultDispatcher(writers)
+
+
+class FirstResultDispatcher(object):
+    """A dispatcher that return the first result got from callables."""
+    def __init__(self, runners=[]):
+        self.runners = runners
+
+    def __call__(self, *fargs, **kwargs):
+        for runner in self.runners:
+            result = runner(*fargs, **kwargs)
+            if result is not None:
+                return result
+        return result
+
+
 @conf_template.post()
 def post_conf_template(request):
     resource = get_resource(request)
@@ -149,11 +197,7 @@ def post_conf_template(request):
         'now': datetime.now()}
     if not resource.exists:
         return NotFound('Template not found')
-    request.response.content_type = resource.content_type
-    try:
-        request.response.write(resource.render(context))
-    except TemplateError as e:
-        request.response.status_int = 500
-        logger.error('TemplateError caught: {error}'.format(error=e))
-        request.response.write(json.dumps(str(e)))
-    return request.response
+    writers = get_writers(request, resource, context)
+    dispatcher = get_dispatcher(request, resource, context, writers)
+    response = dispatcher(request, resource, context)
+    return response

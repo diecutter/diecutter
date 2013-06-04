@@ -49,8 +49,20 @@ class Resource(object):
         """Return rendered filename against context using FilenameEngine."""
         return self.filename_engine.render(path, context)
 
+    @property
+    def is_file(self):
+        """Return True if resource is a single file."""
+        raise NotImplementedError()
+
+    @property
+    def is_dir(self):
+        """Return True if resource is a collection of files."""
+        return not self.is_file
+
 
 class FileResource(Resource):
+    is_file = True
+
     @property
     def exists(self):
         return isfile(self.path)
@@ -66,14 +78,15 @@ class FileResource(Resource):
     def render(self, context):
         """Return the template rendered against context."""
         try:
-            return self.engine.render(self.read(), context)
-        except TemplateError as e:
-            print self.path
+            return [self.engine.render(self.read(), context).encode('utf-8')]
+        except (TemplateError, UnicodeDecodeError) as e:
             raise TemplateError('%s: %s' % (self.path, e))
 
 
 class DirResource(Resource):
     """Container for other files and directories resources."""
+    is_file = False
+
     @property
     def exists(self):
         return isdir(self.path)
@@ -154,10 +167,7 @@ class DirResource(Resource):
 
     def render_file(self, template, context):
         """Render a file with context."""
-        try:
-            return template.render(context).encode('utf-8')
-        except (TemplateError, UnicodeDecodeError) as e:
-            raise TemplateError('%s: %s' % (template.path, e))
+        return template.render(context)
 
     def get_tree_template(self):
         """Return FileResource that holds directory tree."""
@@ -165,7 +175,8 @@ class DirResource(Resource):
 
     def render_tree_from_template(self, template, context):
         """Generate directory tree from a template file resource."""
-        content = self.render_file(template, context)
+        content_generator = self.render_file(template, context)
+        content = u''.join(content_generator)
         tree = json.loads(content)
         for item in iter(tree):
             item_path = join(self.path, item['template'])
@@ -176,12 +187,7 @@ class DirResource(Resource):
 
     def render(self, context):
         """Return archive of files in tree rendered against context."""
-        temp_file = StringIO()
-        temp_zip = zipfile.ZipFile(temp_file, 'w',
-                                   compression=zipfile.ZIP_DEFLATED)
         for resource_path, filename, context in self.render_tree(context):
             resource = self.get_file_resource(resource_path)
-            content = self.render_file(resource, context)
-            temp_zip.writestr(filename, content)
-        temp_zip.close()
-        return temp_file.getvalue()
+            content_generator = self.render_file(resource, context)
+            yield filename, content_generator
