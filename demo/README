@@ -216,11 +216,8 @@ You can get the content as a tar.gz archive instead with the "accept" header:
    >>> response.headers['Content-Type']
    'application/gzip; charset=UTF-8'
    >>> response_file = StringIO(response.content)
-   >>> try:
-   ...     archive = tarfile.open(fileobj=response_file, mode='r|gz')
-   ...     print '\n'.join(archive.getnames())
-   ... finally:
-   ...     archive.close()
+   >>> with tarfile.open(fileobj=response_file, mode='r|gz') as archive:
+   ...    print '\n'.join(archive.getnames())
    manage.py
    demo/__init__.py
    demo/settings.py
