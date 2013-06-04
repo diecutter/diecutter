@@ -57,12 +57,11 @@ class Resource(object):
     @property
     def is_dir(self):
         """Return True if resource is a collection of files."""
-        raise NotImplementedError()
+        return not self.is_file
 
 
 class FileResource(Resource):
     is_file = True
-    is_dir = False
 
     @property
     def exists(self):
@@ -87,7 +86,6 @@ class FileResource(Resource):
 class DirResource(Resource):
     """Container for other files and directories resources."""
     is_file = False
-    is_dir = True
 
     @property
     def exists(self):
