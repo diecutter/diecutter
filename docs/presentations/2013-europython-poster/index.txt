@@ -48,7 +48,7 @@ Run:
    curl -X POST  \
         -d django_project=demo  \
         -H accept:application/gzip  \
-        http://diecutter.alwaysdata.net/api/+django_project+/  \
+        http://diecutter/+django_project+/  \
         | tar -zxv
 
 You got:
