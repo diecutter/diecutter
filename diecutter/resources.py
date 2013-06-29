@@ -95,7 +95,7 @@ class DirResource(Resource):
     def content_type(self):
         return 'application/zip'
 
-    def relative_filename(self, filename):
+    def relative_filename(self, filename, with_prefix=True):
         """Return filename relative to :py:attr:`path`.
 
         >>> from diecutter.resources import DirResource
@@ -114,8 +114,11 @@ class DirResource(Resource):
         'nested/name'
 
         """
-        prefix = basename(self.path)
-        return join(prefix, relpath(filename, self.path))
+        if with_prefix:
+            prefix = basename(self.path)
+            return join(prefix, relpath(filename, self.path))
+        else:
+            return filename[len(self.path):].lstrip('/')
 
     def read_tree(self):
         """Generate list of paths to contained resources."""
@@ -154,7 +157,9 @@ class DirResource(Resource):
 
     def has_tree_template(self):
         """Return True if .diecutter-tree file exists."""
-        return isfile(join(self.path, '.diecutter-tree'))
+        lines = [self.relative_filename(line, with_prefix=False)
+                 for line in self.read_tree()]
+        return '.diecutter-tree' in lines
 
     def get_file_resource(self, path):
         """Factory for internal FileResources."""

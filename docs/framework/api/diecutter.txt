@@ -25,6 +25,22 @@ diecutter Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`github` Module
+--------------------
+
+.. automodule:: diecutter.github
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`loaders` Module
+---------------------
+
+.. automodule:: diecutter.loaders
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`resources` Module
 -----------------------
 
