@@ -49,6 +49,14 @@ diecutter Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`service` Module
+---------------------
+
+.. automodule:: diecutter.service
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`validators` Module
 ------------------------
 

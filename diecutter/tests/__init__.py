@@ -6,7 +6,7 @@ import tempfile
 
 from webtest.http import StopableWSGIServer
 
-import diecutter
+import diecutter.service
 
 
 class temporary_directory(object):
@@ -62,8 +62,7 @@ def wsgi_application(settings={}):
 
     """
     global_config = {}
-    application = diecutter.main(global_config, **settings)
-    #application = TestApp(application)
+    application = diecutter.service.main(global_config, **settings)
     return application
 
 

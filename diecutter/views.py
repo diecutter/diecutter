@@ -95,13 +95,11 @@ def is_readonly(request):
                                                     False))
 
 
-@template_service.get()
 def get_hello(request):
     """Returns Hello in JSON."""
     return {'diecutter': 'Hello', 'version': VERSION}
 
 
-@conf_template.put(validators=(token_validator,))
 def put_template(request):
     if is_readonly(request):
         raise Forbidden('This diecutter server is readonly.')
@@ -123,7 +121,6 @@ def put_template(request):
     return {'diecutter': 'Ok'}
 
 
-@conf_template.get()
 def get_conf_template(request):
     resource = get_resource(request)
     if not resource.exists:
@@ -183,7 +180,6 @@ class FirstResultDispatcher(object):
         return result
 
 
-@conf_template.post()
 def post_conf_template(request):
     resource = get_resource(request)
     try:
@@ -201,3 +197,9 @@ def post_conf_template(request):
     dispatcher = get_dispatcher(request, resource, context, writers)
     response = dispatcher(request, resource, context)
     return response
+
+
+template_service.add_view('GET', get_hello)
+conf_template.add_view('PUT', put_template, validators=(token_validator,))
+conf_template.add_view('GET', get_conf_template)
+conf_template.add_view('POST', post_conf_template)

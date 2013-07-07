@@ -41,5 +41,5 @@ if __name__ == '__main__':  # Don't run setup() when we import this module.
           zip_safe=False,
           setup_requires=['PasteScript'],
           install_requires=REQUIREMENTS,
-          entry_points={'paste.app_factory': ['main = diecutter:main']},
+          entry_points={'paste.app_factory': ['main = diecutter.service:main']},
           paster_plugins=['pyramid'])
