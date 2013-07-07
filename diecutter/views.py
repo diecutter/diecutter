@@ -4,7 +4,6 @@ import logging
 from os import makedirs
 from os.path import join, abspath, dirname, exists, isdir, normpath
 
-from cornice import Service
 from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
 from pyramid.httpexceptions import HTTPNotImplemented, HTTPNotAcceptable
 from webob.acceptparse import MIMENilAccept
@@ -20,12 +19,72 @@ from diecutter.validators import token_validator
 logger = logging.getLogger(__name__)
 
 
-template_service = Service(name='template_service', path='/',
-                           description="The template API",
-                           cors_origins=('*',))
+class Service(object):
+    """Base class for diecutter services."""
+    def hello(self, request):
+        raise NotImplementedError()
 
-conf_template = Service(name='template', path='/{template_path:.+}',
-                        description="Return the template render or raw")
+    def get(self, request):
+        raise NotImplementedError()
+
+    def post(self, request):
+        raise NotImplementedError()
+
+    def put(self, request):
+        raise NotImplementedError()
+
+
+class LocalService(Service):
+    """A service that loads templates on local filesystem."""
+    def hello(self, request):
+        """Returns Hello in JSON."""
+        return {'diecutter': 'Hello', 'version': VERSION}
+
+    def get(self, request):
+        resource = get_resource(request)
+        if not resource.exists:
+            return NotFound('Template not found')
+        request.response.content_type = 'text/plain'
+        request.response.write(resource.read())
+        return request.response
+
+    def post(self, request):
+        resource = get_resource(request)
+        try:
+            context = extract_context(request)
+        except NotImplementedError as e:
+            raise HTTPNotImplemented(e.message)
+        context['diecutter'] = {
+            'api_url': '%s://%s' % (request.environ['wsgi.url_scheme'],
+                                    request.environ['HTTP_HOST']),
+            'version': VERSION,
+            'now': datetime.now()}
+        if not resource.exists:
+            return NotFound('Template not found')
+        writers = get_writers(request, resource, context)
+        dispatcher = get_dispatcher(request, resource, context, writers)
+        response = dispatcher(request, resource, context)
+        return response
+
+    def put(self, request):
+        if is_readonly(request):
+            raise Forbidden('This diecutter server is readonly.')
+        filename = request.matchdict['template_path']
+        input_file = request.POST['file'].file
+
+        file_path = get_resource_path(request)
+
+        if not exists(dirname(file_path)):
+            makedirs(dirname(file_path))
+
+        with open(file_path, 'w') as output_file:
+            # Finally write the data to the output file
+            input_file.seek(0)
+            for line in input_file.readlines():
+                output_file.write(line)
+        request.response.status_int = 201
+        request.response.headers['location'] = str('/%s' % filename)
+        return {'diecutter': 'Ok'}
 
 
 def get_template_dir(request):
@@ -95,41 +154,6 @@ def is_readonly(request):
                                                     False))
 
 
-def get_hello(request):
-    """Returns Hello in JSON."""
-    return {'diecutter': 'Hello', 'version': VERSION}
-
-
-def put_template(request):
-    if is_readonly(request):
-        raise Forbidden('This diecutter server is readonly.')
-    filename = request.matchdict['template_path']
-    input_file = request.POST['file'].file
-
-    file_path = get_resource_path(request)
-
-    if not exists(dirname(file_path)):
-        makedirs(dirname(file_path))
-
-    with open(file_path, 'w') as output_file:
-        # Finally write the data to the output file
-        input_file.seek(0)
-        for line in input_file.readlines():
-            output_file.write(line)
-    request.response.status_int = 201
-    request.response.headers['location'] = str('/%s' % filename)
-    return {'diecutter': 'Ok'}
-
-
-def get_conf_template(request):
-    resource = get_resource(request)
-    if not resource.exists:
-        return NotFound('Template not found')
-    request.response.content_type = 'text/plain'
-    request.response.write(resource.read())
-    return request.response
-
-
 def get_accepted_types(request):
     """Return list of accepted content types from request's 'accept' header."""
     if isinstance(request.accept, MIMENilAccept):  # Not explicitely requested.
@@ -180,26 +204,20 @@ class FirstResultDispatcher(object):
         return result
 
 
-def post_conf_template(request):
-    resource = get_resource(request)
-    try:
-        context = extract_context(request)
-    except NotImplementedError as e:
-        raise HTTPNotImplemented(e.message)
-    context['diecutter'] = {
-        'api_url': '%s://%s' % (request.environ['wsgi.url_scheme'],
-                                request.environ['HTTP_HOST']),
-        'version': VERSION,
-        'now': datetime.now()}
-    if not resource.exists:
-        return NotFound('Template not found')
-    writers = get_writers(request, resource, context)
-    dispatcher = get_dispatcher(request, resource, context, writers)
-    response = dispatcher(request, resource, context)
-    return response
-
-
-template_service.add_view('GET', get_hello)
-conf_template.add_view('PUT', put_template, validators=(token_validator,))
-conf_template.add_view('GET', get_conf_template)
-conf_template.add_view('POST', post_conf_template)
+def register_service(config, name, service, path):
+    """Register a diecutter service in Pyramid routing."""
+    import cornice
+    hello = cornice.Service(name='{name}_hello'.format(name=name),
+                            path=path,
+                            description="The template API",
+                            cors_origins=('*',))
+    template = cornice.Service(
+        name='{name}_template'.format(name=name),
+        path='%s{template_path:.+}' % path,
+        description="Return the template render or raw")
+    hello.add_view('GET', service.hello)
+    template.add_view('PUT', service.put, validators=(token_validator,))
+    template.add_view('GET', service.get)
+    template.add_view('POST', service.post)
+    cornice.register_service_views(config, hello)
+    cornice.register_service_views(config, template)
