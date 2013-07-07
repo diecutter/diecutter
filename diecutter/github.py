@@ -1,5 +1,8 @@
 import os
+import tarfile
 import tempfile
+
+import requests
 
 from diecutter.resources import FileResource, DirResource
 from diecutter.tests import temporary_directory
@@ -61,6 +64,32 @@ class GithubResource(object):
 #        return '/home/benoit/web/diecutter/'
         return 'git@github.com:{user}/{project}.git'.format(user=user,
                                                             project=project)
+
+    def github_targz(self, user, project, commit, output_dir=None):
+        """Download archive from Github and return path to local extract."""
+        try:
+            return self._checkout
+        except AttributeError:
+            if output_dir is None:
+                output_dir = tempfile.mkdtemp()
+            url = self.github_targz_url(user, project, commit)
+            response = requests.get(url, stream=True)
+            archive = tarfile.open(fileobj=response.raw, mode='r|gz')
+            archive.extractall(output_dir)
+            self._checkout = output_dir
+            return self._checkout
+
+    def github_targz_url(self, user, project, commit):
+        """Return URL of Github archive.
+
+        >>> from diecutter.github import GithubResource
+        >>> res = GithubResource()
+        >>> res.github_targz_url('user', 'project', 'master')
+        'https://github.com/user/project/archive/master.tar.gz'
+
+        """
+        return 'https://github.com/{user}/{project}/archive/{commit}.tar.gz' \
+               .format(user=user, project=project, commit=commit)
 
 
 class GithubFileResource(GithubResource, FileResource):
@@ -145,7 +174,7 @@ class GithubService(LocalService):
         filename_engine = self.get_filename_engine(request)
         res = GithubResource()
         user, project, commit, relative_path = res.split_path(path)
-        res.github_checkout(user, project, commit, output_dir=self.checkout_dir)
+        res.github_targz(user, project, commit, output_dir=self.checkout_dir)
         local_path = os.path.join(self.checkout_dir, relative_path)
         if os.path.isdir(local_path):
             resource = GithubDirResource(path=path, engine=engine,
