@@ -2,6 +2,8 @@ import os
 import tempfile
 
 from diecutter.resources import FileResource, DirResource
+from diecutter.tests import temporary_directory
+from diecutter.views import LocalService
 
 
 def execute(command):
@@ -114,3 +116,46 @@ class GithubDirResource(GithubResource, DirResource):
             self, user, project, commit, local_dir)
         local_path = os.path.join(local_dir, relative_path)
         DirResource.__init__(self, local_path, engine, filename_engine)
+
+
+class GithubService(LocalService):
+    """A diecutter service that uses Github as template storage."""
+    def get(self, request):
+        with temporary_directory() as checkout_dir:
+            self.checkout_dir = checkout_dir
+            return super(GithubService, self).get(request)
+
+    def post(self, request):
+        with temporary_directory() as checkout_dir:
+            self.checkout_dir = checkout_dir
+            return super(GithubService, self).post(request)
+
+    def put(self, request):
+        raise NotImplementedError()
+
+    def get_resource(self, request):
+        """Return the resource matching request.
+
+        Return value is a :py:class:`GithubFileResource` or
+        :py:class`GithubDirResource`.
+
+        """
+        path = self.get_resource_path(request)
+        engine = self.get_engine(request)
+        filename_engine = self.get_filename_engine(request)
+        res = GithubResource()
+        user, project, commit, relative_path = res.split_path(path)
+        res.github_checkout(user, project, commit, output_dir=self.checkout_dir)
+        local_path = os.path.join(self.checkout_dir, relative_path)
+        if os.path.isdir(local_path):
+            resource = GithubDirResource(path=path, engine=engine,
+                                         filename_engine=filename_engine)
+        else:
+            resource = GithubFileResource(path=path, engine=engine,
+                                          filename_engine=filename_engine)
+        resource._checkout = self.checkout_dir
+        return resource
+
+    def get_resource_path(self, request):
+        """Return validated (absolute) resource path from request."""
+        return request.matchdict['template_path']
