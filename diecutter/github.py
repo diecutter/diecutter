@@ -1,3 +1,4 @@
+"""Manage templates located on Github."""
 import os
 import tarfile
 import tempfile
@@ -61,7 +62,6 @@ class GithubResource(object):
 
     def github_clone_url(self, user, project):
         """Return URL to clone from github."""
-#        return '/home/benoit/web/diecutter/'
         return 'git@github.com:{user}/{project}.git'.format(user=user,
                                                             project=project)
 
