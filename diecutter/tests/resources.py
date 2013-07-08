@@ -8,12 +8,11 @@ try:
     from unittest import mock
 except:
     import mock
-import zipfile
 
 from diecutter import resources
 from diecutter.engines.mock import MockEngine
 from diecutter.exceptions import TemplateError
-from diecutter.tests import temporary_directory
+from diecutter.utils import temporary_directory
 
 
 class ResourceTestCase(unittest.TestCase):

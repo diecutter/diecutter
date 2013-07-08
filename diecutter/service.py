@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Stuff related to server."""
 from pyramid.config import Configurator
 from pyramid.path import DottedNameResolver

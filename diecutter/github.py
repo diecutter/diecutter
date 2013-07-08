@@ -6,7 +6,7 @@ from pyramid.exceptions import NotFound
 import requests
 
 from diecutter.resources import FileResource, DirResource
-from diecutter.tests import temporary_directory
+from diecutter.utils import temporary_directory
 from diecutter.views import LocalService
 
 
@@ -65,7 +65,16 @@ class GithubLoader(object):
         code, stdout, stderr = execute(command)
 
     def github_clone_url(self, user, project):
-        """Return URL to clone from github."""
+        """Return URL to clone from github.
+
+        >>> from diecutter.github import GithubLoader
+        >>> from diecutter.utils import temporary_directory
+        >>> with temporary_directory() as temp_dir:
+        ...     loader = GithubLoader(temp_dir)
+        ...     loader.github_clone_url('user', 'project')
+        'git@github.com:user/project.git'
+
+        """
         return 'git@github.com:{user}/{project}.git'.format(user=user,
                                                             project=project)
 
@@ -89,9 +98,11 @@ class GithubLoader(object):
     def github_targz_url(self, user, project, commit):
         """Return URL of Github archive.
 
-        >>> from diecutter.github import GithubResource
-        >>> res = GithubResource()
-        >>> res.github_targz_url('user', 'project', 'master')
+        >>> from diecutter.github import GithubLoader
+        >>> from diecutter.utils import temporary_directory
+        >>> with temporary_directory() as temp_dir:
+        ...     loader = GithubLoader(temp_dir)
+        ...     loader.github_targz_url('user', 'project', 'master')
         'https://github.com/user/project/archive/master.tar.gz'
 
         """
@@ -117,11 +128,11 @@ class GithubService(LocalService):
     def split_path(self, path):
         """Return parts of path of the form /{user}/{project}/{commit}/{path}.
 
-        >>> from diecutter.github import GithubResource
-        >>> res = GithubResource()
-        >>> res.split_path('/user/project/commit/path')
+        >>> from diecutter.github import GithubService
+        >>> service = GithubService()
+        >>> service.split_path('/user/project/commit/path')
         ['user', 'project', 'commit', 'path']
-        >>> res.split_path('/user/project/commit/nested/path')
+        >>> service.split_path('/user/project/commit/nested/path')
         ['user', 'project', 'commit', 'nested/path']
 
         """

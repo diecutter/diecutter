@@ -33,14 +33,6 @@ diecutter Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`loaders` Module
----------------------
-
-.. automodule:: diecutter.loaders
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 :mod:`resources` Module
 -----------------------
 
@@ -53,6 +45,14 @@ diecutter Package
 ---------------------
 
 .. automodule:: diecutter.service
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`utils` Module
+-------------------
+
+.. automodule:: diecutter.utils
     :members:
     :undoc-members:
     :show-inheritance:

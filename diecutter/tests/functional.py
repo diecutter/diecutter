@@ -7,7 +7,7 @@ import zipfile
 from webtest import TestApp, Upload
 
 import diecutter.service
-from diecutter.tests import temporary_directory
+from diecutter.utils import temporary_directory
 
 
 class FunctionalTestCase(unittest.TestCase):
