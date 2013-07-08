@@ -106,10 +106,10 @@ class GithubLoader(object):
         >>> with temporary_directory() as temp_dir:
         ...     loader = GithubLoader(temp_dir)
         ...     loader.github_targz_url('user', 'project', 'master')
-        'https://github.com/user/project/archive/master.tar.gz'
+        'https://codeload.github.com/user/project/tar.gz/master'
 
         """
-        return 'https://github.com/{user}/{project}/archive/{commit}.tar.gz' \
+        return 'https://codeload.github.com/{user}/{project}/tar.gz/{commit}' \
                .format(user=user, project=project, commit=commit)
 
 
