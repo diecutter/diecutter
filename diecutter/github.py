@@ -96,7 +96,6 @@ class GithubLoader(object):
         'https://github.com/user/project/archive/master.tar.gz'
 
         """
-        return 'http://localhost:8000/diecutter-master.tar.gz'
         return 'https://github.com/{user}/{project}/archive/{commit}.tar.gz' \
                .format(user=user, project=project, commit=commit)
 
