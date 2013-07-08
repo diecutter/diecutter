@@ -42,14 +42,14 @@ class GithubLoader(object):
             with chdir(self.checkout_dir):
                 code, stdout, stderr = execute(command)
             if code is not 0:
-                raise Exception('Failed to execute "{command}" for '
-                                '{user}/{project}/{commit}. '
-                                'Stderr is: {stderr}'
-                                .format(command=' '.join(command),
-                                        user=user,
-                                        project=project,
-                                        commit=commit,
-                                        stderr=stderr))
+                raise NotFound('Failed to execute "{command}" for '
+                               '{user}/{project}/{commit}. '
+                               'Stderr is: {stderr}'
+                               .format(command=' '.join(command),
+                                       user=user,
+                                       project=project,
+                                       commit=commit,
+                                       stderr=stderr))
             self._checkout = self.checkout_dir
             return self._checkout
 
