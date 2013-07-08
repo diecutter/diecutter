@@ -1,8 +1,8 @@
 """Manage templates located on Github."""
 import os
 import tarfile
-import tempfile
 
+from pyramid.exceptions import NotFound
 import requests
 
 from diecutter.resources import FileResource, DirResource
@@ -20,44 +20,48 @@ def execute(command):
     return (process.wait(), process.stdout.read(), process.stderr.read())
 
 
-class GithubResource(object):
-    """Base class for Github resources."""
-    def split_path(self, path):
-        """Return parts of path of the form /{user}/{project}/{commit}/{path}.
+class GithubLoader(object):
+    """Loads resources from Github."""
+    def __init__(self, checkout_dir):
+        self.checkout_dir = checkout_dir
 
-        >>> from diecutter.github import GithubResource
-        >>> res = GithubResource()
-        >>> res.split_path('/user/project/commit/path')
-        ['user', 'project', 'commit', 'path']
-        >>> res.split_path('/user/project/commit/nested/path')
-        ['user', 'project', 'commit', 'nested/path']
+    def get_resource(self, engine, filename_engine, user, project, commit,
+                     path):
+        """Return resource (either a file or directory)."""
+        local_root = self.github_targz(user, project, commit)
+        local_path = os.path.join(local_root,
+                                  '{project}-{commit}'.format(project=project,
+                                                              commit=commit),
+                                  path)
+        if os.path.isdir(local_path):
+            resource = DirResource(path=local_path, engine=engine,
+                                   filename_engine=filename_engine)
+        else:
+            resource = FileResource(path=local_path, engine=engine,
+                                    filename_engine=filename_engine)
+        return resource
 
-        """
-        return path.lstrip('/').split('/', 3)
-
-    def github_checkout(self, user, project, commit, output_dir=None):
+    def github_checkout(self, user, project, commit):
         """Return path to local checkout of remote repository."""
         try:
             return self._checkout
         except AttributeError:
-            if output_dir is None:
-                output_dir = tempfile.mkdtemp()
-            self.github_clone(user, project, output_dir)
+            self.github_clone(user, project, self.checkout_dir)
             command = ['git', 'checkout', commit]
             previous_dir = os.getcwd()
-            os.chdir(output_dir)
+            os.chdir(self.checkout_dir)
             try:
                 code, stdout, stderr = execute(command)
             finally:
                 os.chdir(previous_dir)
-            self._checkout = output_dir
+            self._checkout = self.checkout_dir
             return self._checkout
 
-    def github_clone(self, user, project, output_dir):
-        """Clone repository locally over ssh in ``output_dir``."""
+    def github_clone(self, user, project):
+        """Clone repository locally over ssh in ``self.checkout_dir``."""
         command = ['git', 'clone', '--no-checkout',
                    self.github_clone_url(user, project),
-                   output_dir]
+                   self.checkout_dir]
         code, stdout, stderr = execute(command)
 
     def github_clone_url(self, user, project):
@@ -65,18 +69,22 @@ class GithubResource(object):
         return 'git@github.com:{user}/{project}.git'.format(user=user,
                                                             project=project)
 
-    def github_targz(self, user, project, commit, output_dir=None):
+    def github_targz(self, user, project, commit):
         """Download archive from Github and return path to local extract."""
         try:
             return self._checkout
         except AttributeError:
-            if output_dir is None:
-                output_dir = tempfile.mkdtemp()
             url = self.github_targz_url(user, project, commit)
+            try:
+                response = requests.get(url)
+            except requests.exceptions.RequestException as e:
+                raise e
+            if response.status_code == 404:
+                raise NotFound()
             response = requests.get(url, stream=True)
             archive = tarfile.open(fileobj=response.raw, mode='r|gz')
-            archive.extractall(output_dir)
-            self._checkout = output_dir
+            archive.extractall(self.checkout_dir)
+            self._checkout = self.checkout_dir
             return self._checkout
 
     def github_targz_url(self, user, project, commit):
@@ -88,63 +96,9 @@ class GithubResource(object):
         'https://github.com/user/project/archive/master.tar.gz'
 
         """
+        return 'http://localhost:8000/diecutter-master.tar.gz'
         return 'https://github.com/{user}/{project}/archive/{commit}.tar.gz' \
                .format(user=user, project=project, commit=commit)
-
-
-class GithubFileResource(GithubResource, FileResource):
-    """A file resource that lives on Github.
-
-    >>> from diecutter.github import GithubFileResource
-    >>> from diecutter.tests import temporary_directory
-    >>> with temporary_directory() as working_dir:
-    ...     res = GithubFileResource(
-    ...         '/novagile/diecutter/967556784a99d593120718c222051d8b4766e176/demo/templates/greetings.txt',
-    ...         local_dir=working_dir)
-    ...     res.exists
-    ...     res.is_file
-    ...     print res.read()
-    True
-    True
-    {{ greetings|default('Hello') }} {{ name }}!
-    <BLANKLINE>
-
-    """
-    def __init__(self, path='', engine=None, filename_engine=None,
-                 local_dir=None):
-        self.remote_path = path
-        user, project, commit, relative_path = self.split_path(path)
-        local_dir = GithubResource.github_checkout(
-            self, user, project, commit, local_dir)
-        local_path = os.path.join(local_dir, relative_path)
-        FileResource.__init__(self, local_path, engine, filename_engine)
-
-
-class GithubDirResource(GithubResource, DirResource):
-    """A directory resource that lives on Github.
-
-    >>> from diecutter.github import GithubDirResource
-    >>> from diecutter.tests import temporary_directory
-    >>> with temporary_directory() as working_dir:
-    ...     res = GithubDirResource('/novagile/diecutter/967556784a99d593120718c222051d8b4766e176/demo/templates/dynamic-tree/',
-    ...         local_dir=working_dir)
-    ...     res.exists
-    ...     res.is_dir
-    ...     print res.read()
-    True
-    True
-    .diecutter-tree
-    greeter.txt
-
-    """
-    def __init__(self, path='', engine=None, filename_engine=None,
-                 local_dir=None):
-        self.remote_path = path
-        user, project, commit, relative_path = self.split_path(path)
-        local_dir = GithubResource.github_checkout(
-            self, user, project, commit, local_dir)
-        local_path = os.path.join(local_dir, relative_path)
-        DirResource.__init__(self, local_path, engine, filename_engine)
 
 
 class GithubService(LocalService):
@@ -162,6 +116,23 @@ class GithubService(LocalService):
     def put(self, request):
         raise NotImplementedError()
 
+    def split_path(self, path):
+        """Return parts of path of the form /{user}/{project}/{commit}/{path}.
+
+        >>> from diecutter.github import GithubResource
+        >>> res = GithubResource()
+        >>> res.split_path('/user/project/commit/path')
+        ['user', 'project', 'commit', 'path']
+        >>> res.split_path('/user/project/commit/nested/path')
+        ['user', 'project', 'commit', 'nested/path']
+
+        """
+        return path.lstrip('/').split('/', 3)
+
+    def get_resource_loader(self, request):
+        """Return :py:class:`GithubLoader` instance."""
+        return GithubLoader(self.checkout_dir)
+
     def get_resource(self, request):
         """Return the resource matching request.
 
@@ -170,19 +141,12 @@ class GithubService(LocalService):
 
         """
         path = self.get_resource_path(request)
+        user, project, commit, relative_path = self.split_path(path)
         engine = self.get_engine(request)
         filename_engine = self.get_filename_engine(request)
-        res = GithubResource()
-        user, project, commit, relative_path = res.split_path(path)
-        res.github_targz(user, project, commit, output_dir=self.checkout_dir)
-        local_path = os.path.join(self.checkout_dir, relative_path)
-        if os.path.isdir(local_path):
-            resource = GithubDirResource(path=path, engine=engine,
-                                         filename_engine=filename_engine)
-        else:
-            resource = GithubFileResource(path=path, engine=engine,
-                                          filename_engine=filename_engine)
-        resource._checkout = self.checkout_dir
+        resource_loader = self.get_resource_loader(request)
+        resource = resource_loader.get_resource(
+            engine, filename_engine, user, project, commit, relative_path)
         return resource
 
     def get_resource_path(self, request):
