@@ -60,12 +60,12 @@ class GithubLoader(object):
                    self.checkout_dir]
         code, stdout, stderr = execute(command)
         if code is not 0:
-            raise Exception('Failed to execute "{command}" for '
-                            '{user}/{project}. Stderr is: {stderr}'
-                            .format(command=' '.join(command),
-                                    user=user,
-                                    project=project,
-                                    stderr=stderr))
+            raise NotFound('Failed to execute "{command}" for '
+                           '{user}/{project}. Stderr is: {stderr}'
+                           .format(command=' '.join(command),
+                                   user=user,
+                                   project=project,
+                                   stderr=stderr))
 
     def github_clone_url(self, user, project):
         """Return URL to clone from github.
