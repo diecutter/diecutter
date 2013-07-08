@@ -7,7 +7,7 @@ from pyramid.exceptions import NotFound
 import requests
 
 from diecutter.resources import FileResource, DirResource
-from diecutter.utils import temporary_directory, execute
+from diecutter.utils import temporary_directory, chdir, execute
 from diecutter.views import LocalService
 
 
@@ -37,14 +37,10 @@ class GithubLoader(object):
         try:
             return self._checkout
         except AttributeError:
-            self.github_clone(user, project, self.checkout_dir)
+            self.github_clone(user, project)
             command = ['git', 'checkout', commit]
-            previous_dir = os.getcwd()
-            os.chdir(self.checkout_dir)
-            try:
+            with chdir(self.checkout_dir):
                 code, stdout, stderr = execute(command)
-            finally:
-                os.chdir(previous_dir)
             self._checkout = self.checkout_dir
             return self._checkout
 
