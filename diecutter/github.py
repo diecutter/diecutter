@@ -76,12 +76,11 @@ class GithubLoader(object):
         except AttributeError:
             url = self.github_targz_url(user, project, commit)
             try:
-                response = requests.get(url)
+                response = requests.get(url, stream=True)
             except requests.exceptions.RequestException as e:
                 raise e
             if response.status_code == 404:
                 raise NotFound()
-            response = requests.get(url, stream=True)
             archive = tarfile.open(fileobj=response.raw, mode='r|gz')
             archive.extractall(self.checkout_dir)
             self._checkout = self.checkout_dir
