@@ -25,6 +25,14 @@ tests Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`github` Module
+--------------------
+
+.. automodule:: diecutter.tests.github
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`resources` Module
 -----------------------
 

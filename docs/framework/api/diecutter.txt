@@ -49,14 +49,6 @@ diecutter Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`utils` Module
--------------------
-
-.. automodule:: diecutter.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 :mod:`validators` Module
 ------------------------
 
@@ -88,4 +80,5 @@ Subpackages
 
     diecutter.engines
     diecutter.tests
+    diecutter.utils
 

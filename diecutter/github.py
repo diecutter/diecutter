@@ -41,6 +41,15 @@ class GithubLoader(object):
             command = ['git', 'checkout', commit]
             with chdir(self.checkout_dir):
                 code, stdout, stderr = execute(command)
+            if code is not 0:
+                raise Exception('Failed to execute "{command}" for '
+                                '{user}/{project}/{commit}. '
+                                'Stderr is: {stderr}'
+                                .format(command=' '.join(command),
+                                        user=user,
+                                        project=project,
+                                        commit=commit,
+                                        stderr=stderr))
             self._checkout = self.checkout_dir
             return self._checkout
 
@@ -50,6 +59,13 @@ class GithubLoader(object):
                    self.github_clone_url(user, project),
                    self.checkout_dir]
         code, stdout, stderr = execute(command)
+        if code is not 0:
+            raise Exception('Failed to execute "{command}" for '
+                            '{user}/{project}. Stderr is: {stderr}'
+                            .format(command=' '.join(command),
+                                    user=user,
+                                    project=project,
+                                    stderr=stderr))
 
     def github_clone_url(self, user, project):
         """Return URL to clone from github.
