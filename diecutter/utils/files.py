@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Utilities that could be packaged in separate project."""
+"""Manage temporary directories."""
 import shutil
 import tempfile
 
@@ -7,7 +7,7 @@ import tempfile
 class temporary_directory(object):
     """Create, yield, and finally delete a temporary directory.
 
-    >>> from diecutter.utils import temporary_directory
+    >>> from diecutter.utils.files import temporary_directory
     >>> import os
     >>> with temporary_directory() as directory:
     ...     os.path.isdir(directory)

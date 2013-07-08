@@ -6,18 +6,8 @@ from pyramid.exceptions import NotFound
 import requests
 
 from diecutter.resources import FileResource, DirResource
-from diecutter.utils import temporary_directory
+from diecutter.utils import temporary_directory, execute
 from diecutter.views import LocalService
-
-
-def execute(command):
-    import subprocess
-    process = subprocess.Popen(command,
-                               stdin=None,
-                               stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE,
-                               shell=False)
-    return (process.wait(), process.stdout.read(), process.stderr.read())
 
 
 class GithubLoader(object):
