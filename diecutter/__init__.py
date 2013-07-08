@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Diecutter provides API to manage and render templates."""
 import pkg_resources
 

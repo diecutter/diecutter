@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Manage templates located on Github."""
 import os
 import tarfile
