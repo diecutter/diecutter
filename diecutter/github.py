@@ -87,16 +87,22 @@ class GithubLoader(object):
             return self._checkout
         except AttributeError:
             url = self.github_targz_url(user, project, commit)
-            try:
-                response = requests.get(url, stream=True)
-            except requests.exceptions.RequestException as e:
-                raise e
-            if response.status_code == 404:
-                raise NotFound()
-            archive = tarfile.open(fileobj=response.raw, mode='r|gz')
+            archive = tarfile.open(fileobj=self.github_targz_content(url),
+                                   mode='r|gz')
             archive.extractall(self.checkout_dir)
             self._checkout = self.checkout_dir
             return self._checkout
+
+    def github_targz_content(self, url):
+        """Return stream from URL."""
+        try:
+            response = requests.get(url, stream=True)
+        except requests.exceptions.RequestException as e:
+            raise e
+        if response.status_code == 404:
+            raise NotFound()
+        return response.raw
+
 
     def github_targz_url(self, user, project, commit):
         """Return URL of Github archive.

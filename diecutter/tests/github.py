@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Tests around :py:mod:`diecutter.github`."""
 import os
+from StringIO import StringIO
+import tarfile
 import unittest
 try:
     from unittest import mock
@@ -69,5 +71,30 @@ class GithubLoaderTestCase(unittest.TestCase):
                 loader.github_checkout('fake-user', 'fake-project',
                                        'this-revision-does-not-exist')
 
+    def setup_targz(self, path, project, commit):
+        """Create archive file in ``path``."""
+        with tarfile.open(path, mode='w:gz') as archive:
+            greetings_content = 'Hello {name}!'
+            greetings_file = StringIO(greetings_content)
+            greetings_name = '{project}-{commit}/greetings.txt'.format(
+                project=project, commit=commit)
+            greetings_info = tarfile.TarInfo(name=greetings_name)
+            greetings_info.size = len(greetings_content)
+            greetings_info.type = tarfile.REGTYPE
+            archive.addfile(greetings_info, fileobj=greetings_file)
+
     def test_github_targz(self):
         """github_targz downloads and extracts archive in directory."""
+        with temporary_directory() as github_mock_dir:
+            archive_name = os.path.join(github_mock_dir, 'foo.tar.gz')
+            self.setup_targz(archive_name, 'diecutter', 'master')
+            with open(archive_name, 'r') as archive:
+                content_mock = mock.Mock(return_value=archive)
+                with temporary_directory() as output_dir:
+                    loader = diecutter.github.GithubLoader(output_dir)
+                    loader.github_targz_content = content_mock
+                    loader.github_targz('fake-user', 'diecutter', 'master')
+                    self.assertTrue(
+                        os.path.exists(os.path.join(output_dir,
+                                                    'diecutter-master',
+                                                    'greetings.txt')))
