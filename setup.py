@@ -42,6 +42,6 @@ if __name__ == '__main__':  # Don't run setup() when we import this module.
           setup_requires=['PasteScript'],
           install_requires=REQUIREMENTS,
           entry_points={
-              'paste.app_factory': ['main = diecutter.wsgi.for_paste'],
+              'paste.app_factory': ['main = diecutter.wsgi:for_paste'],
           },
           paster_plugins=['pyramid'])
