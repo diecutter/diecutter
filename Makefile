@@ -18,7 +18,7 @@ PIP = $(VIRTUALENV_DIR)/bin/pip
 NOSE = $(BIN_DIR)/nosetests
 PYTHON = $(VIRTUALENV_DIR)/bin/python
 PROJECT = $(shell $(PYTHON) -c "import setup; print setup.NAME")
-DIECUTTER_PUBLIC_API = http://diecutter.alwaysdata.net/api
+DIECUTTER_PUBLIC_API = http://diecutter.io/api
 DIECUTTER_LOCAL_API = http://localhost:8106
 
 

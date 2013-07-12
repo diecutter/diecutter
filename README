@@ -29,14 +29,14 @@ GET raw content of a template:
 
 .. code-block:: text
 
-   $ curl -X GET http://diecutter.alwaysdata.net/api/greetings.txt
+   $ curl -X GET http://diecutter.io/api/greetings.txt
    {{ greetings|default('Hello') }} {{ name }}!
 
 POST data to the template and retrieve generated content:
 
 .. code-block:: text
 
-   $ curl -X POST -d name=world http://diecutter.alwaysdata.net/api/greetings.txt
+   $ curl -X POST -d name=world http://diecutter.io/api/greetings.txt
    Hello world!
 
 More examples in :doc:`demo` and :doc:`client/index`!
@@ -47,7 +47,7 @@ Ressources
 **********
 
 * Documentation: http://diecutter.readthedocs.org
-* Online demo: http://diecutter.alwaysdata.net
+* Online demo: http://diecutter.io
 * PyPI page: http://pypi.python.org/pypi/diecutter
 * Code repository: https://github.com/novagile/diecutter
 * Bugtracker: https://github.com/novagile/diecutter/issues

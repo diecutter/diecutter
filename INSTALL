@@ -36,7 +36,7 @@ Use `diecutter's online demo`_ to generate your local diecutter configuration:
 .. code-block:: sh
 
    # Adapt "YOUR_TEMPLATE_DIR"!
-   wget -O diecutter.ini --post-data "template_dir=YOUR_TEMPLATE_DIR" http://diecutter.alwaysdata.net/api/diecutter.ini
+   wget -O diecutter.ini --post-data "template_dir=YOUR_TEMPLATE_DIR" http://diecutter.io/api/diecutter.ini
 
 
 ***
@@ -70,4 +70,4 @@ You should get an "hello" with diecutter's version.
 
 .. _`Python`: http://python.org
 .. _`pip`: https://pypi.python.org/pypi/pip/
-.. _`diecutter's online demo`: http://diecutter.alwaysdata.net/
+.. _`diecutter's online demo`: http://diecutter.io/
