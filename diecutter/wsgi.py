@@ -7,6 +7,7 @@ from pyramid.paster import get_app, setup_logging
 from pyramid.path import DottedNameResolver
 
 import diecutter.settings
+import diecutter.service
 
 
 def for_modwsgi(settings_file, virtualenv_dir):
@@ -30,5 +31,5 @@ def for_paste(global_config, **settings):
     service_factory = DottedNameResolver().resolve(service_factory_path)
     service = service_factory()
     config.include("cornice")  # Diecutter uses Cornice.
-    diecutter.views.register_service(config, 'diecutter', service, '/')
+    diecutter.service.register_service(config, 'diecutter', service, '/')
     return config.make_wsgi_app()

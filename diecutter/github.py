@@ -8,7 +8,7 @@ import requests
 
 from diecutter.resources import FileResource, DirResource
 from diecutter.utils import temporary_directory, chdir, execute
-from diecutter.views import LocalService
+from diecutter.local import LocalService
 
 
 class GithubLoader(object):

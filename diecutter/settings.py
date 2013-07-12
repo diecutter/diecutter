@@ -3,7 +3,7 @@
 
 #: Default values for settings.
 defaults = {
-    'diecutter.service': 'diecutter.views.LocalService',
+    'diecutter.service': 'diecutter.local.LocalService',
 }
 
 

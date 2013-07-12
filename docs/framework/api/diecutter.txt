@@ -33,6 +33,14 @@ diecutter Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`local` Module
+-------------------
+
+.. automodule:: diecutter.local
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`resources` Module
 -----------------------
 
@@ -61,14 +69,6 @@ diecutter Package
 ------------------------
 
 .. automodule:: diecutter.validators
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-:mod:`views` Module
--------------------
-
-.. automodule:: diecutter.views
     :members:
     :undoc-members:
     :show-inheritance:
