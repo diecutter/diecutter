@@ -103,7 +103,6 @@ class GithubLoader(object):
             raise NotFound()
         return response.raw
 
-
     def github_targz_url(self, user, project, commit):
         """Return URL of Github archive.
 

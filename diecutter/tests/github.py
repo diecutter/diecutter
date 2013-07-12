@@ -10,6 +10,7 @@ except ImportError:
     import mock
 
 import pyramid.exceptions
+import requests
 
 import diecutter.github
 from diecutter.utils import chdir, execute, temporary_directory
@@ -98,3 +99,50 @@ class GithubLoaderTestCase(unittest.TestCase):
                         os.path.exists(os.path.join(output_dir,
                                                     'diecutter-master',
                                                     'greetings.txt')))
+
+    def test_github_targz_content(self):
+        """github_targz_content downloads and returns archive stream."""
+        with temporary_directory() as github_mock_dir:
+            archive_name = os.path.join(github_mock_dir, 'foo.tar.gz')
+            self.setup_targz(archive_name, 'diecutter', 'master')
+            with open(archive_name, 'r') as archive:
+                response_mock = mock.MagicMock()
+                response_mock.raw = archive
+                response_mock.status_code = 200
+                get_mock = mock.Mock(return_value=response_mock)
+                with mock.patch('diecutter.github.requests.get', new=get_mock):
+                    with temporary_directory() as output_dir:
+                        loader = diecutter.github.GithubLoader(output_dir)
+                        content = loader.github_targz_content('fake-url')
+                        self.assertTrue(archive is content)
+
+    def test_github_targz_error(self):
+        """github_targz_content raises requests exceptions."""
+        with temporary_directory() as github_mock_dir:
+            archive_name = os.path.join(github_mock_dir, 'foo.tar.gz')
+            self.setup_targz(archive_name, 'diecutter', 'master')
+            get_mock = mock.Mock(
+                side_effect=requests.exceptions.ConnectionError)
+            with mock.patch('diecutter.github.requests.get', new=get_mock):
+                with temporary_directory() as output_dir:
+                    loader = diecutter.github.GithubLoader(output_dir)
+                    self.assertRaises(
+                        requests.exceptions.ConnectionError,
+                        loader.github_targz_content,
+                        'fake-url')
+
+    def test_github_targz_content_not_found(self):
+        """github_targz_content raises NotFound if Github returns 404."""
+        with temporary_directory() as github_mock_dir:
+            archive_name = os.path.join(github_mock_dir, 'foo.tar.gz')
+            self.setup_targz(archive_name, 'diecutter', 'master')
+            response_mock = mock.MagicMock()
+            response_mock.status_code = 404
+            get_mock = mock.Mock(return_value=response_mock)
+            with mock.patch('diecutter.github.requests.get', new=get_mock):
+                with temporary_directory() as output_dir:
+                    loader = diecutter.github.GithubLoader(output_dir)
+                    self.assertRaises(
+                        pyramid.exceptions.NotFound,
+                        loader.github_targz_content,
+                        'fake-url')
