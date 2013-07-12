@@ -82,10 +82,8 @@ diecutter server. Adapt the following setup to your needs:
 
    import diecutter.tests
 
-   template_dir = diecutter.tests.demo_template_dir()
-   settings = diecutter.tests.settings(template_dir)
-   application = diecutter.tests.wsgi_application(settings)
-   diecutter_server = diecutter.tests.wsgi_server(application)
+   # Serve demo project.
+   diecutter_server = diecutter.tests.demo_server()
 
 .. testcleanup::
 

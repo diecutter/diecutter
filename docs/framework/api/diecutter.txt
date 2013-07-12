@@ -49,6 +49,14 @@ diecutter Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`settings` Module
+----------------------
+
+.. automodule:: diecutter.settings
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`validators` Module
 ------------------------
 
@@ -69,6 +77,14 @@ diecutter Package
 ---------------------
 
 .. automodule:: diecutter.writers
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`wsgi` Module
+------------------
+
+.. automodule:: diecutter.wsgi
     :members:
     :undoc-members:
     :show-inheritance:

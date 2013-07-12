@@ -4,7 +4,7 @@ import os
 
 from webtest.http import StopableWSGIServer
 
-import diecutter.service
+import diecutter.wsgi
 
 
 def demo_template_dir():
@@ -16,24 +16,17 @@ def demo_template_dir():
     return os.path.normpath(os.path.join(demo_dir, 'templates'))
 
 
-def settings(template_dir):
-    """Shortcut to get diecutter settings for use in WSGI application."""
-    return {'diecutter.template_dir': template_dir}
-
-
-def wsgi_application(settings={}):
-    """Return diecutter WSGI application for tests.
-
-    Uses WebTest.
-
-    """
-    global_config = {}
-    application = diecutter.service.main(global_config, **settings)
-    return application
-
-
-def wsgi_server(application):
+def webtest_server(application):
     """Return (running) WebTest's StopableWSGIServer for application."""
     server = StopableWSGIServer.create(application)
     server.wait()
     return server
+
+
+def demo_server():
+    """Return (running) WebTest's StopableWSGIServer for demo."""
+    template_dir = demo_template_dir()
+    settings = {'diecutter.template_dir': template_dir}
+    global_settings = {}
+    application = diecutter.wsgi.for_paste(global_settings, **settings)
+    return webtest_server(application)
