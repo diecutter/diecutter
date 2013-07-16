@@ -99,16 +99,15 @@ Now let's render the directory as an archive:
    $ curl -X POST \
           -d name=Remy -d greetings=hello -d greetings=goodbye \
           http://localhost:8106/dynamic-greetings \
-          > dynamic-greetings.zip
-   $ unzip dynamic-greetings.zip
+          | tar -zxv
    $ tree dynamic-greetings
    dynamic-greetings
    ├── hello.txt
    └── goodbye.txt
-    
    0 directory, 2 files
 
    $ cat hello.txt
    hello Remy!
+
    $ cat goodbye.txt
    goodbye Remy!

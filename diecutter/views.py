@@ -155,7 +155,16 @@ def get_writers(request, resource, context):
         # Aliases.
         mime_type_map['application/x-gzip'] = mime_type_map['application/gzip']
         # Fallback.
-        mime_type_map['*/*'] = mime_type_map['application/zip']
+        settings = request.registry.settings
+        try:
+            default_type = settings['diecutter.default_archive_type']
+        except KeyError:
+            default_type = 'application/gzip'
+        if default_type not in mime_type_map.keys():
+            raise ConfigurationError(
+                'Cannot use "%s" as "default_archive_type". Supported types '
+                'are: %s' % (default_type, ','.join(mime_type_map.keys())))
+        mime_type_map['*/*'] = mime_type_map[default_type]
         for accepted_mime_type in accepted_mime_types:
             try:
                 return mime_type_map[accepted_mime_type]
