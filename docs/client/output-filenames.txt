@@ -20,13 +20,8 @@ The variables within ``+`` will be resolved and replaced by their value:
 
 .. code-block:: text
 
-   $ curl -X POST -d bar=baz http://localhost:8106/foo > foo.zip
-   $ unzip foo.zip
-   $ tree foo
-   foo
-   └── baz.txt
-
-   0 directories, 1 file
+   $ curl -X POST -d bar=baz http://localhost:8106/foo | tar -zt
+   foo/baz.txt
 
 .. note::
 

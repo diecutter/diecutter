@@ -159,25 +159,26 @@ GET lists the templates it contains:
 Every template in a directory can be handled as a single file. But let's focus
 on the directory feature...
 
-POST returns an archive, with ZIP format by default:
+POST returns an archive, with TAR.GZ format by default:
 
 .. doctest::
 
-   >>> from StringIO import StringIO
-   >>> from zipfile import ZipFile
+   >>> django_project_url = diecutter_url + '+django_project+'
 
+   >>> from StringIO import StringIO
+   >>> import tarfile
    >>> response = requests.post(django_project_url,
    ...                          {'django_project': u'demo'})
-   >>> print response.headers['Content-Type']
-   application/zip; charset=UTF-8
-   >>> zip_file = ZipFile(StringIO(response.content))
-   >>> print '\n'.join(zip_file.namelist())
+   >>> response.headers['Content-Type']
+   'application/gzip; charset=UTF-8'
+   >>> archive = tarfile.open(fileobj=StringIO(response.content), mode='r|gz')
+   >>> print '\n'.join(archive.getnames())
    demo/manage.py
    demo/demo/__init__.py
    demo/demo/settings.py
    demo/demo/urls.py
    demo/demo/wsgi.py
-   >>> zip_file.close()
+   >>> archive.close()
 
 Without trailing slash, directory name is used as a prefix for filenames.
 Let's try the same requests with a trailing slash:
@@ -196,36 +197,33 @@ Let's try the same requests with a trailing slash:
 
    >>> response = requests.post(django_project_url,
    ...                          {'django_project': u'demo'})
-   >>> zip_file = ZipFile(StringIO(response.content))
-   >>> print '\n'.join(zip_file.namelist())
+   >>> archive = tarfile.open(fileobj=StringIO(response.content), mode='r|gz')
+   >>> print '\n'.join(archive.getnames())
    manage.py
    demo/__init__.py
    demo/settings.py
    demo/urls.py
    demo/wsgi.py
-   >>> zip_file.close()
+   >>> archive.close()
 
-You can get the content as a tar.gz archive instead with the "accept" header:
+You can get the content as a ZIP archive instead with the "accept" header:
 
 .. doctest::
 
-   >>> import tarfile
+   >>> from zipfile import ZipFile
    >>> response = requests.post(django_project_url,
    ...                          {'django_project': u'demo'},
-   ...                          headers={'accept': 'application/gzip'})
-   >>> response.headers['Content-Type']
-   'application/gzip; charset=UTF-8'
-   >>> response_file = StringIO(response.content)
-   >>> try:
-   ...     archive = tarfile.open(fileobj=response_file, mode='r|gz')
-   ...     print '\n'.join(archive.getnames())
-   ... finally:
-   ...     archive.close()
+   ...                          headers={'accept': 'application/zip'})
+   >>> print response.headers['Content-Type']
+   application/zip; charset=UTF-8
+   >>> archive = ZipFile(StringIO(response.content))
+   >>> print '\n'.join(archive.namelist())
    manage.py
    demo/__init__.py
    demo/settings.py
    demo/urls.py
    demo/wsgi.py
+   >>> archive.close()
 
 .. tip::
 
@@ -327,15 +325,15 @@ resource:
    >>> response = requests.post(dynamic_tree_url,
    ...                          {'name': u'Remy',
    ...                           'greeting_list': [u'bonjour', u'bonsoir']})
-   >>> zip_file = ZipFile(StringIO(response.content))
-   >>> print '\n'.join(zip_file.namelist())
+   >>> archive = tarfile.open(fileobj=StringIO(response.content), mode='r:gz')
+   >>> print '\n'.join(archive.getnames())
    bonjour.txt
    bonsoir.txt
-   >>> print zip_file.read('bonjour.txt')
+   >>> print archive.extractfile('bonjour.txt').read()
    bonjour Remy!
-   >>> print zip_file.read('bonsoir.txt')
+   >>> print archive.extractfile('bonsoir.txt').read()
    bonsoir Remy!
-   >>> zip_file.close()
+   >>> archive.close()
 
 Here, the :file:`greeter.txt` template has been rendered several times, with
 different context data.

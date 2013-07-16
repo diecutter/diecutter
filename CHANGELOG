@@ -9,6 +9,9 @@ New feature (tar.gz archives) and marketing (talks).
 - Feature #4 - Added support of "accept" header for POST requests on
   directories: accepted types are ZIP (``application/zip``) and TAR.GZ
   (``application/gzip``).
+- Feature #53 - GZIP is now the default archive format when rendering
+  directories. Use "diecutter.default_archive_type = application/zip" in
+  configuration file if you need ZIP format as a default.
 - Refactoring #20 - Render functions return generator ; moved response
   composition (file/archive) into views via writers.
 - Feature #46 - Added content of talks in documentation: AFPY event and

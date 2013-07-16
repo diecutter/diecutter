@@ -3,6 +3,7 @@
 import os
 import unittest
 import zipfile
+import tarfile
 
 from webtest import TestApp, Upload
 
@@ -117,8 +118,8 @@ class FunctionalTestCase(unittest.TestCase):
         # Check content.
         self.assertEqual(response.body, "Hello world!")
 
-    def test_post_directory(self):
-        """POST context for directory returns ZIP file content."""
+    def test_post_directory_targz(self):
+        """POST context for directory returns TAR.GZ file content."""
         # Setup.
         dir_path = os.path.join(self.template_dir.path, 'dummy')
         os.mkdir(dir_path)
@@ -130,6 +131,34 @@ class FunctionalTestCase(unittest.TestCase):
                 open(file_path, 'w').write(content)
         # Perform request.
         response = self.app.post('/dummy/', {'foo': 'bar'}, status=200)
+        # Check content.
+        filename = os.path.join(self.template_dir.path, 'response.zip')
+        open(filename, 'w').write(response.body)
+        self.assertTrue(tarfile.is_tarfile(filename))
+        try:
+            archive = tarfile.open(filename, mode='r:gz')
+            self.assertEqual(archive.getnames(),
+                             ['a/one', 'a/two', 'b/one', 'b/two'])
+            self.assertEqual(archive.extractfile('a/one').read(),
+                             'Content of a/one: bar')
+        finally:
+            archive.close()
+
+    def test_post_directory_zip(self):
+        """POST context for directory with accept header returns ZIP file."""
+        # Setup.
+        dir_path = os.path.join(self.template_dir.path, 'dummy')
+        os.mkdir(dir_path)
+        for dir_name in ('a', 'b'):
+            os.mkdir(os.path.join(dir_path, dir_name))
+            for file_name in ('one', 'two'):
+                file_path = os.path.join(dir_path, dir_name, file_name)
+                content = "Content of %s/%s: {{ foo }}" % (dir_name, file_name)
+                open(file_path, 'w').write(content)
+        # Perform request.
+        response = self.app.post('/dummy/', {'foo': 'bar'},
+                                 headers={'accept': 'application/zip'},
+                                 status=200)
         # Check content.
         zip_filename = os.path.join(self.template_dir.path, 'response.zip')
         open(zip_filename, 'w').write(response.body)
