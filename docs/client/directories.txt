@@ -85,3 +85,36 @@ All files in directory are rendered with the same context data.
 
 Like with `GET`_, the trailing slash affects filenames: without trailing slash,
 filenames are prefixed with directory name.
+
+Supported archives types: "accept" header
+=========================================
+
+By default, POST requests return ZIP archives.
+
+You can get the content as a tar.gz archive with the "accept" header:
+
+.. code:: text
+
+   $ curl -s -X POST --header "accept:application/gzip" -d django_project=demo http://localhost:8106/+django_project+/ | tar -zt
+   manage.py
+   demo/__init__.py
+   demo/settings.py
+   demo/urls.py
+   demo/wsgi.py 
+
+.. tip::
+
+   You can see all supported "accept" headers by requesting an unknown mime
+   type:
+
+   .. code:: text
+
+      $ curl -X POST --header "accept:fake/mime-type" -d django_project=demo http://localhost:8106/+django_project+/
+      406 Not Acceptable
+
+      The server could not comply with the request since it is either malformed or
+      otherwise incorrect.
+
+
+      Supported mime types: */*, application/gzip, application/x-gzip,
+      application/zip

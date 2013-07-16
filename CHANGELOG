@@ -4,7 +4,17 @@ Changelog
 0.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
+New feature (tar.gz archives) and marketing (talks).
+
+- Feature #4 - Added support of "accept" header for POST requests on
+  directories: accepted types are ZIP (``application/zip``) and TAR.GZ
+  (``application/gzip``).
+- Refactoring #20 - Render functions return generator ; moved response
+  composition (file/archive) into views via writers.
+- Feature #46 - Added content of talks in documentation: AFPY event and
+  EuroPython 2013.
+
+See also `milestone 0.4 on bugtracker`_.
 
 
 0.3 (2013-04-16)
@@ -22,6 +32,9 @@ New features, documentation, bugfixes.
 - Feature #23 - Added diecutter's Sphinx documentation.
 - Feature #10 - Added dynamic tree template.
 
+See also `milestone 0.3 on bugtracker`_.
+
+
 0.2 (2013-02-22)
 ----------------
 
@@ -30,6 +43,9 @@ Maintenance release, implementation refactoring, tests.
 - Refactoring #22 - Added tests.
 - Bug #17 - Sort directories alphabetically.
 - Bug #13 - Fixed "diecutter.readonly" which was always ``True``.
+
+See also `milestone 0.2 on bugtracker`_.
+
 
 0.1 (2013-01-29)
 ----------------
@@ -45,3 +61,19 @@ Initial release.
   data such as "diecutter.api_url", "diecutter.version" and "diecutter.now".
 - Feature - Diecutter service renders directories as ZIP archives.
 - Feature - Diecutter service renders files.
+
+See also `milestone 0.1 on bugtracker`_.
+
+
+.. rubric:: Notes & references
+
+.. target-notes::
+
+.. _`milestone 0.4 on bugtracker`:
+   https://github.com/novagile/diecutter/issues?milestone=7&state=closed 
+.. _`milestone 0.3 on bugtracker`:
+   https://github.com/novagile/diecutter/issues?milestone=6&state=closed 
+.. _`milestone 0.2 on bugtracker`:
+   https://github.com/novagile/diecutter/issues?milestone=2&state=closed 
+.. _`milestone 0.1 on bugtracker`:
+   https://github.com/novagile/diecutter/issues?milestone=1&state=closed 
