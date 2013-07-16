@@ -44,7 +44,7 @@ Setup a development environment
 
 System requirements:
 
-* `Python`_ version 2.6 or 2.7, available as ``python`` command.
+* `Python`_ version 2.7, available as ``python`` command.
   
   .. note::
 

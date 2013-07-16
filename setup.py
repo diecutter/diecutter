@@ -26,7 +26,7 @@ if __name__ == '__main__':  # Don't run setup() when we import this module.
           description='Templates as a service',
           long_description=README,
           classifiers=['Development Status :: 3 - Alpha',
-                       "Programming Language :: Python",
+                       "Programming Language :: Python :: 2.7",
                        "Framework :: Pylons",
                        "Topic :: Internet :: WWW/HTTP",
                        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",

@@ -12,6 +12,8 @@ New feature (tar.gz archives) and marketing (talks).
 - Feature #53 - GZIP is now the default archive format when rendering
   directories. Use "diecutter.default_archive_type = application/zip" in
   configuration file if you need ZIP format as a default.
+- Refactoring #55 - Dropped support of Python 2.6. Tests are run against Python
+  2.7 only.
 - Refactoring #20 - Render functions return generator ; moved response
   composition (file/archive) into views via writers.
 - Feature #46 - Added content of talks in documentation: AFPY event and
