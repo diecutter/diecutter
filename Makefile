@@ -5,19 +5,21 @@ ROOT_DIR = $(shell pwd)
 BIN_DIR = $(ROOT_DIR)/bin
 DATA_DIR = $(ROOT_DIR)/var
 WGET = wget
-PYTHON = $(shell which python)
-PROJECT = $(shell $(PYTHON) -c "import setup; print setup.NAME")
 BUILDOUT_CFG = $(ROOT_DIR)/etc/buildout.cfg
 BUILDOUT_DIR = $(ROOT_DIR)/lib/buildout
-BUILDOUT_VERSION = 1.7.1
+BUILDOUT_VERSION = 2.2.0
 BUILDOUT_BOOTSTRAP_URL = https://raw.github.com/buildout/buildout/$(BUILDOUT_VERSION)/bootstrap/bootstrap.py
 BUILDOUT_BOOTSTRAP = $(BUILDOUT_DIR)/bootstrap.py
-BUILDOUT_BOOTSTRAP_ARGS = -c $(BUILDOUT_CFG) --version=$(BUILDOUT_VERSION) --distribute buildout:directory=$(ROOT_DIR)
+BUILDOUT_BOOTSTRAP_ARGS = -c $(BUILDOUT_CFG) --version=$(BUILDOUT_VERSION) buildout:directory=$(ROOT_DIR)
 BUILDOUT = $(BIN_DIR)/buildout
 BUILDOUT_ARGS = -N -c $(BUILDOUT_CFG) buildout:directory=$(ROOT_DIR)
+VIRTUALENV_DIR = $(ROOT_DIR)/lib/virtualenv
+PIP = $(VIRTUALENV_DIR)/bin/pip
+NOSE = $(BIN_DIR)/nosetests
+PYTHON = $(VIRTUALENV_DIR)/bin/python
+PROJECT = $(shell $(PYTHON) -c "import setup; print setup.NAME")
 DIECUTTER_PUBLIC_API = http://diecutter.alwaysdata.net/api
 DIECUTTER_LOCAL_API = http://localhost:8106
-NOSE = $(BIN_DIR)/nosetests
 
 
 configure:
@@ -28,7 +30,13 @@ configure:
 develop: buildout
 
 
-buildout:
+py27:
+	virtualenv --no-site-packages $(VIRTUALENV_DIR)
+	$(PIP) install pip==1.3.1
+	$(PIP) install setuptools==0.8
+
+
+buildout: py27
 	if [ ! -d $(BUILDOUT_DIR) ]; then mkdir -p $(BUILDOUT_DIR); fi
 	if [ ! -f $(BUILDOUT_BOOTSTRAP) ]; then wget -O $(BUILDOUT_BOOTSTRAP) $(BUILDOUT_BOOTSTRAP_URL); fi
 	if [ ! -x $(BUILDOUT) ]; then $(PYTHON) $(BUILDOUT_BOOTSTRAP) $(BUILDOUT_BOOTSTRAP_ARGS); fi
@@ -56,7 +64,7 @@ test: test-app test-documentation
 
 
 test-app:
-	$(NOSE) --config=etc/nose.cfg diecutter
+	$(NOSE) --config=etc/nose.cfg $(PROJECT)
 	rm $(ROOT_DIR)/.coverage
 
 
