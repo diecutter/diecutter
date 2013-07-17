@@ -54,7 +54,7 @@ Run:
    curl -X POST  \
         -d django_project=demo  \
         -H accept:application/zip \
-        http://diecutter.alwaysdata.net/api/+django_project+/
+        http://diecutter.io/api/+django_project+/
 
 You get:
 
@@ -72,7 +72,7 @@ Run:
 
 .. code:: sh
 
-   firefox http://diecutter.alwaysdata.net/sphinx-docs.html
+   firefox http://diecutter.io/sphinx-docs.html
 
 You get:
 
