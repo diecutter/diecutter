@@ -60,12 +60,16 @@ serve:
 	$(BIN_DIR)/pserve $(ROOT_DIR)/etc/diecutter.ini --reload
 
 
-test: test-app test-documentation
+test: test-app test-pep8 test-documentation
 
 
 test-app:
 	$(NOSE) --config=etc/nose.cfg $(PROJECT)
 	rm $(ROOT_DIR)/.coverage
+
+
+test-pep8:
+	$(BIN_DIR)/flake8 $(PROJECT)
 
 
 test-documentation:
