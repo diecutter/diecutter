@@ -8,7 +8,6 @@ try:
     from unittest import mock
 except:
     import mock
-import zipfile
 
 from diecutter import resources
 from diecutter.engines.mock import MockEngine

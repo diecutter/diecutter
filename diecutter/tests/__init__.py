@@ -13,7 +13,6 @@ class temporary_directory(object):
     """Create, yield, and finally delete a temporary directory.
 
     >>> from diecutter.tests import temporary_directory
-    >>> import os
     >>> with temporary_directory() as directory:
     ...     os.path.isdir(directory)
     True

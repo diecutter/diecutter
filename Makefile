@@ -60,20 +60,27 @@ serve:
 	$(BIN_DIR)/pserve $(ROOT_DIR)/etc/diecutter.ini --reload
 
 
-test: test-app test-documentation
+test: test-app test-pep8 test-documentation
 
 
 test-app:
-	$(NOSE) --config=etc/nose.cfg $(PROJECT)
-	rm $(ROOT_DIR)/.coverage
+	$(NOSE) --config=etc/nose.cfg --config=etc/nose-app.cfg $(PROJECT)
+	mv $(ROOT_DIR)/.coverage $(ROOT_DIR)/var/test/app.coverage
+
+
+test-pep8:
+	$(BIN_DIR)/flake8 $(PROJECT)
 
 
 test-documentation:
 	$(NOSE) -c $(ROOT_DIR)/etc/nose.cfg sphinxcontrib.testbuild.tests
-	rm $(ROOT_DIR)/.coverage
 
 
-documentation: sphinx-apidoc sphinx-html
+documentation: sphinx-doctest sphinx-apidoc sphinx-html
+
+
+sphinx-doctest: sphinx-apidoc-clean
+	make --directory=docs clean doctest
 
 
 # Remove auto-generated API documentation files.
@@ -81,15 +88,17 @@ documentation: sphinx-apidoc sphinx-html
 # is set to True in Sphinx configuration file.
 sphinx-apidoc-clean:
 	find docs/framework/api/ -type f \! -name "index.txt" -delete
+	echo -e "Modules\n=======" > $(ROOT_DIR)/docs/framework/api/modules.txt
 
 
 sphinx-apidoc: sphinx-apidoc-clean
+	rm $(ROOT_DIR)/docs/framework/api/modules.txt
 	$(BIN_DIR)/sphinx-apidoc --suffix txt --output-dir $(ROOT_DIR)/docs/framework/api $(PROJECT)
 
 
 sphinx-html:
 	if [ ! -d docs/_static ]; then mkdir docs/_static; fi
-	make --directory=docs clean html doctest
+	make --directory=docs clean html
 
 
 generate-documentation:
