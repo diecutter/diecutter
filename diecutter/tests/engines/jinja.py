@@ -2,7 +2,7 @@
 """Tests around diecutter.engines.jinja."""
 import unittest
 
-from diecutter.engines.jinja import Jinja2Engine
+from diecutter.engines import Jinja2Engine
 from diecutter.exceptions import TemplateError
 
 

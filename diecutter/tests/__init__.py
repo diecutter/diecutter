@@ -51,7 +51,7 @@ def demo_template_dir():
 
 def settings(template_dir):
     """Shortcut to get diecutter settings for use in WSGI application."""
-    return {'diecutter.template_dir': template_dir}
+    return {'diecutter.template_dir': template_dir, 'diecutter.template_engine': 'Jinja2Engine', 'diecutter.filename_template_engine': 'FilenameEngine'}
 
 
 def wsgi_application(settings={}):

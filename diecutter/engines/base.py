@@ -9,7 +9,7 @@ class Engine(object):
 
     Subclasses must implement :py:meth:`render`:
 
-    >>> from diecutter.engines import Engine
+    >>> from diecutter.engines.base import Engine
     >>> engine = Engine()
     >>> engine.render('fake-template', {'fake': 1})  # Doctest: +ELLIPSIS
     Traceback (most recent call last):
