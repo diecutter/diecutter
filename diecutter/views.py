@@ -9,11 +9,11 @@ from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
 from pyramid.httpexceptions import HTTPNotImplemented, HTTPNotAcceptable
 from webob.acceptparse import MIMENilAccept
 
-from . import __version__ as VERSION
-from . import engines
-from . import resources
-from .contextextractors import extract_context
-from .validators import token_validator
+from diecutter import __version__ as VERSION
+from diecutter import engines
+from diecutter import resources
+from diecutter.contextextractors import extract_context
+from diecutter.validators import token_validator
 
 
 logger = logging.getLogger(__name__)

@@ -5,8 +5,8 @@ import os
 from jinja2 import Environment
 from jinja2.exceptions import UndefinedError, TemplateSyntaxError
 
-from .base import Engine
-from ..exceptions import TemplateError
+from diecutter.engines.base import Engine
+from diecutter.exceptions import TemplateError
 
 
 def path_join(*args, **kwargs):
