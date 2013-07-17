@@ -1,5 +1,5 @@
 """Template engine specialized to render filenames."""
-from diecutter.engines import Engine
+from diecutter.engines.base import Engine
 
 
 class FilenameEngine(Engine):
