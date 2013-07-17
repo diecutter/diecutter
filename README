@@ -10,6 +10,16 @@ generated files**.
 
 Files and directories are supported. Directories are rendered as archives.
 
+.. note::
+
+   Diecutter is under active development: some (killer) features have not been
+   implemented yet, or they are not mature.
+   Check `milestones <https://github.com/novagile/diecutter/issues/milestones>`_
+   and `vision <https://diecutter.readthedocs.org/en/latest/about/vision.html>`_
+   for details.
+
+   That said, features documented below actually work, so **give it a try!**
+
 
 *******
 Example
