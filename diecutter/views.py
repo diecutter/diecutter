@@ -9,11 +9,11 @@ from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
 from pyramid.httpexceptions import HTTPNotImplemented, HTTPNotAcceptable
 from webob.acceptparse import MIMENilAccept
 
-from diecutter import __version__ as VERSION
-import diecutter.engines
-from diecutter import resources
-from diecutter.contextextractors import extract_context
-from diecutter.validators import token_validator
+from . import __version__ as VERSION
+from . import engines
+from . import resources
+from .contextextractors import extract_context
+from .validators import token_validator
 
 
 logger = logging.getLogger(__name__)
@@ -64,8 +64,8 @@ def get_resource(request):
     """
     path = get_resource_path(request)
 
-    engine          = getattr(diecutter.engines, request.registry.settings['diecutter.template_engine'])()
-    filename_engine = getattr(diecutter.engines, request.registry.settings['diecutter.filename_template_engine'])()
+    engine          = getattr(engines, request.registry.settings['diecutter.template_engine'])()
+    filename_engine = getattr(engines, request.registry.settings['diecutter.filename_template_engine'])()
 
     if isdir(path):
         resource = resources.DirResource(path=path, engine=engine,
