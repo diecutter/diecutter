@@ -3,18 +3,19 @@
 
 from __future__ import absolute_import
 
+from django.template import Template, Context, TemplateSyntaxError
 from django.conf import settings
+
+from .base import Engine
+from ..exceptions import TemplateError
+
 settings.configure()
-from django.template.loader import render_to_string
-
-from diecutter.engines.base import Engine
-from diecutter.exceptions import TemplateError
-
 
 class DjangoEngine(Engine):
     """Django template engine."""
     def render(self, template, context):
         """Return the rendered template against context."""
-        # FIXME: Template syntax error.
-        # FIXME: If Django is not installed.
-        return render_to_string(template, context)
+        try:
+            return Template(template).render(Context(context))
+        except TemplateSyntaxError as e:
+            raise TemplateError(e)
