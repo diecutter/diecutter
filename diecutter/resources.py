@@ -3,8 +3,6 @@
 import json
 import os
 from os.path import basename, isdir, isfile, join, normpath, relpath, sep
-import zipfile
-from cStringIO import StringIO
 
 from diecutter.exceptions import TemplateError
 

@@ -11,10 +11,12 @@ class Engine(object):
 
     >>> from diecutter.engines import Engine
     >>> engine = Engine()
-    >>> engine.render('fake-template', {'fake': 1})  # Doctest: +ELLIPSIS
+    >>> engine.render('fake-template', {'fake': 1})
+    ... # doctest: +ELLIPSIS, +NORMALIZE_WHITESPACE
     Traceback (most recent call last):
       ...
-    NotImplementedError: Subclasses of "diecutter.engines.Engine" must implement render() method.
+    NotImplementedError: Subclasses of "diecutter.engines.Engine" must
+    implement render() method.
 
     """
     def render(self, template, context):

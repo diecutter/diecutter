@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Mock template engine, for use in tests."""
 from diecutter.engines import Engine
-from diecutter.exceptions import TemplateError
 
 
 #: Default value used as :py:attr:`MockEngine.render_result`
