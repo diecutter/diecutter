@@ -17,7 +17,8 @@ class FunctionalTestCase(unittest.TestCase):
         global_config = {}
         self.template_dir = temporary_directory()
         self.template_dir.__enter__()
-        application = diecutter.main(global_config, **settings(self.template_dir.path))
+        application = diecutter.main(global_config,
+                                     **settings(self.template_dir.path))
         self.app = TestApp(application)
 
     def tearDown(self):
