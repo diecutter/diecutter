@@ -4,10 +4,10 @@
 # because our file is also called django.py
 from __future__ import absolute_import 
 
-from django.template import Template, Context, TemplateSyntaxError
 from django.conf import settings
+from django.template import Template, Context, TemplateSyntaxError
 
-from diecutter.engines.base import Engine
+from diecutter.engines import Engine
 from diecutter.exceptions import TemplateError
 
 settings.configure()

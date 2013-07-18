@@ -2,7 +2,7 @@
 """Tests around diecutter.engines.django."""
 import unittest
 
-from diecutter.engines import DjangoEngine
+from diecutter.engines.django import DjangoEngine
 from diecutter.exceptions import TemplateError
 
 

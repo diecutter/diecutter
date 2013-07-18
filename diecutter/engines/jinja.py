@@ -5,7 +5,7 @@ import os
 from jinja2 import Environment
 from jinja2.exceptions import UndefinedError, TemplateSyntaxError
 
-from diecutter.engines.base import Engine
+from diecutter.engines import Engine
 from diecutter.exceptions import TemplateError
 
 
