@@ -54,7 +54,8 @@ def settings(template_dir):
     return {
         'diecutter.template_dir': template_dir,
         'diecutter.template_engine': 'diecutter.engines.jinja:Jinja2Engine',
-        'diecutter.filename_template_engine': 'diecutter.engines.filename:FilenameEngine'
+        'diecutter.filename_template_engine':
+        'diecutter.engines.filename:FilenameEngine'
     }
 
 

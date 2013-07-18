@@ -67,7 +67,8 @@ def get_resource(request):
     config = Configurator(settings)
 
     engine = config.maybe_dotted(settings['diecutter.template_engine'])()
-    filename_engine = config.maybe_dotted(settings['diecutter.filename_template_engine'])()
+    filename_engine = config.maybe_dotted(
+        settings['diecutter.filename_template_engine'])()
 
     if isdir(path):
         resource = resources.DirResource(path=path, engine=engine,
