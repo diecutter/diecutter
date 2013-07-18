@@ -7,11 +7,10 @@ from os.path import join, abspath, dirname, exists, isdir, normpath
 from cornice import Service
 from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
 from pyramid.httpexceptions import HTTPNotImplemented, HTTPNotAcceptable
+from pyramid.config import Configurator
 from webob.acceptparse import MIMENilAccept
 
 from diecutter import __version__ as VERSION
-from diecutter.engines.filename import FilenameEngine
-from diecutter.engines.jinja import Jinja2Engine
 from diecutter import resources
 from diecutter.contextextractors import extract_context
 from diecutter.validators import token_validator
@@ -64,8 +63,13 @@ def get_resource(request):
 
     """
     path = get_resource_path(request)
-    engine = Jinja2Engine()
-    filename_engine = FilenameEngine()
+    settings = request.registry.settings
+    config = Configurator(settings)
+
+    engine = config.maybe_dotted(settings['diecutter.template_engine'])()
+    filename_engine = config.maybe_dotted(
+        settings['diecutter.filename_template_engine'])()
+
     if isdir(path):
         resource = resources.DirResource(path=path, engine=engine,
                                          filename_engine=filename_engine)

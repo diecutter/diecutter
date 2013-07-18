@@ -15,6 +15,7 @@ REQUIREMENTS = ['setuptools',
                 'PasteScript',
                 'PasteDeploy',
                 'waitress',
+                'django',
                 'Jinja2',
                 'mock',
                 'webtest']

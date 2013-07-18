@@ -8,7 +8,7 @@ import tarfile
 from webtest import TestApp, Upload
 
 import diecutter
-from diecutter.tests import temporary_directory
+from diecutter.tests import temporary_directory, settings
 
 
 class FunctionalTestCase(unittest.TestCase):
@@ -17,8 +17,8 @@ class FunctionalTestCase(unittest.TestCase):
         global_config = {}
         self.template_dir = temporary_directory()
         self.template_dir.__enter__()
-        settings = {'diecutter.template_dir': self.template_dir.path}
-        application = diecutter.main(global_config, **settings)
+        application = diecutter.main(global_config,
+                                     **settings(self.template_dir.path))
         self.app = TestApp(application)
 
     def tearDown(self):

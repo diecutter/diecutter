@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Template engines."""
+"""Base template engine (abstract)."""
 
 
 class Engine(object):

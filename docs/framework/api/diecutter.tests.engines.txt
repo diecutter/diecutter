@@ -9,6 +9,14 @@ engines Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`django` Module
+--------------------
+
+.. automodule:: diecutter.tests.engines.django
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`filename` Module
 ----------------------
 
