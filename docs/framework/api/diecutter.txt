@@ -25,10 +25,42 @@ diecutter Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`github` Module
+--------------------
+
+.. automodule:: diecutter.github
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`local` Module
+-------------------
+
+.. automodule:: diecutter.local
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 :mod:`resources` Module
 -----------------------
 
 .. automodule:: diecutter.resources
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`service` Module
+---------------------
+
+.. automodule:: diecutter.service
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+:mod:`settings` Module
+----------------------
+
+.. automodule:: diecutter.settings
     :members:
     :undoc-members:
     :show-inheritance:
@@ -57,6 +89,14 @@ diecutter Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`wsgi` Module
+------------------
+
+.. automodule:: diecutter.wsgi
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Subpackages
 -----------
 
@@ -64,4 +104,5 @@ Subpackages
 
     diecutter.engines
     diecutter.tests
+    diecutter.utils
 
