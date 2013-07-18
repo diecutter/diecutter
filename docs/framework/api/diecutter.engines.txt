@@ -9,14 +9,6 @@ engines Package
     :undoc-members:
     :show-inheritance:
 
-:mod:`base` Module
-------------------
-
-.. automodule:: diecutter.engines.base
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 :mod:`django` Module
 --------------------
 
