@@ -7,7 +7,7 @@ from diecutter.exceptions import TemplateError
 
 
 class DjangoTestCase(unittest.TestCase):
-    """Test diecutter.engines.jinja.Jinja2Engine."""
+    """Test diecutter.engines.django.DjangoEngine."""
     def test_render_noop(self):
         """DjangoEngine correctly renders ``Hello world!`` template."""
         engine = DjangoEngine()
