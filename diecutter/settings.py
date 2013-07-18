@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
 """Parse settings, set defaults."""
+from diecutter.engines.django import DjangoEngine
+from diecutter.engines.jinja import Jinja2Engine
+from diecutter.engines.filename import FilenameEngine
+
+#: Mapping between engine name and engines
+TEMPLATE_ENGINE_MAPPINGS = {
+    'django': DjangoEngine,
+    'jinja': Jinja2Engine,
+    'filename': FilenameEngine,
+}
 
 #: Default values for settings.
 defaults = {
     'diecutter.service': 'diecutter.local:LocalService',
-    'diecutter.template_engine': 'diecutter.engines.jinja:Jinja2Engine',
-    'diecutter.filename_template_engine': 'diecutter.engines.filename'
-                                          ':FilenameEngine',
+    'diecutter.template_engine': 'jinja',
+    'diecutter.filename_template_engine': 'filename',
 }
 
 
