@@ -41,7 +41,7 @@ class Service(object):
         if param_name.format('_') in request.headers:
             try:
                 engine_path = TEMPLATE_ENGINES_MAPPING[
-                        request.headers[param_name.format('_')]
+                    request.headers[param_name.format('_')]
                 ]
             except KeyError:
                 raise HTTPNotAcceptable('Supported template engines: %s'
