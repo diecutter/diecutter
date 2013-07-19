@@ -8,7 +8,15 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Features #27 and #28 - Experimental support of remote templates, where
+  templates are hosted in Github public repositories.
+- Features #57 and #29 - Public online SAAS at http://diecutter.io
+- Feature #66 - Introduced support of Django template engine. You can choose
+  the (unique) template engine with ``diecutter.template_engine`` configuration
+  directive. Default value is ``diecutter.engines.jinja:Jinja2Engine``.
+- Bug #60 - PyPI renders README as HTML (was plain text).
+- Bug #65 - Contributor guide mentions dependency to virtualenv (was missing).
+- Refactoring #68 - Code follows strict PEP8. Using flake8 in tests.
 
 
 0.4 (2013-07-17)
