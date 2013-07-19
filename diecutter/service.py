@@ -32,8 +32,9 @@ class Service(object):
         """Return the resource object (instance) matching request."""
         raise NotImplementedError()
 
-    def _get_settings_value(self, request, name):
+    def get_settings_value(self, request, name):
         """ Return the value of a setting named « name »
+
         WARNING: The value returned is to be considered unsafe,
                  as it can be set by the user."""
         if 'diecutter_{0}'.format(name) in request.headers:
@@ -45,7 +46,7 @@ class Service(object):
 
     def get_engine(self, request):
         """Return configured template engine to render templates."""
-        engine_name = self._get_settings_value(request, 'template_engine')
+        engine_name = self.get_settings_value(request, 'template_engine')
         if engine_name not in TEMPLATE_ENGINE_MAPPINGS:
             raise HTTPNotAcceptable('Supported template engines: %s'
                                     % ', '.join(sorted(
@@ -59,8 +60,8 @@ class Service(object):
         This is not used for dynamic trees.
 
         """
-        engine_name = self._get_settings_value(request,
-                                               'filename_template_engine')
+        engine_name = self.get_settings_value(request,
+                                              'filename_template_engine')
         if engine_name not in TEMPLATE_ENGINE_MAPPINGS:
             raise HTTPNotAcceptable('Supported template engines: %s'
                                     % ', '.join(sorted(
