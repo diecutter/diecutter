@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
 """Parse settings, set defaults."""
-from diecutter.engines.django import DjangoEngine
-from diecutter.engines.jinja import Jinja2Engine
-from diecutter.engines.filename import FilenameEngine
 
-#: Mapping between engine name and engines
-TEMPLATE_ENGINE_MAPPINGS = {
-    'django': DjangoEngine,
-    'jinja': Jinja2Engine,
-    'filename': FilenameEngine,
+#: Mapping between engine name and engines.
+#: Used when getting the engine name from the user.
+TEMPLATE_ENGINES_MAPPING = {
+    'django': 'diecutter.engines.django:DjangoEngine',
+    'jinja2': 'diecutter.engines.jinja:Jinja2Engine',
+    'filename': 'diecutter.engines.filename:FilenameEngine',
 }
 
 #: Default values for settings.
