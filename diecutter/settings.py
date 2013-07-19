@@ -12,8 +12,9 @@ TEMPLATE_ENGINES_MAPPING = {
 #: Default values for settings.
 DEFAULTS = {
     'diecutter.service': 'diecutter.local:LocalService',
-    'diecutter.template_engine': 'jinja',
-    'diecutter.filename_template_engine': 'filename',
+    'diecutter.template_engine': 'diecutter.engines.jinja:Jinja2Engine',
+    'diecutter.filename_template_engine':
+    'diecutter.engines.filename:FilenameEngine',
 }
 
 
