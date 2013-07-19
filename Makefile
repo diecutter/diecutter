@@ -64,12 +64,12 @@ test: test-app test-pep8 test-documentation
 
 
 test-app:
-	$(NOSE) --config=etc/nose.cfg --config=etc/nose-app.cfg $(PROJECT)
+	$(NOSE) --config=etc/nose.cfg --config=etc/nose-app.cfg $(PROJECT) tests
 	mv $(ROOT_DIR)/.coverage $(ROOT_DIR)/var/test/app.coverage
 
 
 test-pep8:
-	$(BIN_DIR)/flake8 $(PROJECT)
+	$(BIN_DIR)/flake8 $(PROJECT) tests
 
 
 test-documentation:
