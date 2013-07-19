@@ -44,18 +44,12 @@ Setup a development environment
 
 System requirements:
 
-* `Python`_ version 2.7, available as ``python`` command.
-  
-  .. note::
-
-     You may use `Virtualenv`_ to make sure the active ``python`` is the right
-     one.
-
+* `Virtualenv`_ for `Python`_ version 2.7, available as ``virtualenv`` command.
 * make and wget to use the provided :file:`Makefile`.
 
 Execute:
 
-.. code-block:: sh
+.. code:: sh
 
    git clone git@github.com:novagile/diecutter.git
    cd diecutter/
@@ -75,7 +69,8 @@ Use it to run common development tasks, such as:
 
 * setup the development environment: ``make develop`` ;
 * run tests: ``make test`` ;
-* build documentation: ``make documentation``...
+* build documentation: ``make documentation`` ;
+* run demo server on port 8106: ``make serve``...
 
 The :file:`Makefile` is intended to be a live reference for the development
 environment.
