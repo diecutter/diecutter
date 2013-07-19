@@ -39,8 +39,6 @@ POST data to the template and retrieve generated content:
    $ curl -X POST -d name=world http://diecutter.io/api/greetings.txt
    Hello world!
 
-More examples in :doc:`demo` and :doc:`client/index`!
-
 
 **********
 Ressources
