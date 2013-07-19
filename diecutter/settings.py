@@ -12,7 +12,7 @@ TEMPLATE_ENGINE_MAPPINGS = {
 }
 
 #: Default values for settings.
-defaults = {
+DEFAULTS = {
     'diecutter.service': 'diecutter.local:LocalService',
     'diecutter.template_engine': 'jinja',
     'diecutter.filename_template_engine': 'filename',
@@ -26,6 +26,6 @@ def normalize(settings={}):
 
     """
     normalized = settings.copy()
-    for key, value in defaults.items():
+    for key, value in DEFAULTS.items():
         normalized.setdefault(key, value)
     return normalized
