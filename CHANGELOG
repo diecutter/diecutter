@@ -10,6 +10,9 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Features #27 and #28 - Experimental support of remote templates, where
   templates are hosted in Github public repositories.
+  The github service is published at http://diecutter.io/github. It accepts
+  URLs like
+  http://diecutter.io/github/<owner>/<project>/<revision>/<path/to/template/resource>
 - Features #57 and #29 - Public online SAAS at http://diecutter.io
 - Feature #66 - Introduced support of Django template engine. You can choose
   the (unique) template engine with ``diecutter.template_engine`` configuration
