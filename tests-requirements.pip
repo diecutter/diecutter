@@ -1,0 +1,11 @@
+bpython
+flake8
+nose
+rednose
+coverage
+Sphinx
+sphinxcontrib-testbuild
+requests
+PasteDeploy
+
+-e ./
