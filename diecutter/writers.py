@@ -93,5 +93,6 @@ def targz_directory_response(request, resource, context):
         request.response.status_int = 500
         logger.error('TemplateError caught: {error}'.format(error=e))
         request.response.write(json.dumps(str(e)))
-    request.response.write(content)
+    else:
+        request.response.write(content)
     return request.response
