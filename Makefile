@@ -14,7 +14,7 @@ configure:
 
 develop:
 	pip install -r tests-requirements.pip
-
+	rm -rf $(ROOT_DIR)/*.egg
 
 clean:
 	find $(ROOT_DIR)/ -name "*.pyc" -delete
@@ -25,7 +25,6 @@ distclean: clean
 
 
 maintainer-clean: distclean
-
 
 serve:
 	pserve $(ROOT_DIR)/etc/diecutter.ini --reload
