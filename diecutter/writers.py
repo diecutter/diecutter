@@ -69,7 +69,7 @@ def targz_directory(directory_content):
         try:
             archive = tarfile.open(mode='w|gz', fileobj=temporary_file)
             for filename, file_generator in directory_content:
-                content_text = u''.join(file_generator)
+                content_text = ''.join(file_generator)
                 content_file = StringIO(content_text)
                 content_file.seek(0)
                 info = tarfile.TarInfo(name=filename)
