@@ -7,7 +7,7 @@ from setuptools import setup
 here = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'diecutter'
-README = open(os.path.join(here, 'README')).read()
+README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(here, 'VERSION')).read().strip()
 PACKAGES = [NAME]
 REQUIREMENTS = ['setuptools',
@@ -18,6 +18,7 @@ REQUIREMENTS = ['setuptools',
                 'django',
                 'Jinja2',
                 'mock',
+                'requests',
                 'webtest']
 
 

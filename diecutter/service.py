@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Services expose diecutter API."""
+from collections import OrderedDict
+
 import cornice
 from pyramid.config import Configurator
 from pyramid.exceptions import ConfigurationError
@@ -17,7 +19,10 @@ class Service(object):
     """Base class for diecutter services."""
     def hello(self, request):
         """Returns Hello and API version in JSON."""
-        return {'diecutter': 'Hello', 'version': diecutter.__version__}
+        return OrderedDict((
+            ('diecutter', 'Hello'),
+            ('version', diecutter.__version__),
+        ))
 
     def get(self, request):
         raise HTTPNotImplemented()

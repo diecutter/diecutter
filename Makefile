@@ -3,6 +3,9 @@
 # For standard installation of diecutter, see INSTALL.
 # For details about diecutter's development environment, see CONTRIBUTING.rst.
 #
+PIP = pip
+RELEASE = fullrelease
+TOX = tox
 WGET = wget
 PROJECT = $(shell python -c "import setup; print setup.NAME")
 DIECUTTER_PUBLIC_API = http://diecutter.io/api
@@ -34,8 +37,8 @@ configure:
 
 #: develop - Install minimal development utilities (tox, Sphinx, ...).
 develop:
-	pip install -r tests-requirements.pip
-	rm -rf *.egg
+	$(PIP) install tox
+
 
 #: clean - Basic cleanup, mostly temporary files.
 clean:
@@ -44,11 +47,17 @@ clean:
 
 #: distclean - Remove local builds, such as *.egg-info.
 distclean: clean
+	rm -rf *.egg
 	rm -rf *.egg-info
 
 
 #: maintainer-clean - Remove almost everything that can be re-generated.
 maintainer-clean: distclean
+	rm -rf bin/
+	rm -rf lib/
+	rm -rf build/
+	rm -rf dist/
+	rm -rf .tox/
 
 
 #: serve - Run local diecutter server.
@@ -57,28 +66,12 @@ serve:
 
 
 #: test - Run test suites.
-test: test-app test-pep8
-
-
-test-app:
-	mkdir -p var/test
-	nosetests --config=etc/nose.cfg --config=etc/nose-app.cfg $(PROJECT) tests
-
-
-test-pep8:
-	flake8 $(PROJECT) tests
-
-
-test-documentation:
-	nosetests -c etc/nose.cfg sphinxcontrib.testbuild.tests
+test:
+	$(TOX)
 
 
 #: documentation - Build documentation (Sphinx, README, ...)
-documentation: sphinx-doctest sphinx-apidoc sphinx-html
-
-
-sphinx-doctest: sphinx-apidoc-clean
-	make --directory=docs clean doctest
+documentation: sphinx readme
 
 
 # Remove auto-generated API documentation files.
@@ -94,9 +87,13 @@ sphinx-apidoc: sphinx-apidoc-clean
 	sphinx-apidoc --suffix txt --output-dir docs/framework/api $(PROJECT)
 
 
-sphinx-html:
-	mkdir -p docs/_static
-	make --directory=docs clean html
+sphinx:
+	tox -e sphinx
+
+
+#: readme - Build standalone documentation files (README, CONTRIBUTING...).
+readme:
+	tox -e readme
 
 
 generate-documentation:
@@ -107,5 +104,4 @@ generate-documentation:
 
 #: release - Tag and push to PyPI.
 release:
-	pip install zest.releaser
-	fullrelease
+	tox -e release
