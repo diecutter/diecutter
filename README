@@ -24,9 +24,9 @@ Files and directories are supported. Directories are rendered as archives.
    :alt: Build Status
    :target: https://secure.travis-ci.org/diecutter/diecutter
 .. image:: https://pypip.in/v/diecutter/badge.png
-   :target: https://crate.io/packages/diecutter/
+   :target: https://python.org/pypi/diecutter/
 .. image:: https://pypip.in/d/diecutter/badge.png
-   :target: https://crate.io/packages/diecutter/
+   :target: https://python.org/pypi/diecutter/
 
 *******
 Example
