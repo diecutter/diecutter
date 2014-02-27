@@ -37,7 +37,7 @@ if __name__ == '__main__':  # Don't run setup() when we import this module.
                    "'code generator'",
           author=u'Rémy HUBSCHER',
           author_email='hubscher.remy@gmail.com',
-          url='https://github.com/novagile/diecutter',
+          url='https://github.com/diecutter/diecutter',
           packages=PACKAGES,
           include_package_data=True,
           zip_safe=False,

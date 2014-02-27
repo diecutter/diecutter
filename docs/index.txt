@@ -13,8 +13,8 @@ Contents
    client/index
    server/index
    framework/index
-   contribute/index
    about/index
+   contributing
    presentations/index
    faq
 

@@ -19,12 +19,17 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
   The github service is published at http://diecutter.io/github. It accepts
   URLs like
   http://diecutter.io/github/<owner>/<project>/<revision>/<path/to/template/resource>
+
 - Features #57 and #29 - Public online SAAS at http://diecutter.io
+
 - Feature #66 - Introduced support of Django template engine. You can choose
   the (unique) template engine with ``diecutter.template_engine`` configuration
   directive. Default value is ``diecutter.engines.jinja:Jinja2Engine``.
+
 - Bug #60 - PyPI renders README as HTML (was plain text).
+
 - Bug #65 - Contributor guide mentions dependency to virtualenv (was missing).
+
 - Refactoring #68 - Code follows strict PEP8. Using flake8 in tests.
 
 
@@ -36,15 +41,20 @@ New feature (tar.gz archives) and marketing (talks).
 - Feature #4 - Added support of "accept" header for POST requests on
   directories: accepted types are ZIP (``application/zip``) and TAR.GZ
   (``application/gzip``).
+
 - Feature #53 - GZIP is now the default archive format when rendering
   directories. Use "diecutter.default_archive_type = application/zip" in
   configuration file if you need ZIP format as a default.
+
 - Refactoring #55 - Dropped support of Python 2.6. Tests are run against Python
   2.7 only.
+
 - Refactoring #20 - Render functions return generator ; moved response
   composition (file/archive) into views via writers.
+
 - Feature #46 - Added content of talks in documentation: AFPY event and
   EuroPython 2013.
+
 - Feature #58 - Highlighted roadmap and vision in README.
 
 See also `milestone 0.4 on bugtracker`_.
@@ -56,13 +66,20 @@ See also `milestone 0.4 on bugtracker`_.
 New features, documentation, bugfixes.
 
 - Bug #44 - Accepted arrays in URL-encoded POST.
+
 - Bug #40 - Setup CORS to allow AJAX requests on diecutter's API.
+
 - Refactoring #37 - Used Jinja's environment.
+
 - Bug #34 - Frozen buildout configuration file for development environment.
+
 - Features #31 and #43 - Published diecutter's demo online. Online API URL
   changed.
+
 - Feature #24 - Added Sphinx documentation template in diecutter's demo.
+
 - Feature #23 - Added diecutter's Sphinx documentation.
+
 - Feature #10 - Added dynamic tree template.
 
 See also `milestone 0.3 on bugtracker`_.
@@ -74,7 +91,9 @@ See also `milestone 0.3 on bugtracker`_.
 Maintenance release, implementation refactoring, tests.
 
 - Refactoring #22 - Added tests.
+
 - Bug #17 - Sort directories alphabetically.
+
 - Bug #13 - Fixed "diecutter.readonly" which was always ``True``.
 
 See also `milestone 0.2 on bugtracker`_.
@@ -87,12 +106,18 @@ Initial release.
 
 - Bug #11 - On POST requests, handle empty content-type as
   "application/x-www-form-urlencoded".
+
 - Feature #8 - Support INI files as input for POST requests.
+
 - Feature #3 - Use a configuration file outside diecutter's code.
+
 - Feature #2 - If "readonly" option is ``True``, forbid PUT requests.
+
 - Feature #1 - Pass a "diecutter" context variable to templates, containing
   data such as "diecutter.api_url", "diecutter.version" and "diecutter.now".
+
 - Feature - Diecutter service renders directories as ZIP archives.
+
 - Feature - Diecutter service renders files.
 
 See also `milestone 0.1 on bugtracker`_.
@@ -102,12 +127,12 @@ See also `milestone 0.1 on bugtracker`_.
 
 .. target-notes::
 
-.. _`milestones`: https://github.com/novagile/diecutter/issues/milestones
+.. _`milestones`: https://github.com/diecutter/diecutter/issues/milestones
 .. _`milestone 0.4 on bugtracker`:
-   https://github.com/novagile/diecutter/issues?milestone=7&state=closed 
+   https://github.com/diecutter/diecutter/issues?milestone=7&state=closed
 .. _`milestone 0.3 on bugtracker`:
-   https://github.com/novagile/diecutter/issues?milestone=6&state=closed 
+   https://github.com/diecutter/diecutter/issues?milestone=6&state=closed
 .. _`milestone 0.2 on bugtracker`:
-   https://github.com/novagile/diecutter/issues?milestone=2&state=closed 
+   https://github.com/diecutter/diecutter/issues?milestone=2&state=closed
 .. _`milestone 0.1 on bugtracker`:
-   https://github.com/novagile/diecutter/issues?milestone=1&state=closed 
+   https://github.com/diecutter/diecutter/issues?milestone=1&state=closed

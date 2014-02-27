@@ -148,7 +148,7 @@ Resources
 =========
 
 * PyPI: https://pypi.python.org/pypi/diecutter
-* Code repository: https://github.com/novagile/diecutter/
-* Bugs and features: https://github.com/novagile/diecutter/issues
+* Code repository: https://github.com/diecutter/diecutter/
+* Bugs and features: https://github.com/diecutter/diecutter/issues
 * Slides: `http://tech.novapost.fr
   <http://tech.novapost.fr/static/images/slides/afpy-20130304-diecutter.html>`_

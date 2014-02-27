@@ -14,7 +14,7 @@ Files and directories are supported. Directories are rendered as archives.
 
    Diecutter is under active development: some (killer) features have not been
    implemented yet, or they are not mature.
-   Check `milestones <https://github.com/novagile/diecutter/issues/milestones>`_
+   Check `milestones <https://github.com/diecutter/diecutter/issues/milestones>`_
    and `vision <https://diecutter.readthedocs.org/en/latest/about/vision.html>`_
    for details.
 
@@ -51,9 +51,11 @@ POST data to the template and retrieve generated content:
 Ressources
 **********
 
-* Documentation: http://diecutter.readthedocs.org
 * Online demo: http://diecutter.io
+* Documentation: http://diecutter.readthedocs.org
 * PyPI page: http://pypi.python.org/pypi/diecutter
-* Code repository: https://github.com/novagile/diecutter
-* Bugtracker: https://github.com/novagile/diecutter/issues
-* Continuous integration: https://travis-ci.org/novagile/diecutter
+* Bugtracker: https://github.com/diecutter/diecutter/issues
+* Changelog: https://diecutter.readthedocs.org/en/latest/about/changelog.html
+* Roadmap: https://github.com/diecutter/diecutter/issues/milestones
+* Code repository: https://github.com/diecutter/diecutter
+* Continuous integration: https://travis-ci.org/diecutter/diecutter
