@@ -28,23 +28,23 @@ help:
 
 #: configure - Generate etc/diecutter.ini configuration file.
 configure:
-	mkdir -p $(ROOT_DIR)/etc
-	wget -O etc/diecutter.ini --post-data "template_dir=$(ROOT_DIR)/demo/templates" $(DIECUTTER_PUBLIC_API)/diecutter.ini
+	mkdir -p etc
+	wget -O etc/diecutter.ini --post-data "template_dir=$(shell pwd)/demo/templates" $(DIECUTTER_PUBLIC_API)/diecutter.ini
 
 
 #: develop - Install minimal development utilities (tox, Sphinx, ...).
 develop:
 	pip install -r tests-requirements.pip
-	rm -rf $(ROOT_DIR)/*.egg
+	rm -rf *.egg
 
 #: clean - Basic cleanup, mostly temporary files.
 clean:
-	find $(ROOT_DIR)/ -name "*.pyc" -delete
+	find . -name "*.pyc" -delete
 
 
 #: distclean - Remove local builds, such as *.egg-info.
 distclean: clean
-	rm -rf $(ROOT_DIR)/*.egg-info
+	rm -rf *.egg-info
 
 
 #: maintainer-clean - Remove almost everything that can be re-generated.
@@ -53,7 +53,7 @@ maintainer-clean: distclean
 
 #: serve - Run local diecutter server.
 serve:
-	pserve $(ROOT_DIR)/etc/diecutter.ini --reload
+	pserve etc/diecutter.ini --reload
 
 
 #: test - Run test suites.
@@ -70,7 +70,7 @@ test-pep8:
 
 
 test-documentation:
-	nosetests -c $(ROOT_DIR)/etc/nose.cfg sphinxcontrib.testbuild.tests
+	nosetests -c etc/nose.cfg sphinxcontrib.testbuild.tests
 
 
 #: documentation - Build documentation (Sphinx, README, ...)
@@ -86,12 +86,12 @@ sphinx-doctest: sphinx-apidoc-clean
 # is set to True in Sphinx configuration file.
 sphinx-apidoc-clean:
 	find docs/framework/api/ -type f \! -name "index.txt" -delete
-	echo -e "Modules\n=======" > $(ROOT_DIR)/docs/framework/api/modules.txt
+	echo -e "Modules\n=======" > docs/framework/api/modules.txt
 
 
 sphinx-apidoc: sphinx-apidoc-clean
-	rm $(ROOT_DIR)/docs/framework/api/modules.txt
-	sphinx-apidoc --suffix txt --output-dir $(ROOT_DIR)/docs/framework/api $(PROJECT)
+	rm docs/framework/api/modules.txt
+	sphinx-apidoc --suffix txt --output-dir docs/framework/api $(PROJECT)
 
 
 sphinx-html:
