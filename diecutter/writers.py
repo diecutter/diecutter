@@ -2,11 +2,11 @@
 """Writers: utilities that write template output as response, files..."""
 import json
 import logging
-from cStringIO import StringIO
+import os
 import tarfile
 import tempfile
 import zipfile
-from pyramid.view import view_config
+from cStringIO import StringIO
 
 from diecutter.exceptions import TemplateError
 
@@ -45,10 +45,12 @@ def zip_directory(directory_content):
     return temp_file.getvalue()
 
 
-@view_config(name='directory.zip')
 def zip_directory_response(request, resource, context):
     """Render dir resource against context, return result as zip response."""
     request.response.content_type = 'application/zip'
+    request.response.content_disposition = 'attachment; filename=%s.zip' % (
+        os.path.basename(resource.path)
+    )
     try:
         directory_generator = resource.render(context)
         zip_content = zip_directory(directory_generator)
@@ -83,12 +85,14 @@ def targz_directory(directory_content):
         return temporary_file.read()
 
 
-@view_config(name='directory.tar.gz')
 def targz_directory_response(request, resource, context):
     """Render dir resource against context, return result as tar.gz response.
 
     """
     request.response.content_type = 'application/gzip'
+    request.response.content_disposition = 'attachment; filename=%s.tar.gz' % (
+        os.path.basename(resource.path)
+    )
     try:
         directory_generator = resource.render(context)
         content = targz_directory(directory_generator)
