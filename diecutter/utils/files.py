@@ -32,7 +32,10 @@ class temporary_directory(object):
 
     def __exit__(self, exc_type=None, exc_val=None, exc_tb=None):
         """Remove temporary directory recursively."""
-        shutil.rmtree(self.path)
+        try:
+            shutil.rmtree(self.path)
+        except OSError:
+            pass
 
 
 class chdir(object):
