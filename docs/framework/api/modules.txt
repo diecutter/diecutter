@@ -1,7 +1,0 @@
-diecutter
-=========
-
-.. toctree::
-   :maxdepth: 4
-
-   diecutter
