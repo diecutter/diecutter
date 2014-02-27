@@ -57,7 +57,7 @@ serve:
 
 
 #: test - Run test suites.
-test: test-app test-pep8 test-documentation
+test: test-app test-pep8
 
 
 test-app:
