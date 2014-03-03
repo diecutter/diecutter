@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 """Services expose diecutter API."""
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 
 import cornice
 from pyramid.config import Configurator
