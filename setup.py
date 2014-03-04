@@ -18,6 +18,7 @@ REQUIREMENTS = ['setuptools',
                 'django',
                 'Jinja2',
                 'mock',
+                'piecutter',
                 'requests',
                 'webtest']
 

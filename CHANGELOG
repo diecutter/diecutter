@@ -8,7 +8,7 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Mutualize everything that can be in piecutter
 
 
 0.5 (2013-07-19)
@@ -24,7 +24,7 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Feature #66 - Introduced support of Django template engine. You can choose
   the (unique) template engine with ``diecutter.template_engine`` configuration
-  directive. Default value is ``diecutter.engines.jinja:Jinja2Engine``.
+  directive. Default value is ``piecutter.engines.jinja:Jinja2Engine``.
 
 - Bug #60 - PyPI renders README as HTML (was plain text).
 

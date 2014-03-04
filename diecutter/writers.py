@@ -9,7 +9,7 @@ import tempfile
 import zipfile
 from cStringIO import StringIO
 
-from diecutter.exceptions import TemplateError
+from piecutter.exceptions import TemplateError
 
 
 logger = logging.getLogger(__name__)

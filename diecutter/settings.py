@@ -4,8 +4,8 @@
 #: Default values for settings.
 defaults = {
     'diecutter.service': 'diecutter.local:LocalService',
-    'diecutter.template_engine': 'diecutter.engines.jinja:Jinja2Engine',
-    'diecutter.filename_template_engine': 'diecutter.engines.filename'
+    'diecutter.template_engine': 'piecutter.engines.jinja:Jinja2Engine',
+    'diecutter.filename_template_engine': 'piecutter.engines.filename'
                                           ':FilenameEngine',
 }
 

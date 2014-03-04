@@ -1,2 +1,12 @@
-tox
+bpython
+flake8
+nose
+rednose
+coverage
+Sphinx
+sphinxcontrib-testbuild
+requests
+PasteDeploy
+
+-e git+ssh://git@github.com/diecutter/piecutter.git#egg=piecutter
 -e ./
