@@ -47,9 +47,12 @@ def zip_directory(directory_content):
 
 def zip_directory_response(request, resource, context):
     """Render dir resource against context, return result as zip response."""
+    filename = os.path.basename(resource.path.rstrip('/'))
+    filename = resource.filename_engine.render(filename, context)
+
     request.response.content_type = 'application/zip'
     request.response.content_disposition = 'attachment; filename=%s.zip' % (
-        os.path.basename(resource.path.rstrip('/'))
+        filename
     )
     try:
         directory_generator = resource.render(context)
@@ -89,9 +92,12 @@ def targz_directory_response(request, resource, context):
     """Render dir resource against context, return result as tar.gz response.
 
     """
+    filename = os.path.basename(resource.path.rstrip('/'))
+    filename = resource.filename_engine.render(filename, context)
+
     request.response.content_type = 'application/gzip'
     request.response.content_disposition = 'attachment; filename=%s.tar.gz' % (
-        os.path.basename(resource.path.rstrip('/'))
+        filename
     )
     try:
         directory_generator = resource.render(context)
