@@ -154,7 +154,11 @@ class GithubService(LocalService):
 
         """
         path = self.get_resource_path(request)
-        user, project, commit, relative_path = self.split_path(path)
+        try:
+            user, project, commit, relative_path = self.split_path(path)
+        except:
+            # favicon.ico request.
+            return
         engine = self.get_engine(request)
         filename_engine = self.get_filename_engine(request)
         resource_loader = self.get_resource_loader(request)

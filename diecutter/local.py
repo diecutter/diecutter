@@ -21,7 +21,7 @@ class LocalService(diecutter.service.Service):
     """A service that loads templates on local filesystem."""
     def get(self, request):
         resource = self.get_resource(request)
-        if not resource.exists:
+        if not resource or not resource.exists:
             return NotFound('Template not found')
         request.response.content_type = 'text/plain'
         request.response.write(resource.read())
