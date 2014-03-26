@@ -38,6 +38,7 @@ configure:
 #: develop - Install minimal development utilities (tox, Sphinx, ...).
 develop:
 	$(PIP) install tox
+	$(PIP) install -r tests-requirements.pip
 
 
 #: clean - Basic cleanup, mostly temporary files.
