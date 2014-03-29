@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Django template engine."""
-from __future__ import absolute_import  # Required to ``import from django``
-                                        # because our file is called django.py
+from __future__ import absolute_import  # Remove ambiguity of ``import django``
 
 from django.conf import settings
 from django.template import Template, Context, TemplateSyntaxError
