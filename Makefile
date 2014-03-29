@@ -7,6 +7,7 @@ PIP = pip
 RELEASE = fullrelease
 TOX = tox
 WGET = wget
+PSERVE = pserve
 PROJECT = $(shell python -c "import setup; print setup.NAME")
 DIECUTTER_PUBLIC_API = http://diecutter.io/api
 DIECUTTER_LOCAL_API = http://localhost:8106
@@ -37,7 +38,6 @@ configure:
 
 #: develop - Install minimal development utilities (tox, Sphinx, ...).
 develop:
-	$(PIP) install tox
 	$(PIP) install -r tests-requirements.pip
 
 
@@ -63,7 +63,7 @@ maintainer-clean: distclean
 
 #: serve - Run local diecutter server.
 serve:
-	pserve etc/diecutter.ini --reload
+	$(PSERVE) etc/diecutter.ini --reload
 
 
 #: test - Run test suites.
@@ -89,12 +89,12 @@ sphinx-apidoc: sphinx-apidoc-clean
 
 
 sphinx:
-	tox -e sphinx
+	$(TOX) -e sphinx
 
 
 #: readme - Build standalone documentation files (README, CONTRIBUTING...).
 readme:
-	tox -e readme
+	$(TOX) -e readme
 
 
 generate-documentation:
@@ -105,4 +105,4 @@ generate-documentation:
 
 #: release - Tag and push to PyPI.
 release:
-	tox -e release
+	$(TOX) -e release
