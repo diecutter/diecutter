@@ -5,11 +5,3 @@ Framework
 Diecutter is developped with extensibility in mind. Even if not stable yet, the
 idea is to build a default implementation upon a flexible framework. So that
 anyone can adapt the "templates as a service" pattern to his specific needs.
-
-This section dives into diecutter's internals and explains how to use or extend
-parts of it.
-
-.. toctree::
-   :maxdepth: 2
-
-   api/index
