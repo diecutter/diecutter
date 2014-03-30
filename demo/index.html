@@ -7,44 +7,56 @@
 </head>
 <body>
     <div class="container-fluid">
-        <div class="row-fluid">
+        <div class="row">
             <div class="span12">
 <!-- Page content. -->
 <ul class="breadcrumb">
     <li><a href="https://diecutter.readthedocs.org">diecutter, templates as a service</a> <span class="divider">/</span></li>
 </ul> 
-<h1>Welcome to diecutter's demo!</h1>
-<p>
-    <strong>So you heard about
-    <a href="https://diecutter.readthedocs.org">diecutter</a>?
-    Let's give it a try!</strong>
-</p>
-<ul>
-    <li>
-        <a href="sphinx-docs.html">HTML client for Sphinx documentation templates</a>:
-        fill in the form and generate Sphinx-based documentation layout.
-    </li>
-    <li>
-        But you can also use curl, wget or any HTTP client!
-        Learn more about
-        <a href="https://diecutter.readthedocs.org/en/latest/client/index.html">
-            diecutter's API usage
-        </a> in the project's documentation.
-    </li>
-    <li>
-        Diecutter's demo API is available online at
-        <a href="http://diecutter.io/api">http://diecutter.io/api</a>.
-    </li>
-    <li>
-        Templates of this demo are part of 
-        <a href="https://github.com/novagile/diecutter/tree/master/demo/templates">diecutter's source code</a>.
-    </li>
-</ul>
+<h1><em>diecutter</em>: template rendering as a service</h1>
+            </div>
+            <div class="span8">
+<h2>Templates</h2>
+<p>Here are some templates made for diecutter.</p>
+<p>Note: <a href="https://github.com/diecutter/diecutter/issues/30">a better template index is in the roadmap</a>!</p>
+<div class="well">
+  <a href="https://diecutter.alwaysdata.net/rawgithub/diecutter/python-startproject/index.html">
+    <h3>python-startproject</h3>
+  </a>
+  <p>Scaffold a new Python project.</p>
+  <ul class="nav nav-pills">
+    <li><a href="https://diecutter.alwaysdata.net/rawgithub/diecutter/python-startproject/index.html">Online UI</a></li>
+    <li><a href="https://github.com/diecutter/python-startproject">Source code</a></li>
+  </ul>
+</div>
+<div class="well">
+  <a href="https://diecutter.alwaysdata.net/rawgithub/diecutter/sphinx-quickstart/index.html">
+    <h3>sphinx-quickstart</h3>
+  </a>
+  <p>Generate a Sphinx documentation. This is an alternative to Sphinx's builtin <code>sphinx-quickstart</code>.</p>
+  <ul class="nav nav-pills">
+    <li><a href="https://diecutter.alwaysdata.net/rawgithub/diecutter/sphinx-quickstart/index.html">Online UI</a></li>
+    <li><a href="https://github.com/diecutter/sphinx-quickstart">Source code</a></li>
+  </ul>
+</div>
+            </div>
+            <div class="span4">
 <h2>About diecutter</h2>
 <p>
-    Diecutter is an open-source project that allows you to deploy and use
-    templates as a service.
+  <em>diecutter</em> is a server that handles templates.
+  When you post data to a template resource, you retrieve the generated
+  content.
+  Templates can be either single files (returns single files) or directories
+  (returns archive). Learn more in
+  <a href="https://diecutter.readthedocs.org">the documentation</a>.
 </p>
+<p>
+    <em>diecutter</em> is open-source template rendering software.
+</p>
+<p>
+    <em>diecutter.io</em> is the original online provider for diecutter.
+</p>
+<h3>Resources</h3>
 <ul>
     <li><a href="http://diecutter.readthedocs.org">Documentation</a></li>
     <li><a href="http://pypi.python.org/pypi/diecutter">PyPI page</a></li>
