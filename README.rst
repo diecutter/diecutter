@@ -2,6 +2,12 @@
 diecutter
 #########
 
+.. raw:: html
+
+   <a alt="Build status" href="http://badge.fury.io/py/diecutter"><img src="https://badge.fury.io/py/diecutter.png"></a>
+   <a href="https://travis-ci.org/diecutter/diecutter"><img src="https://travis-ci.org/diecutter/diecutter.png?branch=master"></a>
+   <a href="https://crate.io/packages/diecutter?version=latest"><img src="https://pypip.in/d/diecutter/badge.png"></a>
+
 Templates as a service.
 
 ``diecutter`` exposes an API where you manage templates as resources.
@@ -20,13 +26,6 @@ Files and directories are supported. Directories are rendered as archives.
 
    That said, features documented below actually work, so **give it a try!**
 
-.. image:: https://secure.travis-ci.org/diecutter/diecutter.png?branch=master
-   :alt: Build Status
-   :target: https://secure.travis-ci.org/diecutter/diecutter
-.. image:: https://pypip.in/v/diecutter/badge.png
-   :target: https://python.org/pypi/diecutter/
-.. image:: https://pypip.in/d/diecutter/badge.png
-   :target: https://python.org/pypi/diecutter/
 
 *******
 Example

@@ -75,19 +75,6 @@ test:
 documentation: sphinx readme
 
 
-# Remove auto-generated API documentation files.
-# Files will be restored during sphinx-build, if "autosummary_generate" option
-# is set to True in Sphinx configuration file.
-sphinx-apidoc-clean:
-	find docs/framework/api/ -type f \! -name "index.txt" -delete
-	echo -e "Modules\n=======" > docs/framework/api/modules.txt
-
-
-sphinx-apidoc: sphinx-apidoc-clean
-	rm docs/framework/api/modules.txt
-	sphinx-apidoc --suffix txt --output-dir docs/framework/api $(PROJECT)
-
-
 sphinx:
 	$(TOX) -e sphinx
 
