@@ -46,9 +46,9 @@ POST data to the template and retrieve generated content:
    Hello world!
 
 
-**********
-Ressources
-**********
+*********
+Resources
+*********
 
 * Online demo: http://diecutter.io
 * Documentation: http://diecutter.readthedocs.org
