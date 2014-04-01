@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Functional tests: run test server and make requests on it."""
 import os
+import time
 import unittest
 import zipfile
 import tarfile
@@ -122,6 +123,7 @@ class FunctionalTestCase(unittest.TestCase):
     def test_post_directory_targz(self):
         """POST context for directory returns TAR.GZ file content."""
         # Setup.
+        time_floor = int(time.time())
         dir_path = os.path.join(self.template_dir.path, 'dummy')
         os.mkdir(dir_path)
         for dir_name in ('a', 'b'):
@@ -133,7 +135,7 @@ class FunctionalTestCase(unittest.TestCase):
         # Perform request.
         response = self.app.post('/dummy/', {'foo': 'bar'}, status=200)
         # Check content.
-        filename = os.path.join(self.template_dir.path, 'response.zip')
+        filename = os.path.join(self.template_dir.path, 'response.tar.gz')
         open(filename, 'w').write(response.body)
         self.assertTrue(tarfile.is_tarfile(filename))
         try:
@@ -142,6 +144,11 @@ class FunctionalTestCase(unittest.TestCase):
                              ['a/one', 'a/two', 'b/one', 'b/two'])
             self.assertEqual(archive.extractfile('a/one').read(),
                              'Content of a/one: bar')
+            info = archive.getmember('a/one')
+            time_ceil = time.time()
+            self.assertNotEqual(info.mtime, 0)
+            self.assertTrue(time_floor <= info.mtime)
+            self.assertTrue(info.mtime <= time_ceil)
         finally:
             archive.close()
 

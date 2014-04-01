@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Writers: utilities that write template output as response, files..."""
+import time
 import json
 import logging
 import os
@@ -72,6 +73,7 @@ def targz_directory(directory_content):
     :py:meth:`diecutter.resources.DirResource.render` output.
 
     """
+    mtime = time.time()
     with tempfile.TemporaryFile() as temporary_file:
         try:
             archive = tarfile.open(mode='w|gz', fileobj=temporary_file)
@@ -81,6 +83,7 @@ def targz_directory(directory_content):
                 content_file.seek(0)
                 info = tarfile.TarInfo(name=filename)
                 info.size = len(content_text)
+                info.mtime = mtime
                 archive.addfile(tarinfo=info, fileobj=content_file)
         finally:
             archive.close()
