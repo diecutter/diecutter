@@ -8,8 +8,9 @@ from os.path import join, abspath, dirname, exists, isdir, normpath
 from pyramid.exceptions import ConfigurationError, Forbidden, NotFound
 from pyramid.httpexceptions import HTTPNotImplemented
 
+from piecutter import resources
+
 from diecutter import __version__ as VERSION
-from diecutter import resources
 from diecutter.contextextractors import extract_context
 import diecutter.service
 

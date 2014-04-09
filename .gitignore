@@ -19,3 +19,5 @@
 # Editors' temporary buffers.
 *~
 .*.swp
+
+/.tox/

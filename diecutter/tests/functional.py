@@ -7,10 +7,10 @@ import zipfile
 import tarfile
 
 from webtest import TestApp, Upload
+from piecutter.utils import temporary_directory
 
 import diecutter.wsgi
 from diecutter.tests import demo_settings
-from diecutter.utils import temporary_directory
 
 
 class FunctionalTestCase(unittest.TestCase):
