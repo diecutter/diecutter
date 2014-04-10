@@ -6,8 +6,7 @@ Presentation at an `AFPY <http://www.afpy.org>`_ event, march 2013, Paris.
 
 By Rémy Hubscher and Benoit Bryon.
 
-Slides available on `http://diecutter.readthedocs.org
-<http://diecutter.readthedocs.org/en/latest/presentations/2013-afpy-lightning-talk/index.html>`_
+Slides available on https://diecutter.readthedocs.org
 
 This presentation is published under `CC BY 3.0
 <http://creativecommons.org/licenses/by/3.0/>`_
@@ -17,7 +16,7 @@ This presentation is published under `CC BY 3.0
 Render templates
 ================
 
-.. image:: /_static/overview-file.svg
+.. image:: overview-file.svg
    :alt: Client posts DATA to TEMPLATE which returns FILE
 
 -------------------------------------------------------------------------------
@@ -25,7 +24,7 @@ Render templates
 Render directories
 ==================
 
-.. image:: /_static/overview-directory.svg
+.. image:: overview-directory.svg
    :alt: Client posts DATA to DIRECTORY which returns ARCHIVE
 
 -------------------------------------------------------------------------------
@@ -151,4 +150,4 @@ Resources
 * Code repository: https://github.com/diecutter/diecutter/
 * Bugs and features: https://github.com/diecutter/diecutter/issues
 * Slides: `http://tech.novapost.fr
-  <http://tech.novapost.fr/static/images/slides/afpy-20130304-diecutter.html>`_
+  <http://tech.novapost.fr/images/slides/afpy-20130304-diecutter.html>`_

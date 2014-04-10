@@ -1,0 +1,17 @@
+#############
+Presentations
+#############
+
+Here are some presentations about diecutter:
+
+* `Lightning talk, at an Afpy event, Paris, march 2013
+  <_static/20130304-afpy-paris.html>`_
+  (`source <_static/20130304-afpy-paris.rst>`__)
+
+* `Poster, at EuroPython, Florence, july 2013
+  <_static/20130701-europython-florence.pdf>`_
+  (`source <_static/20130701-europython-florence.svg>`__)
+
+* `Lightning talk, at Write The Docs, Budapest, march 2014
+  <_static/20140331-writethedocs-budapest.html>`_
+  (`source <_static/20140331-writethedocs-budapest.rst>`__)
