@@ -6,7 +6,7 @@ diecutter
 
    <a alt="Build status" href="http://badge.fury.io/py/diecutter"><img src="https://badge.fury.io/py/diecutter.png"></a>
    <a href="https://travis-ci.org/diecutter/diecutter"><img src="https://travis-ci.org/diecutter/diecutter.png?branch=master"></a>
-   <a href="https://crate.io/packages/diecutter?version=latest"><img src="https://pypip.in/d/diecutter/badge.png"></a>
+   <a href="https://pypi.python.org/pypi/diecutter"><img src="https://pypip.in/d/diecutter/badge.png"></a>
 
 Templates as a service.
 
