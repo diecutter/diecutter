@@ -58,3 +58,4 @@ Resources
 * Roadmap: https://github.com/diecutter/diecutter/issues/milestones
 * Code repository: https://github.com/diecutter/diecutter
 * Continuous integration: https://travis-ci.org/diecutter/diecutter
+* IRC Channel: irc://irc.freenode.net/#diecutter
