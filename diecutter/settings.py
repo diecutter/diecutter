@@ -1,8 +1,16 @@
 # -*- coding: utf-8 -*-
 """Parse settings, set defaults."""
 
+#: Mapping between engine name and engines.
+#: Used when getting the engine name from the user.
+TEMPLATE_ENGINES_MAPPING = {
+    'django': 'piecutter.engines.django:DjangoEngine',
+    'jinja2': 'piecutter.engines.jinja:Jinja2Engine',
+    'filename': 'piecutter.engines.filename:FilenameEngine',
+}
+
 #: Default values for settings.
-defaults = {
+DEFAULTS = {
     'diecutter.service': 'diecutter.local:LocalService',
     'diecutter.template_engine': 'piecutter.engines.jinja:Jinja2Engine',
     'diecutter.filename_template_engine': 'piecutter.engines.filename'
@@ -17,6 +25,6 @@ def normalize(settings={}):
 
     """
     normalized = settings.copy()
-    for key, value in defaults.items():
+    for key, value in DEFAULTS.items():
         normalized.setdefault(key, value)
     return normalized

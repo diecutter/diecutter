@@ -13,6 +13,7 @@ from pyramid.httpexceptions import HTTPNotImplemented, HTTPNotAcceptable
 import diecutter
 import diecutter.validators
 import diecutter.utils
+from diecutter.settings import TEMPLATE_ENGINES_MAPPING
 from diecutter.writers import (zip_directory_response,
                                file_response,
                                targz_directory_response)
@@ -40,14 +41,31 @@ class Service(object):
         """Return the resource object (instance) matching request."""
         raise NotImplementedError()
 
+    def get_engine_factory(self, request, filename=False):
+        """ Returns the class of an engine """
+        param_name = 'diecutter{}filename_template_engine' if filename \
+                     else 'diecutter{}template_engine'
+
+        if param_name.format('_') in request.headers:
+            try:
+                engine_path = TEMPLATE_ENGINES_MAPPING[
+                    request.headers[param_name.format('_')]
+                ]
+            except KeyError:
+                raise HTTPNotAcceptable('Supported template engines: %s'
+                                        % ', '.join(sorted(
+                                            TEMPLATE_ENGINES_MAPPING.keys())))
+        else:
+            engine_path = request.registry.settings[param_name.format('.')]
+
+        config = Configurator(request.registry.settings)
+        engine_factory = config.maybe_dotted(engine_path)
+
+        return engine_factory
+
     def get_engine(self, request):
         """Return configured template engine to render templates."""
-        settings = request.registry.settings
-        config = Configurator(settings)
-        engine_factory_path = settings['diecutter.template_engine']
-        engine_factory = config.maybe_dotted(engine_factory_path)
-        engine = engine_factory()
-        return engine
+        return self.get_engine_factory(request)()
 
     def get_filename_engine(self, request):
         """Return configured template engine to render filenames.
@@ -55,12 +73,7 @@ class Service(object):
         This is not used for dynamic trees.
 
         """
-        settings = request.registry.settings
-        config = Configurator(settings)
-        engine_factory_path = settings['diecutter.filename_template_engine']
-        engine_factory = config.maybe_dotted(engine_factory_path)
-        engine = engine_factory()
-        return engine
+        return self.get_engine_factory(request, filename=True)()
 
     def get_writers(self, request, resource, context):
         """Return iterable of writers."""

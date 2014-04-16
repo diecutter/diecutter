@@ -120,6 +120,27 @@ class FunctionalTestCase(unittest.TestCase):
         # Check content.
         self.assertEqual(response.body, "Hello world!")
 
+    def test_header_for_specific_template_engine(self):
+        """ Try to use the Django template engine by setting a header. """
+        content = "Hello {{ who }}!"
+        server_filename = os.path.join(self.template_dir.path, 'hello')
+        open(server_filename, 'w').write(content)
+        headers = {'diecutter_template_engine': 'django'}
+        # Perform request.
+        response = self.app.post('/hello', {'who': 'world'},
+                                 headers=headers, status=200)
+        # Check content.
+        self.assertEqual(response.body, "Hello world!")
+
+    def test_invalid_header_template_engine(self):
+        """ Try to us an invalid template engine by setting a header. """
+        content = "Hello {{ who }}!"
+        server_filename = os.path.join(self.template_dir.path, 'hello')
+        open(server_filename, 'w').write(content)
+        headers = {'diecutter_template_engine': 'invalid'}
+        # Perform request, and check if the status code is 406
+        self.app.post('/hello', {'who': 'world'}, headers=headers, status=406)
+
     def test_post_directory_targz(self):
         """POST context for directory returns TAR.GZ file content."""
         # Setup.
