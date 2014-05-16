@@ -137,9 +137,10 @@ class FunctionalTestCase(unittest.TestCase):
         content = "Hello {{ who }}!"
         server_filename = os.path.join(self.template_dir.path, 'hello')
         open(server_filename, 'w').write(content)
-        headers = {'diecutter_template_engine': 'invalid'}
         # Perform request, and check if the status code is 406
-        self.app.post('/hello', {'who': 'world'}, headers=headers, status=406)
+        self.app.post('/hello?engine=invalid',
+                      {'who': 'world'},
+                      status=406)
 
     def test_post_directory_targz(self):
         """POST context for directory returns TAR.GZ file content."""

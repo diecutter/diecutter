@@ -42,25 +42,34 @@ class Service(object):
         raise NotImplementedError()
 
     def get_engine_factory(self, request, filename=False):
-        """ Returns the class of an engine """
-        param_name = 'diecutter{}filename_template_engine' if filename \
-                     else 'diecutter{}template_engine'
+        """Return engine factory (class) for request.
 
-        if param_name.format('_') in request.headers:
-            try:
-                engine_path = TEMPLATE_ENGINES_MAPPING[
-                    request.headers[param_name.format('_')]
-                ]
-            except KeyError:
-                raise HTTPNotAcceptable('Supported template engines: %s'
-                                        % ', '.join(sorted(
-                                            TEMPLATE_ENGINES_MAPPING.keys())))
+        If ``filename`` is ``True`` (defaults to ``False``),
+        then return the engine to render filenames. It may differ from the
+        engine to render files.
+
+        """
+        # Try engine from request's GET.
+        try:
+            engine_slug = request.GET['engine']
+        except KeyError:
+            engine_type = 'diecutter.filename_engine' if filename \
+                else 'diecutter.engine'
+            engine_slug = request.registry.settings[engine_type]
+        if not hasattr(request, 'cache'):
+            request.cache = {}
+        if filename:
+            request.cache['diecutter_filename_engine_slug'] = engine_slug
         else:
-            engine_path = request.registry.settings[param_name.format('.')]
-
+            request.cache['diecutter_engine_slug'] = engine_slug
+        try:
+            engine_path = TEMPLATE_ENGINES_MAPPING[engine_slug]
+        except KeyError:
+            raise HTTPNotAcceptable(
+                'Supported template engines: %s'
+                % ', '.join(sorted(TEMPLATE_ENGINES_MAPPING.keys())))
         config = Configurator(request.registry.settings)
         engine_factory = config.maybe_dotted(engine_path)
-
         return engine_factory
 
     def get_engine(self, request):
@@ -140,3 +149,12 @@ def register_service(config, name, service, path):
     template.add_view('POST', service.post)
     cornice.register_service_views(config, hello)
     cornice.register_service_views(config, template)
+    # Deprecate 'template_engine' and 'filename_template_engine' settings.
+    deprecated_settings = ['diecutter.filename_template_engine',
+                           'diecutter.template_engine']
+    for deprecated_key in deprecated_settings:
+        if deprecated_key in config.registry.settings:
+            raise DeprecationWarning(
+                'Setting {deprecated} is deprecated, use {new} instead'
+                .format(deprecated=deprecated_key,
+                        new=deprecated_key.replace('template_', '')))

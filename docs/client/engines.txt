@@ -1,0 +1,80 @@
+##########################
+Targeting template engines
+##########################
+
+`diecutter` supports several template engines. This section explains how
+`diecutter` chooses the engine for a given template.
+
+As a summary, `diecutter` follows the scenario below:
+
+* ``engine`` `in query string`_;
+* `default engine`_.
+
+Notice that `diecutter` sets a `diecutter-engine header in responses`_.
+
+.. testsetup::
+   :hide:
+
+   import requests
+   import diecutter.tests
+
+   diecutter_url = diecutter_server.application_url
+
+   # Serve demo project.
+   diecutter_server = diecutter.tests.demo_server()
+
+.. testcleanup::
+   :hide:
+
+   diecutter_server.shutdown()
+
+
+***************
+In query string
+***************
+
+If the HTTP request has a known ``engine`` in query string, then `diecutter`
+uses it to render the template. Here is an example using ``jinja2``:
+
+.. doctest::
+
+   >>> greetings_url = diecutter_url + 'greetings.txt?engine=jinja2'
+   >>> response = requests.get(greetings_url)
+   >>> print response.headers['Diecutter-Engine']
+   jinja2
+
+Here is an example using ``django``:
+
+.. doctest::
+
+   >>> greetings_url = diecutter_url + 'greetings.txt?engine=django'
+   >>> response = requests.get(greetings_url)
+   >>> print response.headers['Diecutter-Engine']
+   django
+
+
+**************
+Default engine
+**************
+
+In case no specific engine was resolved for the current request, `diecutter`
+fallbacks to default engines. Default engines are setup in configuration:
+
+* ``diecutter.engine`` is the default engine used to render files;
+* ``diecutter.filename_engine`` is the default engine used to render filenames.
+
+The configuration itself defaults to ``jinja2``.
+
+.. doctest::
+
+   >>> greetings_url = diecutter_url + 'greetings.txt'
+   >>> response = requests.get(greetings_url)
+   >>> print response.headers['Diecutter-Engine']
+   jinja2
+
+
+************************************
+diecutter-engine header in responses
+************************************
+
+`diecutter` sets the value of used engine as ``Diecutter-Engine`` header.

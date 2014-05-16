@@ -23,15 +23,16 @@ class EngineSelectorTestCase(unittest.TestCase):
         request = mock.Mock()
         request.registry = mock.Mock()
         request.registry.settings = DEFAULTS
+        request.cache = {}
 
-        request.headers = {}
+        request.GET = {}
         self.assertEquals(self.service.get_engine_factory(request),
                           Jinja2Engine)
 
-        request.headers = {"diecutter_template_engine": 'django'}
+        request.GET['engine'] = 'django'
         self.assertEquals(self.service.get_engine_factory(request),
                           DjangoEngine)
 
-        request.headers = {"diecutter_template_engine": "<invalid>"}
+        request.GET['engine'] = 'invalid'
         self.assertRaises(HTTPNotAcceptable,
                           self.service.get_engine_factory, request)

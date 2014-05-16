@@ -18,8 +18,8 @@ def demo_template_dir():
 
 def demo_settings(**settings):
     defaults = {  # Defaults
-        'template_engine': 'piecutter.engines.jinja:Jinja2Engine',
-        'filename_template_engine': 'piecutter.engines.filename:FilenameEngine'
+        'engine': 'jinja2',
+        'filename_engine': 'filename'
     }
     defaults.update(settings)
     return dict([('diecutter.{key}'.format(key=key), value)
