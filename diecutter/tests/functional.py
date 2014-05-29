@@ -31,7 +31,8 @@ class FunctionalTestCase(unittest.TestCase):
         """GET on root displays "hello" and version number as JSON."""
         response = self.app.get('/', status=200)
         self.assertEqual(response.body,
-                         """{"diecutter": "Hello", "version": "%s"}"""
+                         """{"diecutter": "Hello", "version": "%s", """
+                         """"engines": ["django", "filename", "jinja2"]}"""
                          % diecutter.__version__)
 
     def test_get_file_404(self):

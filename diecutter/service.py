@@ -13,10 +13,19 @@ from pyramid.httpexceptions import HTTPNotImplemented, HTTPNotAcceptable
 import diecutter
 import diecutter.validators
 import diecutter.utils
-from diecutter.settings import TEMPLATE_ENGINES_MAPPING
 from diecutter.writers import (zip_directory_response,
                                file_response,
                                targz_directory_response)
+
+
+def supported_engines(request):
+    """Return the list of supported template engines."""
+    engines = []
+    for key in request.registry.settings.keys():
+        if key.startswith('diecutter.engine.'):
+            engine_slug = key[len('diecutter.engine.'):]
+            engines.append(engine_slug)
+    return engines
 
 
 class Service(object):
@@ -26,6 +35,7 @@ class Service(object):
         return OrderedDict((
             ('diecutter', 'Hello'),
             ('version', diecutter.__version__),
+            ('engines', sorted(supported_engines(request)))
         ))
 
     def get(self, request):
@@ -63,11 +73,12 @@ class Service(object):
         else:
             request.cache['diecutter_engine_slug'] = engine_slug
         try:
-            engine_path = TEMPLATE_ENGINES_MAPPING[engine_slug]
+            engine_path_setting = 'diecutter.engine.{0}'.format(engine_slug)
+            engine_path = request.registry.settings[engine_path_setting]
         except KeyError:
             raise HTTPNotAcceptable(
                 'Supported template engines: %s'
-                % ', '.join(sorted(TEMPLATE_ENGINES_MAPPING.keys())))
+                % ', '.join(sorted(supported_engines(request))))
         config = Configurator(request.registry.settings)
         engine_factory = config.maybe_dotted(engine_path)
         return engine_factory

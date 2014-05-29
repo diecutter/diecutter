@@ -93,3 +93,16 @@ diecutter-engine header in responses
 ************************************
 
 `diecutter` sets the value of used engine as ``Diecutter-Engine`` header.
+
+
+*****************
+Supported engines
+*****************
+
+Ask the `diecutter` server API index to get the list of engines:
+
+.. doctest::
+
+   >>> response = requests.get(diecutter_url)
+   >>> response.json()['engines']
+   [u'django', u'filename', u'jinja2']
