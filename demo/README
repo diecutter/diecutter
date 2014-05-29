@@ -263,7 +263,7 @@ GET lists the templates it contains:
 
    >>> response = requests.get(dynamic_tree_url)
    >>> print response.content
-   .diecutter-tree
+   .directory-tree
    greeter.txt
 
 :file:`greeter.txt` is the same as `greetings.txt`_ example above:
@@ -275,11 +275,11 @@ GET lists the templates it contains:
    {{ greeter|default('Hello') }} {{ name|default('world') }}!
    <BLANKLINE>
 
-:file:`diecutter-tree` is a normal template, with a special name:
+:file:`directory-tree` is a normal template, with a special name:
 
 .. doctest::
 
-   >>> response = requests.get(dynamic_tree_url + '.diecutter-tree')
+   >>> response = requests.get(dynamic_tree_url + '.directory-tree')
    >>> print response.content
    [
      {% for greeter in greeting_list|default(['hello', 'goodbye']) %}
@@ -296,7 +296,7 @@ It renders a list of templates, in JSON:
 
 .. doctest::
 
-   >>> response = requests.post(dynamic_tree_url + '.diecutter-tree',
+   >>> response = requests.post(dynamic_tree_url + '.directory-tree',
    ...                          {'greeting_list': [u'bonjour', u'bonsoir']})
    >>> print response.content
    [

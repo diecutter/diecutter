@@ -13,18 +13,17 @@ As a summary, `diecutter` follows the scenario below:
 Notice that `diecutter` sets a `diecutter-engine header in responses`_.
 
 .. testsetup::
-   :hide:
 
    import requests
    import diecutter.tests
 
-   diecutter_url = diecutter_server.application_url
-
-   # Serve demo project.
    diecutter_server = diecutter.tests.demo_server()
 
+.. doctest::
+
+   >>> diecutter_url = diecutter_server.application_url
+
 .. testcleanup::
-   :hide:
 
    diecutter_server.shutdown()
 
@@ -39,7 +38,9 @@ uses it to render the template. Here is an example using ``jinja2``:
 .. doctest::
 
    >>> greetings_url = diecutter_url + 'greetings.txt?engine=jinja2'
-   >>> response = requests.get(greetings_url)
+   >>> response = requests.post(greetings_url, {'name': 'world'})
+   >>> print response.text
+   Hello world!
    >>> print response.headers['Diecutter-Engine']
    jinja2
 
@@ -47,10 +48,22 @@ Here is an example using ``django``:
 
 .. doctest::
 
-   >>> greetings_url = diecutter_url + 'greetings.txt?engine=django'
-   >>> response = requests.get(greetings_url)
+   >>> greetings_url = diecutter_url + 'greetings-django.txt?engine=django'
+   >>> response = requests.post(greetings_url, {'name': 'world'})
+   >>> print response.text
+   Hello world!
+   <BLANKLINE>
    >>> print response.headers['Diecutter-Engine']
    django
+
+If you try to use an unknown template engine, then you get a 406:
+
+.. doctest::
+
+   >>> greetings_url = diecutter_url + 'greetings.txt?engine=unknown'
+   >>> response = requests.post(greetings_url, {'name': 'world'})
+   >>> response.status_code
+   406
 
 
 **************
@@ -68,7 +81,9 @@ The configuration itself defaults to ``jinja2``.
 .. doctest::
 
    >>> greetings_url = diecutter_url + 'greetings.txt'
-   >>> response = requests.get(greetings_url)
+   >>> response = requests.post(greetings_url, {'name': 'world'})
+   >>> print response.text
+   Hello world!
    >>> print response.headers['Diecutter-Engine']
    jinja2
 

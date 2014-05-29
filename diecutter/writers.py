@@ -28,7 +28,7 @@ def file_response(request, resource, context):
         file_content = ''.join(file_generator)
         request.response.write(file_content)
         engine_slug = request.cache['diecutter_engine_slug']
-        request.response.headers['Diecutter-Engine'] = engine_slug
+        request.response.headers['Diecutter-Engine'] = str(engine_slug)
     return request.response
 
 
