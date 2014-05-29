@@ -8,6 +8,15 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.7 (unreleased)
 ----------------
 
+- Feature #77 - One `diecutter` server can support multiple template engines:
+
+  * The client can ask `diecutter` to use a specific engine with ``engine``
+    in query string.
+
+  * The list of supported engines in displayed in API index.
+
+  * Supported engines and their implementation can be configured server-side.
+
 - Feature #104 - Get in touch via IRC: #diecutter on freenode.
 
 
