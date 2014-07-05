@@ -19,6 +19,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Feature #104 - Get in touch via IRC: #diecutter on freenode.
 
+- Bug #103 - README is rendered as HTML on PyPI (was plain reStructuredText).
+
 
 0.6 (2014-04-13)
 ----------------
