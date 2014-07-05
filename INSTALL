@@ -38,6 +38,44 @@ Use `diecutter's online demo`_ to generate your local diecutter configuration:
    # Adapt "YOUR_TEMPLATE_DIR"!
    wget -O diecutter.ini --post-data "template_dir=YOUR_TEMPLATE_DIR" http://diecutter.io/api/diecutter.ini
 
+diecutter.service
+=================
+
+Python path to service class that implements `diecutter` API.
+Default is ``diecutter.local.LocalService``.
+
+Builtin services are:
+
+* ``diecutter.local.LocalService``
+* ``diecutter.github.GithubService``
+
+diecutter.engine
+================
+
+Code of the default engine to use to render files.
+Default is ``jinja2``.
+
+diecutter.filename_engine
+=========================
+
+Code of the default engine to use to render filenames.
+Default is ``filename``.
+
+diecutter.engine.*
+==================
+
+Mapping between engine codes and Python path to the template engine class.
+Defaults:
+
+* django: ``piecutter.engines.django:DjangoEngine``
+* filename: ``piecutter.engines.filename:FilenameEngine``
+* jinja2: ``piecutter.engines.jinja:Jinja2Engine``
+
+.. note::
+
+   `diecutter` itself does not implement engines. Engines are implemented as
+   part of `piecutter <https://piecutter.readthedocs.org>`_.
+
 
 ***
 Run

@@ -31,7 +31,8 @@ class FunctionalTestCase(unittest.TestCase):
         """GET on root displays "hello" and version number as JSON."""
         response = self.app.get('/', status=200)
         self.assertEqual(response.body,
-                         """{"diecutter": "Hello", "version": "%s"}"""
+                         """{"diecutter": "Hello", "version": "%s", """
+                         """"engines": ["django", "filename", "jinja2"]}"""
                          % diecutter.__version__)
 
     def test_get_file_404(self):
@@ -119,6 +120,28 @@ class FunctionalTestCase(unittest.TestCase):
         response = self.app.post('/hello', {'who': 'world'}, status=200)
         # Check content.
         self.assertEqual(response.body, "Hello world!")
+
+    def test_header_for_specific_template_engine(self):
+        """ Try to use the Django template engine by setting a header. """
+        content = "Hello {{ who }}!"
+        server_filename = os.path.join(self.template_dir.path, 'hello')
+        open(server_filename, 'w').write(content)
+        headers = {'diecutter_template_engine': 'django'}
+        # Perform request.
+        response = self.app.post('/hello', {'who': 'world'},
+                                 headers=headers, status=200)
+        # Check content.
+        self.assertEqual(response.body, "Hello world!")
+
+    def test_invalid_header_template_engine(self):
+        """ Try to us an invalid template engine by setting a header. """
+        content = "Hello {{ who }}!"
+        server_filename = os.path.join(self.template_dir.path, 'hello')
+        open(server_filename, 'w').write(content)
+        # Perform request, and check if the status code is 406
+        self.app.post('/hello?engine=invalid',
+                      {'who': 'world'},
+                      status=406)
 
     def test_post_directory_targz(self):
         """POST context for directory returns TAR.GZ file content."""

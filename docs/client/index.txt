@@ -11,5 +11,6 @@ from client's point of view.
    files
    directories
    input-context-data
+   engines
    output-filenames
    dynamic-trees

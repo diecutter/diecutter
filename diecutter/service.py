@@ -18,6 +18,16 @@ from diecutter.writers import (zip_directory_response,
                                targz_directory_response)
 
 
+def supported_engines(request):
+    """Return the list of supported template engines."""
+    engines = []
+    for key in request.registry.settings.keys():
+        if key.startswith('diecutter.engine.'):
+            engine_slug = key[len('diecutter.engine.'):]
+            engines.append(engine_slug)
+    return engines
+
+
 class Service(object):
     """Base class for diecutter services."""
     def hello(self, request):
@@ -25,6 +35,7 @@ class Service(object):
         return OrderedDict((
             ('diecutter', 'Hello'),
             ('version', diecutter.__version__),
+            ('engines', sorted(supported_engines(request)))
         ))
 
     def get(self, request):
@@ -40,14 +51,41 @@ class Service(object):
         """Return the resource object (instance) matching request."""
         raise NotImplementedError()
 
+    def get_engine_factory(self, request, filename=False):
+        """Return engine factory (class) for request.
+
+        If ``filename`` is ``True`` (defaults to ``False``),
+        then return the engine to render filenames. It may differ from the
+        engine to render files.
+
+        """
+        # Try engine from request's GET.
+        try:
+            engine_slug = request.GET['engine']
+        except KeyError:
+            engine_type = 'diecutter.filename_engine' if filename \
+                else 'diecutter.engine'
+            engine_slug = request.registry.settings[engine_type]
+        if not hasattr(request, 'cache'):
+            request.cache = {}
+        if filename:
+            request.cache['diecutter_filename_engine_slug'] = engine_slug
+        else:
+            request.cache['diecutter_engine_slug'] = engine_slug
+        try:
+            engine_path_setting = 'diecutter.engine.{0}'.format(engine_slug)
+            engine_path = request.registry.settings[engine_path_setting]
+        except KeyError:
+            raise HTTPNotAcceptable(
+                'Supported template engines: %s'
+                % ', '.join(sorted(supported_engines(request))))
+        config = Configurator(request.registry.settings)
+        engine_factory = config.maybe_dotted(engine_path)
+        return engine_factory
+
     def get_engine(self, request):
         """Return configured template engine to render templates."""
-        settings = request.registry.settings
-        config = Configurator(settings)
-        engine_factory_path = settings['diecutter.template_engine']
-        engine_factory = config.maybe_dotted(engine_factory_path)
-        engine = engine_factory()
-        return engine
+        return self.get_engine_factory(request)()
 
     def get_filename_engine(self, request):
         """Return configured template engine to render filenames.
@@ -55,12 +93,7 @@ class Service(object):
         This is not used for dynamic trees.
 
         """
-        settings = request.registry.settings
-        config = Configurator(settings)
-        engine_factory_path = settings['diecutter.filename_template_engine']
-        engine_factory = config.maybe_dotted(engine_factory_path)
-        engine = engine_factory()
-        return engine
+        return self.get_engine_factory(request, filename=True)()
 
     def get_writers(self, request, resource, context):
         """Return iterable of writers."""
@@ -127,3 +160,12 @@ def register_service(config, name, service, path):
     template.add_view('POST', service.post)
     cornice.register_service_views(config, hello)
     cornice.register_service_views(config, template)
+    # Deprecate 'template_engine' and 'filename_template_engine' settings.
+    deprecated_settings = ['diecutter.filename_template_engine',
+                           'diecutter.template_engine']
+    for deprecated_key in deprecated_settings:
+        if deprecated_key in config.registry.settings:
+            raise DeprecationWarning(
+                'Setting {deprecated} is deprecated, use {new} instead'
+                .format(deprecated=deprecated_key,
+                        new=deprecated_key.replace('template_', '')))

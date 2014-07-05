@@ -2,11 +2,13 @@
 """Parse settings, set defaults."""
 
 #: Default values for settings.
-defaults = {
+DEFAULTS = {
     'diecutter.service': 'diecutter.local:LocalService',
-    'diecutter.template_engine': 'piecutter.engines.jinja:Jinja2Engine',
-    'diecutter.filename_template_engine': 'piecutter.engines.filename'
-                                          ':FilenameEngine',
+    'diecutter.engine': 'jinja2',
+    'diecutter.filename_engine': 'filename',
+    'diecutter.engine.django': 'piecutter.engines.django:DjangoEngine',
+    'diecutter.engine.jinja2': 'piecutter.engines.jinja:Jinja2Engine',
+    'diecutter.engine.filename': 'piecutter.engines.filename:FilenameEngine',
 }
 
 
@@ -17,6 +19,6 @@ def normalize(settings={}):
 
     """
     normalized = settings.copy()
-    for key, value in defaults.items():
+    for key, value in DEFAULTS.items():
         normalized.setdefault(key, value)
     return normalized

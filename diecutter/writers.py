@@ -20,12 +20,15 @@ def file_response(request, resource, context):
     request.response.content_type = 'text/plain'
     try:
         file_generator = resource.render(context)
-        file_content = ''.join(file_generator)
     except TemplateError as e:
         request.response.status_int = 500
         logger.error('TemplateError caught: {error}'.format(error=e))
         request.response.write(json.dumps(str(e)))
-    request.response.write(file_content)
+    else:
+        file_content = ''.join(file_generator)
+        request.response.write(file_content)
+        engine_slug = request.cache['diecutter_engine_slug']
+        request.response.headers['Diecutter-Engine'] = str(engine_slug)
     return request.response
 
 
