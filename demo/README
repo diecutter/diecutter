@@ -72,32 +72,7 @@ Check it at http://localhost:8106/
 Examples
 ********
 
-The following examples use the `Local demo server`_. But you should be able
-to execute most of them on the `online demo`_ too.
-
-The following examples are `doctested`_, using Python's `WebTest`_ to run a
-diecutter server. Adapt the following setup to your needs:
-
-.. testsetup::
-
-   import diecutter.tests
-
-   # Serve demo project.
-   diecutter_server = diecutter.tests.demo_server()
-
-.. testcleanup::
-
-   diecutter_server.shutdown()
-
-.. doctest::
-
-   >>> diecutter_url = diecutter_server.application_url
-
-In the following examples, we use Python's `requests`_ as HTTP client.
-
-.. doctest::
-
-   >>> import requests
+.. include:: /doctests.inc
 
 greetings.txt
 =============
@@ -346,6 +321,3 @@ See :doc:`/client/dynamic-trees` for details about dynamic tree templates.
 .. _`diecutter's sourcecode`: https://github.com/novagile/diecutter/
 .. _`Python`: http://python.org
 .. _`Virtualenv`: http://virtualenv.org
-.. _`doctested`: http://sphinx-doc.org/ext/doctest.html
-.. _`WebTest`: https://pypi.python.org/pypi/WebTest
-.. _`requests`: https://pypi.python.org/pypi/requests

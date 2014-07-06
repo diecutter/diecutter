@@ -2,31 +2,104 @@
 Files
 #####
 
-Files are the main type of template resource.
+This document explains how to render single files using `diecutter` web API.
+See also :doc:`directories` about how to render multiple files at once.
+
+.. image:: /_static/overview-file.svg
+
 
 Here is service's API overview:
 
+* `GET`_: retrieve information about template, typically raw template content.
+* `POST`_: render single template file against data.
 * `PUT`_: upload template file from client to server.
-* `GET`_: retrieve raw template content.
-* `POST`_: render single template file against context.
 * other HTTP verbs aren't implemented yet.
 
-.. note::
+.. include:: /doctests.inc
 
-   In the examples below, we'll consider that a diecutter service is running
-   at http://localhost:8106.
 
+***
+GET
+***
+
+A ``GET`` request returns raw template content:
+
+.. doctest::
+
+   >>> response = requests.get(diecutter_url + 'greetings.txt')
+   >>> response.status_code
+   200
+   >>> print response.content
+   {{ greetings|default('Hello') }} {{ name }}!
+   <BLANKLINE>
+
+Of course, if template does not exist, it returns a 404:
+
+.. doctest::
+
+   >>> response = requests.get(diecutter_url + 'i-do-not-exist.txt')
+   >>> response.status_code
+   404
+
+
+****
+POST
+****
+
+``POST`` data to template resource in order to retrieve generated file:
+
+.. doctest::
+
+   >>> data = {'name': 'Remy'}
+   >>> response = requests.post(diecutter_url + 'greetings.txt', data=data)
+   >>> response.status_code
+   200
+   >>> print response.content
+   Hello Remy!
+
+See also :doc:`engines` about using specific template engines.
 
 ***
 PUT
 ***
 
-Put your template to the service:
+Use ``PUT`` to upload template from client to server:
 
-.. code-block:: text
+.. doctest::
 
-   $ echo "Hello {{ name }}" | curl -X PUT -F "file=@-" http://localhost:8106/hello.txt
-   {"diecutter": "Ok"}
+   >>> name = 'hello'
+   >>> server_side_name = os.path.join(diecutter_template_dir, name)
+   >>> os.path.exists(server_side_name)
+   False
+   >>> url = diecutter_url + name
+   >>> files = {'file': ('client-side-name', 'Hello {{ who }}\n')}
+   >>> response = requests.put(url, files=files)
+   >>> response.status_code
+   201
+   >>> os.path.exists(server_side_name)
+   True
+   >>> print open(server_side_name).read()
+   Hello {{ who }}
+   <BLANKLINE>
+
+Subdirectories are created on the fly:
+
+.. doctest::
+
+   >>> name = 'some/nested/directories/hello'
+   >>> server_side_name = os.path.join(diecutter_template_dir, name)
+   >>> os.path.exists(server_side_name)
+   False
+   >>> url = diecutter_url + name
+   >>> files = {'file': ('client-side-name', 'Hello {{ who }}\n')}
+   >>> response = requests.put(url, files=files)
+   >>> response.status_code
+   201
+   >>> os.path.exists(server_side_name)
+   True
+   >>> print open(server_side_name).read()
+   Hello {{ who }}
+   <BLANKLINE>
 
 .. warning::
 
@@ -37,27 +110,3 @@ Put your template to the service:
 
    As an example, diecutter's online demo is readonly, and templates are
    synchronized with source code on project's repository.
-
-
-***
-GET
-***
-
-We can get the raw template we just created via `PUT`_:
-
-.. code-block:: text
-
-   $ curl http://localhost:8106/hello.txt
-   Hello {{ name }}
-
-
-****
-POST
-****
-
-And we can render the template against some variables:
-
-.. code-block:: text
-
-   $ curl -X POST -d name=world http://localhost:8106/hello.txt
-   Hello world

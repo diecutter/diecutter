@@ -15,10 +15,9 @@ REQUIREMENTS = ['setuptools',
                 'PasteScript',
                 'PasteDeploy',
                 'waitress',
-                'mock',
                 'piecutter',
                 'requests',
-                'webtest']
+                ]
 
 
 if __name__ == '__main__':  # Don't run setup() when we import this module.

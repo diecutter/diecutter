@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-"""Tests that do not involve diecutter's internals."""
+"""Tests that we do not want to distribute along with `diecutter`'s code."""

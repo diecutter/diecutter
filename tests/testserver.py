@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Tests."""
+"""Utilities to run a test server."""
 import os
 
 from webtest.http import StopableWSGIServer
@@ -29,7 +29,7 @@ def demo_template_dir():
         for i in range(len(here_parts) - tox_index):
             project_dir = os.path.dirname(project_dir)
     else:
-        project_dir = os.path.dirname(os.path.dirname(here))
+        project_dir = os.path.dirname(here)
     demo_dir = os.path.join(project_dir, 'demo')
     return os.path.normpath(os.path.join(demo_dir, 'templates'))
 
@@ -51,9 +51,10 @@ def webtest_server(application):
     return server
 
 
-def demo_server():
+def demo_server(template_dir=None):
     """Return (running) WebTest's StopableWSGIServer for demo."""
-    template_dir = demo_template_dir()
+    if template_dir is None:
+        template_dir = demo_template_dir()
     settings = demo_settings(template_dir=template_dir)
     global_settings = {}
     application = diecutter.wsgi.for_paste(global_settings, **settings)

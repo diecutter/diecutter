@@ -18,6 +18,12 @@ import os
 import re
 
 
+configuration_dir = os.path.dirname(os.path.abspath(__file__))
+documentation_dir = configuration_dir
+project_dir = os.path.dirname(documentation_dir)
+tests_dir = os.path.join(project_dir, 'tests')
+
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -57,8 +63,6 @@ author_slug = re.sub(r'([\w_.-]+)', u'-', author)
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-configuration_dir = os.path.dirname(__file__)
-documentation_dir = configuration_dir
 version_file = os.path.normpath(os.path.join(
     documentation_dir,
     '../VERSION'))
@@ -271,3 +275,9 @@ texinfo_documents = [
 
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
+
+# -- Options for DocTest extension --------------------------------------------
+
+doctest_path = [
+    tests_dir,
+]

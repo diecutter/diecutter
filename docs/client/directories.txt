@@ -2,120 +2,179 @@
 Directories
 ###########
 
-Directories are the second type of template resource. They are collections of
-files and directories resources.
+This document explains how to render directories (i.e. multiple files)  using
+`diecutter` web API.
+See also :doc:`files` about how to render single files.
+
+.. image:: /_static/overview-directory.svg
 
 Here is service's API overview:
 
-* `PUT`_: directories are automatically created when you PUT a file in it.
-  There is currently no way to create a whole directory with one request
-  (uploading an archive as an example).
-
 * `GET`_: list files in directory.
 * `POST`_: render templates in directory against context, as an archive.
+* `PUT`_: directories are automatically created when you PUT a file in it.
 * other HTTP verbs aren't implemented yet.
 
-.. note::
+.. include:: /doctests.inc
 
-   In the examples below, we'll consider that a diecutter service is running
-   at http://localhost:8106.
+.. testsetup::
+
+   from StringIO import StringIO
+   import tarfile
+   import time
 
 
 ***
 PUT
 ***
 
-Let's create some "greetings" directory with "hello.txt" and "goodbye.txt"
-inside:
-    
-.. code-block:: text
+In order to create a directory, ``PUT`` a file in it.
 
-   $ echo "Hello {{ name }}!" | curl -X PUT  -F "file=@-" http://localhost:8106/greetings/hello.txt
-   {"diecutter": "Ok"}
+As an example, let's create some "greetings" directory with "hello.txt" and
+"goodbye.txt" inside:
 
-   $ echo "Good bye {{ name }}!" | curl -X PUT  -F "file=@-" http://localhost:8106/greetings/goodbye.txt
-   {"diecutter": "Ok"}
+.. doctest::
+
+   >>> name = 'greetings/hello.txt'
+   >>> files = {'file': ('client-side-name', 'Hello {{ name }}\n')}
+   >>> response = requests.put(diecutter_url + name, files=files)
+   >>> response.status_code
+   201
+   >>> name = 'greetings/goodbye.txt'
+   >>> files = {'file': ('client-side-name', 'Goodbye {{ name }}\n')}
+   >>> response = requests.put(diecutter_url + name, files=files)
+   >>> response.status_code
+   201
+
+There is currently no way to create an empty directory. And no way to upload
+multiple files at once.
 
 
 ***
 GET
 ***
 
-GET lists files in directory:
+``GET`` lists files in directory, recursively:
 
-.. code-block:: text
+.. doctest::
 
-   $ curl http://localhost:8106/greetings/
+   >>> response = requests.get(diecutter_url + 'greetings/')
+   >>> response.status_code
+   200
+   >>> print response.content
+   goodbye.txt
    hello.txt
-   goodbye.txt 
 
 Notice that, if you don't set the trailing slash, you get the same list with
 folder name as prefix:
 
-.. code-block:: text
+.. doctest::
 
-   $ curl http://localhost:8106/greetings
+   >>> response = requests.get(diecutter_url + 'greetings')
+   >>> response.status_code
+   200
+   >>> print response.content
+   greetings/goodbye.txt
    greetings/hello.txt
-   greetings/goodbye.txt 
 
 
 ****
 POST
 ****
 
-POST renders directory against a context:
+``POST`` renders directory against data, and the result is an archive.
 
-.. code-block:: text
+.. doctest::
 
-   $ curl -X POST -d name="world" -s http://localhost:8106/greetings | tar -zx
+   >>> response = requests.post(
+   ...     diecutter_url + 'greetings/',
+   ...     data={'name': 'Remy'})
+   >>> response.status_code
+   200
+   >>> archive = tarfile.open(fileobj=StringIO(response.content))
+   >>> print archive.getnames()
+   ['goodbye.txt', 'hello.txt']
+   >>> print archive.extractfile('hello.txt').read()
+   Hello Remy
+   >>> print archive.extractfile('goodbye.txt').read()
+   Goodbye Remy
 
-   $ tree greetings
-   greetings
-   ├── hello.txt
-   └── goodbye.txt
-   0 directory, 2 files
+By default, archives are in tar.gz format. See `accept header`_ below for
+alternatives.
 
-   $ cat greetings/hello.txt
-   Hello world!
-
-   $ cat greetings/goodbye.txt
-   Goodbye world!
-
-All files in directory are rendered with the same context data.
+By default, all files in directory are rendered, and the context data does not
+vary. See :doc:`dynamic-trees` if you need to dynamically alter the list of
+files or the context data.
 
 Like with `GET`_, the trailing slash affects filenames: without trailing slash,
 filenames are prefixed with directory name.
 
-Supported archives types: "accept" header
-=========================================
+.. doctest::
 
-By default, POST requests return GZIP archives.
+   >>> response = requests.post(
+   ...     diecutter_url + 'greetings',
+   ...     data={'name': 'Remy'})
+   >>> archive = tarfile.open(fileobj=StringIO(response.content))
+   >>> print archive.getnames()
+   ['greetings/goodbye.txt', 'greetings/hello.txt']
 
-You can get the content as a TAR.GZ archive with the "accept" header:
+In the archive, dates reflect generation time:
+
+.. doctest::
+
+   >>> time_floor = int(time.time())  # Time before generation.
+   >>> response = requests.post(
+   ...     diecutter_url + 'greetings/',
+   ...     data={'name': 'Remy'})
+   >>> archive = tarfile.open(fileobj=StringIO(response.content))
+   >>> time_ceil = time.time()  # Time after generation.
+   >>> info = archive.getmember('hello.txt')
+   >>> info.mtime != 0
+   True
+   >>> info.mtime >= time_floor
+   True
+   >>> info.mtime <= time_ceil
+   True
+
+accept header
+=============
+
+By default, `diecutter` returns TAR.GZ archives. You can get the content as a
+ZIP archive using the HTTP ``accept`` header:
+
+.. doctest::
+
+   >>> response = requests.post(
+   ...     diecutter_url + 'greetings/',
+   ...     data={'name': 'Remy'},
+   ...     headers={'accept': 'application/zip'})
+   >>> import zipfile
+   >>> zip_filename = os.path.join(diecutter_template_dir, 'response.zip')
+   >>> open(zip_filename, 'w').write(response.content)
+   >>> zipfile.is_zipfile(zip_filename)  # File is actually a ZIP.
+   True
+   >>> archive = zipfile.ZipFile(zip_filename)
+   >>> archive.testzip() is None  # ZIP integrity is OK.
+   True
+   >>> print archive.namelist()
+   ['goodbye.txt', 'hello.txt']
+   >>> print archive.read('hello.txt')
+   Hello Remy
+
+Supported archive formats
+=========================
+
+You can see all supported "accept" headers by requesting an unknown mime
+type:
 
 .. code:: text
 
-   $ curl -X POST --header "accept:application/zip" -d name="world" http://localhost:8106/greetings > greetings.zip
-   $ unzip greetings.zip
-   $ tree greetings
-   greetings
-   ├── hello.txt
-   └── goodbye.txt
-   0 directory, 2 files
+   $ curl -X POST --header "accept:fake/mime-type" -d name="world" http://localhost:8106/greetings
+   406 Not Acceptable
 
-.. tip::
-
-   You can see all supported "accept" headers by requesting an unknown mime
-   type:
-
-   .. code:: text
-
-      $ curl -X POST --header "accept:fake/mime-type" -d name="world" http://localhost:8106/greetings
-      406 Not Acceptable
-
-      The server could not comply with the request since it is either malformed or
-      otherwise incorrect.
+   The server could not comply with the request since it is either malformed or
+   otherwise incorrect.
 
 
-      Supported mime types: */*, application/gzip, application/x-gzip,
-      application/zip
+   Supported mime types: */*, application/gzip, application/x-gzip,
+   application/zip
