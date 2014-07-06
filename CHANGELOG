@@ -21,6 +21,12 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 
 - Bug #103 - README is rendered as HTML on PyPI (was plain reStructuredText).
 
+- Refactoring #107 - Functional tests moved to Sphinx documentation.
+
+- Refactoring #108 - `diecutter` no longer requires `webtest` and `mock`. They
+  are only required to run tests or building documentation. Removed
+  ``diecutter.tests`` from distributed package.
+
 
 0.6 (2014-04-13)
 ----------------

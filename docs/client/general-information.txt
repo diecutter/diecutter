@@ -1,0 +1,39 @@
+#######################
+General API information
+#######################
+
+Here are features of `diecutter` API's root endpoint, i.e. ``/``.
+
+.. include:: /doctests.inc
+
+
+***********
+API version
+***********
+
+`diecutter` root API endpoint returns an "hello" message and shows software
+version:
+
+.. doctest::
+
+   >>> response = requests.get(diecutter_url)
+   >>> response.status_code
+   200
+   >>> print response.json()['diecutter']
+   Hello
+   >>> import diecutter
+   >>> response.json()['version'] == diecutter.__version__
+   True
+
+
+**********************
+List supported engines
+**********************
+
+Ask the `diecutter` server API index to get the list of engines:
+
+.. doctest::
+
+   >>> response = requests.get(diecutter_url)
+   >>> response.json()['engines']
+   [u'django', u'filename', u'jinja2']

@@ -12,20 +12,7 @@ As a summary, `diecutter` follows the scenario below:
 
 Notice that `diecutter` sets a `diecutter-engine header in responses`_.
 
-.. testsetup::
-
-   import requests
-   import diecutter.tests
-
-   diecutter_server = diecutter.tests.demo_server()
-
-.. doctest::
-
-   >>> diecutter_url = diecutter_server.application_url
-
-.. testcleanup::
-
-   diecutter_server.shutdown()
+.. include:: /doctests.inc
 
 
 ***************
@@ -94,6 +81,13 @@ diecutter-engine header in responses
 
 `diecutter` sets the value of used engine as ``Diecutter-Engine`` header.
 
+.. doctest::
+
+   >>> greetings_url = diecutter_url + 'greetings.txt'
+   >>> response = requests.post(greetings_url, {'name': 'world'})
+   >>> print response.headers['Diecutter-Engine']
+   jinja2
+
 
 *****************
 Supported engines
@@ -106,3 +100,18 @@ Ask the `diecutter` server API index to get the list of engines:
    >>> response = requests.get(diecutter_url)
    >>> response.json()['engines']
    [u'django', u'filename', u'jinja2']
+
+
+*******************
+Unsupported engines
+*******************
+
+`diecutter` returns a HTTP 406 error code in case an unsupported template
+engine was asked:
+
+.. doctest::
+
+   >>> greetings_url = diecutter_url + 'greetings.txt?engine=unknown'
+   >>> response = requests.post(greetings_url, {'name': 'world'})
+   >>> response.status_code
+   406
