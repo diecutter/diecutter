@@ -164,16 +164,6 @@ Here are some differences with `diecutter`:
 |                                      | engines.                             |
 +--------------------------------------+--------------------------------------+
 
-Another way to compare `cookiecutter` and `diecutter` could be:
-
-* `cookiecutter` has bigger community. It delivers "modern" `paster`-like
-  experience for Jinja2.
-
-* `diecutter` and its ecosystem have larger vision. It tries to improve user
-  and developer experience for the "render templates against data" pattern.
-  That's why features like multiple template engines are part of the plan since
-  the beginning.
-
 
 ******
 Voodoo
