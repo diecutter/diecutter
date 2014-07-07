@@ -1,0 +1,29 @@
+**********
+Python API
+**********
+
+`diecutter` is written in `Python`_. Here are some tips about `diecutter`'s
+internals:
+
+* `diecutter` is built on top of a third-party project called `piecutter`_.
+  `piecutter` provides things such as template engines and template loaders.
+  In most cases, i.e. except you explicitely need `diecutter`'s WSGI layer,
+  have a look at `piecutter`'s Python API.
+
+* `diecutter` provides a WSGI layer and a REST API on top of `piecutter`.
+
+.. note::
+
+   At the moment, authors put efforts in `piecutter`'s API, because it is more
+   general purpose than `diecutter`'s. That said, if you have an use case for
+   `diecutter` API, `let us know
+   <https://github.com/diecutter/diecutter/issues>`_! Feedback, reviews and
+   contributions are welcome ;)
+
+
+.. rubric:: Notes & references
+
+.. target-notes::
+
+.. _`Python`: http://python.org
+.. _`piecutter`: https://pypi.python.org/pypi/piecutter

@@ -27,6 +27,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
   are only required to run tests or building documentation. Removed
   ``diecutter.tests`` from distributed package.
 
+- Features #81 and #87 - Reviewed documentation about alternatives and related
+  projects: added `Voodoo` and `cookiecutter` to alternatives ; highlighted
+  `piecutter` as the core Python API provider.
+
 
 0.6 (2014-04-13)
 ----------------

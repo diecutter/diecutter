@@ -3,13 +3,34 @@ Alternatives and related projects
 #################################
 
 This document presents other projects that provide similar or complementary
-functionalities. It focuses on differences with diecutter.
+functionalities. It focuses on differences with `diecutter`.
 
 .. note::
 
-   This document reflects diecutter's authors point of view, which is,
+   This document reflects `diecutter`'s authors point of view, which is,
    inherently, a partial one. :doc:`Contact authors <authors>` if you feel
    something is wrong.
+
+
+*******************
+diecutter ecosystem
+*******************
+
+`diecutter` is part of an ecosystem:
+
+* `piecutter`_ is the core Python API. It provides stuff like template engines
+  or template loaders.
+
+* `diecutter` implements a WSGI application and REST interface on top of
+  `piecutter`.
+
+* `diecutter-index <https://github.com/diecutter/diecutter-index>`_ is a
+  proof-of-concept project for an online template registry.
+
+* http://diecutter.io is the SAAS platform running `diecutter` ecosystem.
+
+* `diecutter organization on Github <https://github.com/diecutter>`_ has been
+  created to manage every related projects in a single place.
 
 
 *************
@@ -19,12 +40,12 @@ paster create
 `PasteScript`_ provides a ``paster create`` command to generate files from
 templates.
 
-Diecutter's authors tried PasteScript, and found it too complicated for most
-use cases. They felt that the more they generated files with PasteScript, the
-more they spent time on PasteScript's specific stuff. With diecutter, they
+`diecutter`'s authors tried PasteScript, and found it too complicated for most
+use cases. They felt that the more they generated files with `PasteScript`, the
+more they spent time on `PasteScript`'s specific stuff. With `diecutter`, they
 tried to focus on using templates to generate files.
 
-Let's highlight some differences between PasteScript and diecutter:
+Let's highlight some differences between `PasteScript` and `diecutter`:
 
 +--------------------------------------+--------------------------------------+
 | PasteScript                          | diecutter                            |
@@ -64,9 +85,9 @@ Let's highlight some differences between PasteScript and diecutter:
 | in output directory, and even shows  | You can do that (better) with Git,   |
 | you the diff!                        | Mercurial and many other tools.      |
 +--------------------------------------+--------------------------------------+
-| Uses `Cheetah`_ template engine.     | Currently uses `Jinja`_.             |
-|                                      | Later, diecutter will support        |
-|                                      | several template engines.            |
+| Uses `Cheetah`_ template engine.     | Supports several template engines,   |
+|                                      | such as `Jinja`_ and `Django`_.      |
+|                                      | `Cheetah`_ is in the plans.          |
 +--------------------------------------+--------------------------------------+
 | Not only about generating files.     | Focuses on generating files.         |
 | PasteScript is a big project that    |                                      |
@@ -93,6 +114,81 @@ to make things easy for most users, but flexible for users who have specific
 needs.
 
 
+************
+Cookiecutter
+************
+
+`cookiecutter`_ provides command line tools to generate files using templates.
+
+Here are some differences with `diecutter`:
+
++--------------------------------------+--------------------------------------+
+| cookiecutter                         | diecutter                            |
++======================================+======================================+
+| Provides command line interface.     | Provides WSGI application and REST   |
+|                                      | API. Use things like ``curl`` if you |
+|                                      | like a CLI.                          |
++--------------------------------------+--------------------------------------+
+| You need it installed on your        | You just need a web client.          |
+| machine.                             |                                      |
++--------------------------------------+--------------------------------------+
+| Easily develop templates on your     | To develop templates, you need to    |
+| machine.                             | install and run a local `diecutter`. |
++--------------------------------------+--------------------------------------+
+| Reads templates from Github.         | Reads templates from Github,         |
+|                                      | anywhere in the repository.          |
++--------------------------------------+--------------------------------------+
+| One template per repository.         | Unlimited number of templates per    |
+| Repository is dedicated to templates | repository. Templates are just files |
+|                                      | and directories in a filesystem.     |
++--------------------------------------+--------------------------------------+
+| Supports Bitbucket too.              | No support for Bitbucket at the      |
+|                                      | moment. Help is welcome ;)           |
++--------------------------------------+--------------------------------------+
+| A "cookiecutter" is a set of         | Renders directories or any part of   |
+| templates. Renders everything.       | it (sub-directories, single files).  |
++--------------------------------------+--------------------------------------+
+| In templates, variables are like     | No prefix for variables. Works with  |
+| ``{{ cookiecutter.YOUR_VARIABLE }}`` | templates not made for `diecutter`.  |
+| so templates are tied to             |                                      |
+| `cookiecutter`.                      |                                      |
++--------------------------------------+--------------------------------------+
+| Python API.                          | Python API lives in `piecutter`_.    |
++--------------------------------------+--------------------------------------+
+| Shell is the user interface.         | HTML forms provide a nice,           |
+|                                      | human-readable and highly            |
+|                                      | customizable user interface.         |
++--------------------------------------+--------------------------------------+
+| Only Jinja2. No plans for other      | Supports several template engines.   |
+| template engines.                    | Could support even non-Python        |
+|                                      | engines.                             |
++--------------------------------------+--------------------------------------+
+
+Another way to compare `cookiecutter` and `diecutter` could be:
+
+* `cookiecutter` has bigger community. It delivers "modern" `paster`-like
+  experience for Jinja2.
+
+* `diecutter` and its ecosystem have larger vision. It tries to improve user
+  and developer experience for the "render templates against data" pattern.
+  That's why features like multiple template engines are part of the plan since
+  the beginning.
+
+
+******
+Voodoo
+******
+
+See https://pypi.python.org/pypi/Voodoo
+
+
+******
+And...
+******
+
+See also projects listed as `cookiecutter alternatives`_.
+
+
 ***********************************
 Puppet, Chef and other provisioners
 ***********************************
@@ -109,7 +205,7 @@ overkill.
 Diecutter also tries to make it easier to migrate from one provisioner to
 another. Provisioners are often tied to one template engine, one layout and
 one deployment process. Those items differ from one provisioner to another.
-With diecutter, which plans to support several template engines, you could
+With diecutter, which supports several template engines, you could
 easily use the same templates whatever the provisioner or deployment procedure.
 
 
@@ -117,9 +213,14 @@ easily use the same templates whatever the provisioner or deployment procedure.
 
 .. target-notes::
 
+.. _`piecutter`: https://pypi.python.org/pypi/piecutter/
 .. _`PasteScript`: https://pypi.python.org/pypi/PasteScript/
 .. _`Cheetah`: http://www.cheetahtemplate.org/
 .. _`Jinja`: http://jinja.pocoo.org/
+.. _`Django`: http://docs.djangoproject.com
 .. _`collective.generic.webbuilder`:
    https://pypi.python.org/pypi/collective.generic.webbuilder/
 .. _`ZCML`: http://docs.zope.org/zope.component/zcml.html
+.. _`cookiecutter`: https://pypi.python.org/pypi/cookiecutter
+.. _`cookiecutter alternatives`:
+   http://cookiecutter.readthedocs.org/en/latest/readme.html#similar-projects

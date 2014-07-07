@@ -23,7 +23,7 @@ REQUIREMENTS = ['setuptools',
 if __name__ == '__main__':  # Don't run setup() when we import this module.
     setup(name=NAME,
           version=VERSION,
-          description='Templates as a service',
+          description='Templates as a service.',
           long_description=README,
           classifiers=['Development Status :: 3 - Alpha',
                        "Programming Language :: Python :: 2.7",

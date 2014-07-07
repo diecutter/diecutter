@@ -12,7 +12,7 @@ Contents
    demo
    client/index
    server/index
-   framework/index
+   framework
    about/index
    contributing
    presentations
