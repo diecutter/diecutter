@@ -8,6 +8,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.7 (unreleased)
 ----------------
 
+Added support for multiple template engines, reviewed documentation.
+
 - Feature #77 - One `diecutter` server can support multiple template engines:
 
   * The client can ask `diecutter` to use a specific engine with ``engine``

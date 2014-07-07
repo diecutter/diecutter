@@ -22,6 +22,9 @@ Here is service's API overview:
 GET
 ***
 
+Let's work on file resource `greetings.txt
+<https://github.com/diecutter/diecutter/tree/master/demo/templates/greetings.txt>`_.
+
 A ``GET`` request returns raw template content:
 
 .. doctest::
@@ -50,14 +53,20 @@ POST
 
 .. doctest::
 
-   >>> data = {'name': 'Remy'}
-   >>> response = requests.post(diecutter_url + 'greetings.txt', data=data)
+   >>> greetings_url = diecutter_url + 'greetings.txt'
+   >>> response = requests.post(greetings_url, data={'name': 'world'})
    >>> response.status_code
    200
    >>> print response.content
-   Hello Remy!
+   Hello world!
+
+   >>> response = requests.post(greetings_url, {'greetings': u'Greetings',
+   ...                                          'name': u'professor Falken'})
+   >>> print response.content
+   Greetings professor Falken!
 
 See also :doc:`engines` about using specific template engines.
+
 
 ***
 PUT

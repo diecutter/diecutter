@@ -2,31 +2,42 @@
 Variable-based output filenames
 ###############################
 
+This document explains how to render dynamic filenames.
+
 When rendering a directory, it is sometimes useful to use variables in the
 filenames to output.
 
-.. note::
+.. tip::
 
    This is useless for single files, since most clients allow you to choose the
    name of the output file.
 
-Setup templates with ``+variable+`` in the filename:
+.. include:: /doctests.inc
 
-.. code-block:: sh
+.. testsetup::
 
-   echo "Focus on filename" | curl -X PUT -F "file=@-" http://localhost:8106/foo/+bar+.txt
+   from StringIO import StringIO
+   import tarfile
+
+When rendering directories, templates having ``+variable+`` in the filename
+will be resolved against the context data:  
+
+.. doctest::
  
-The variables within ``+`` will be resolved and replaced by their value:
+   >>> url = diecutter_url + 'simple-tree/'
+   >>> response = requests.get(url)
+   >>> print response.content
+   +name+.txt
+   >>> response = requests.post(url, {'name': 'demo'})
+   >>> archive = tarfile.open(fileobj=StringIO(response.content))
+   >>> print archive.getnames()
+   ['demo.txt']
 
-.. code-block:: text
+.. tip::
 
-   $ curl -X POST -d bar=baz http://localhost:8106/foo | tar -zt
-   foo/baz.txt
-
-.. note::
-
-   This behaviour is disabled when using the :doc:`template tree template
+   **The "variable-based filenames" feature is meant for simple cases**. If you
+   need advanced things for filenames, use the :doc:`dynamic trees feature
    <dynamic-trees>`.
 
-**This feature is meant for simple cases**. If you need advanced things for
-filenames, use the :doc:`template tree template <dynamic-trees>`.
+   Notice that "variable-based filenames" behaviour is disabled when using the
+   dynamic trees.
