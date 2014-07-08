@@ -7,6 +7,13 @@ Dynamic directory trees templates
 Thus you can use all features of template engines to render filenames, select
 templates or even alter context.
 
+.. include:: /doctests.inc
+
+.. testsetup::
+
+   from StringIO import StringIO
+   import tarfile
+
 
 *********
 Use cases
@@ -27,12 +34,12 @@ While rendering a directory...
 The template tree template
 **************************
 
-When you POST to a directory, diecutter looks for special ".diecutter-tree"
-template in that directory. If present, it renders ".diecutter-tree" against
+When you POST to a directory, diecutter looks for special ".directory-tree"
+template in that directory. If present, it renders ".directory-tree" against
 context, decodes JSON, then iterates over items to actually render the
 directory.
 
-Except when rendering a directory resource, ".diecutter-tree" template is a
+Except when rendering a directory resource, ".directory-tree" template is a
 normal template resource file. Manage it as any other template file.
 
 
@@ -42,48 +49,68 @@ Example
 
 Let's explain this feature with an example...
 
-Create a "dynamic-greetings" directory resource, which contains only one
-"greetings.txt" template:
+Let's work on directory resource :file:`dynamic-tree/`.
 
-.. code-block:: sh
+.. doctest::
 
-   echo '{{ greeting }} {{ who }}!' | curl -X PUT -F "file=@-" http://localhost:8106/dynamic-greetings/greetings.txt
+   >>> dynamic_tree_url = diecutter_url + 'dynamic-tree/'
 
-Let's make "dynamic-greetings" directory dynamic, by putting a .diecutter-tree
-template:
+It's a directory. So ``GET`` lists the templates it contains:
 
-.. code-block:: sh
+.. doctest::
 
-   echo '[
-     {% for greeting in greetings %}
+   >>> response = requests.get(dynamic_tree_url)
+   >>> print response.content
+   .directory-tree
+   greeter.txt
+
+:file:`greeter.txt` is a template, with nothing special:
+
+.. doctest::
+
+   >>> response = requests.get(dynamic_tree_url + 'greeter.txt')
+   >>> print response.content
+   {{ greeter|default('Hello') }} {{ name|default('world') }}!
+   <BLANKLINE>
+
+:file:`directory-tree` is a also a template, with a special name:
+
+.. doctest::
+
+   >>> response = requests.get(dynamic_tree_url + '.directory-tree')
+   >>> print response.content
+   [
+     {% for greeter in greeting_list|default(['hello', 'goodbye']) %}
        {
-         "template": "greetings.txt",
-         "filename": "{{ greeting }}.txt",
-         "context": {"greeting": "{{ greeting }}"}
+         "template": "greeter.txt",
+         "filename": "{{ greeter }}.txt",
+         "context": {"greeter": "{{ greeter }}"}
        }{% if not loop.last %},{% endif %}
      {% endfor %}
    ]
-   ' | curl -X PUT -F "file=@-" http://localhost:8106/dynamic-greetings/.diecutter-tree
+   <BLANKLINE>
 
-POST to ``.diecutter-tree`` returns a JSON-encoded list:
+:file:`directory-tree` template renders as a list of templates, in JSON:
 
-.. code-block:: sh
+.. doctest::
 
-   curl -X POST -d greetings=hello -d greetings=goodbye http://localhost:8106/dynamic-greetings/.diecutter-tree
-
-.. code-block:: json
-
+   >>> response = requests.post(dynamic_tree_url + '.directory-tree',
+   ...                          {'greeting_list': [u'bonjour', u'bonsoir']})
+   >>> print response.content
    [
-     {
-       "template": "greetings.txt",
-       "filename": "hello.txt",
-       "context": {"greeting": "hello"}
-     },
-     {
-       "template": "greetings.txt",
-       "filename": "goodbye.txt",
-       "context": {"greeting": "goodbye"}
-     }
+   <BLANKLINE>
+       {
+         "template": "greeter.txt",
+         "filename": "bonjour.txt",
+         "context": {"greeter": "bonjour"}
+       },
+   <BLANKLINE>
+       {
+         "template": "greeter.txt",
+         "filename": "bonsoir.txt",
+         "context": {"greeter": "bonsoir"}
+       }
+   <BLANKLINE>
    ]
 
 JSON-encoded list items are dictionaries with the following keys:
@@ -92,22 +119,28 @@ JSON-encoded list items are dictionaries with the following keys:
 * "filename": filename to return to the client ;
 * "context": optional dictionary of context overrides.
 
-Now let's render the directory as an archive:
+When rendering a directory, `diecutter` first computes the tree of templates
+in the directory. By default, it just reads the filesystem. But if there is a
+:file:`.directory-tree` file, then this special file is rendered first, and the
+result is used as the list of templates to render.
 
-.. code-block:: text
+So, when you render the directory, you generate the files according to the
+generated :file:`directory-tree` template:
 
-   $ curl -X POST \
-          -d name=Remy -d greetings=hello -d greetings=goodbye \
-          http://localhost:8106/dynamic-greetings \
-          | tar -zxv
-   $ tree dynamic-greetings
-   dynamic-greetings
-   ├── hello.txt
-   └── goodbye.txt
-   0 directory, 2 files
+.. doctest::
 
-   $ cat hello.txt
-   hello Remy!
+   >>> response = requests.post(dynamic_tree_url,
+   ...                          {'name': u'Remy',
+   ...                           'greeting_list': [u'bonjour', u'bonsoir']})
+   >>> archive = tarfile.open(fileobj=StringIO(response.content), mode='r:gz')
+   >>> print '\n'.join(archive.getnames())
+   bonjour.txt
+   bonsoir.txt
+   >>> print archive.extractfile('bonjour.txt').read()
+   bonjour Remy!
+   >>> print archive.extractfile('bonsoir.txt').read()
+   bonsoir Remy!
+   >>> archive.close()
 
-   $ cat goodbye.txt
-   goodbye Remy!
+Here, the :file:`greeter.txt` template has been rendered several times, with
+different context data.

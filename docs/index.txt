@@ -9,12 +9,12 @@ Contents
    :maxdepth: 2
    :titlesonly:
 
-   demo
    client/index
    server/index
    framework
    about/index
    contributing
+   demo
    presentations
    faq
 

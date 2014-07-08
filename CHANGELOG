@@ -8,6 +8,8 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 0.7 (unreleased)
 ----------------
 
+Added support for multiple template engines, reviewed documentation.
+
 - Feature #77 - One `diecutter` server can support multiple template engines:
 
   * The client can ask `diecutter` to use a specific engine with ``engine``
@@ -26,6 +28,10 @@ about future releases, check `milestones`_ and :doc:`/about/vision`.
 - Refactoring #108 - `diecutter` no longer requires `webtest` and `mock`. They
   are only required to run tests or building documentation. Removed
   ``diecutter.tests`` from distributed package.
+
+- Refactoring #110 - From demo, removed templates that are now maintained as
+  third-party projects: Django project, Python project and Sphinx
+  documentation.
 
 - Features #81 and #87 - Reviewed documentation about alternatives and related
   projects: added `Voodoo` and `cookiecutter` to alternatives ; highlighted

@@ -6,42 +6,39 @@ Let's try diecutter!
 
 
 ***********
-Online demo
+Online SAAS
 ***********
 
-There is an online server hosting diecutter's demo:
+There is an online server hosting `diecutter`:
 
 * index page: http://diecutter.io/
-* API: http://diecutter.io/api/
-* demo client for Sphinx documentation template:
-  http://diecutter.io/sphinx-docs.html
+* demo templates API: http://diecutter.io/api/
+* API using Github loader: http://diecutter.io/github/
+
+In most cases, http://diecutter.io/ and :doc:`/client/index` reference should
+be enough for you to discover `diecutter`.
 
 
 *************
 In sourcecode
 *************
 
-The :file:`demo/` directory in `diecutter's sourcecode`_ contains:
-
-* templates in :file:`templates/` folder.
-
-* some HTML-based client, specialized for the sphinx-docs template, as
-  :file:`sphinx-docs.html` file.
-
-* presets (input data) in :file:`presets/` folder.
+The :file:`demo/` directory in `diecutter's sourcecode`_ contains templates in
+:file:`templates/` folder. They are basically used for documentation
+(doctests).
 
 Feel free to use it as a sandbox.
-
-.. note:: the `online demo`_ uses templates from the source code!
 
 
 *****************
 Local demo server
 *****************
 
+Here are instructions to run `diecutter`'s demo on your machine.
+
 System requirements:
 
-* `Python`_ version 2.6 or 2.7, available as ``python`` command.
+* `Python`_ version 2.7, available as ``python`` command.
 
   .. note::
 
@@ -54,7 +51,7 @@ Execute:
 
 .. code-block:: sh
 
-   git clone git@github.com:novagile/diecutter.git
+   git clone git@github.com:diecutter/diecutter.git
    cd diecutter/
    make develop
    make serve
@@ -72,246 +69,7 @@ Check it at http://localhost:8106/
 Examples
 ********
 
-.. include:: /doctests.inc
-
-greetings.txt
-=============
-
-Let's work on file resource :file:`greetings.txt`.
-
-.. doctest::
-
-   >>> greetings_url = diecutter_url + 'greetings.txt'
-
-GET raw content of a template:
-
-.. doctest::
-
-   >>> response = requests.get(greetings_url)
-   >>> print response.content
-   {{ greetings|default('Hello') }} {{ name }}!
-   <BLANKLINE>
-
-POST data to the template and retrieve generated content:
-
-.. doctest::
-
-   >>> response = requests.post(greetings_url, {'name': u'world'})
-   >>> print response.content
-   Hello world!
-
-   >>> response = requests.post(greetings_url, {'greetings': u'Greetings',
-   ...                                          'name': u'professor Falken'})
-   >>> print response.content
-   Greetings professor Falken!
-
-See :doc:`/client/files` for details about working with file resources.
-
-django_admin.py startproject
-============================
-
-Let's work on directory resource :file:`+django_project+/`.
-
-.. doctest::
-
-   >>> django_project_url = diecutter_url + '+django_project+'
-
-It's a directory.
-GET lists the templates it contains:
-
-.. doctest::
-
-   >>> response = requests.get(django_project_url)
-   >>> print response.content
-   +django_project+/manage.py
-   +django_project+/+django_project+/__init__.py
-   +django_project+/+django_project+/settings.py
-   +django_project+/+django_project+/urls.py
-   +django_project+/+django_project+/wsgi.py
-
-Every template in a directory can be handled as a single file. But let's focus
-on the directory feature...
-
-POST returns an archive, with TAR.GZ format by default:
-
-.. doctest::
-
-   >>> django_project_url = diecutter_url + '+django_project+'
-
-   >>> from StringIO import StringIO
-   >>> import tarfile
-   >>> response = requests.post(django_project_url,
-   ...                          {'django_project': u'demo'})
-   >>> response.headers['Content-Type']
-   'application/gzip; charset=UTF-8'
-   >>> archive = tarfile.open(fileobj=StringIO(response.content), mode='r|gz')
-   >>> print '\n'.join(archive.getnames())
-   demo/manage.py
-   demo/demo/__init__.py
-   demo/demo/settings.py
-   demo/demo/urls.py
-   demo/demo/wsgi.py
-   >>> archive.close()
-
-Without trailing slash, directory name is used as a prefix for filenames.
-Let's try the same requests with a trailing slash:
-
-.. doctest::
-
-   >>> django_project_url = diecutter_url + '+django_project+/'
-
-   >>> response = requests.get(django_project_url)
-   >>> print response.content
-   manage.py
-   +django_project+/__init__.py
-   +django_project+/settings.py
-   +django_project+/urls.py
-   +django_project+/wsgi.py
-
-   >>> response = requests.post(django_project_url,
-   ...                          {'django_project': u'demo'})
-   >>> archive = tarfile.open(fileobj=StringIO(response.content), mode='r|gz')
-   >>> print '\n'.join(archive.getnames())
-   manage.py
-   demo/__init__.py
-   demo/settings.py
-   demo/urls.py
-   demo/wsgi.py
-   >>> archive.close()
-
-You can get the content as a ZIP archive instead with the "accept" header:
-
-.. doctest::
-
-   >>> from zipfile import ZipFile
-   >>> response = requests.post(django_project_url,
-   ...                          {'django_project': u'demo'},
-   ...                          headers={'accept': 'application/zip'})
-   >>> print response.headers['Content-Type']
-   application/zip; charset=UTF-8
-   >>> archive = ZipFile(StringIO(response.content))
-   >>> print '\n'.join(archive.namelist())
-   manage.py
-   demo/__init__.py
-   demo/settings.py
-   demo/urls.py
-   demo/wsgi.py
-   >>> archive.close()
-
-.. tip::
-
-   You can see all supported "accept" headers by requesting an unknown mime
-   type:
-
-   .. doctest::
-
-      >>> response = requests.post(django_project_url,
-      ...                          {'django_project': u'demo'},
-      ...                          headers={'accept': 'fake/mime-type'})
-      >>> response.status_code
-      406
-      >>> print response.content
-      406 Not Acceptable
-      <BLANKLINE>
-      The server could not comply with the request since it is either malformed or otherwise incorrect.
-      <BLANKLINE>
-      <BLANKLINE>
-      Supported mime types: */*, application/gzip, application/x-gzip, application/zip
-      <BLANKLINE>
-      <BLANKLINE>
-
-See :doc:`/client/directories` for details about directory resources.
-
-Dynamic tree template
-=====================
-
-Let's work on directory resource :file:`dynamic-tree/`.
-
-.. doctest::
-
-   >>> dynamic_tree_url = diecutter_url + 'dynamic-tree/'
-
-It's a directory.
-GET lists the templates it contains:
-
-.. doctest::
-
-   >>> response = requests.get(dynamic_tree_url)
-   >>> print response.content
-   .directory-tree
-   greeter.txt
-
-:file:`greeter.txt` is the same as `greetings.txt`_ example above:
-
-.. doctest::
-
-   >>> response = requests.get(dynamic_tree_url + 'greeter.txt')
-   >>> print response.content
-   {{ greeter|default('Hello') }} {{ name|default('world') }}!
-   <BLANKLINE>
-
-:file:`directory-tree` is a normal template, with a special name:
-
-.. doctest::
-
-   >>> response = requests.get(dynamic_tree_url + '.directory-tree')
-   >>> print response.content
-   [
-     {% for greeter in greeting_list|default(['hello', 'goodbye']) %}
-       {
-         "template": "greeter.txt",
-         "filename": "{{ greeter }}.txt",
-         "context": {"greeter": "{{ greeter }}"}
-       }{% if not loop.last %},{% endif %}
-     {% endfor %}
-   ]
-   <BLANKLINE>
-
-It renders a list of templates, in JSON:
-
-.. doctest::
-
-   >>> response = requests.post(dynamic_tree_url + '.directory-tree',
-   ...                          {'greeting_list': [u'bonjour', u'bonsoir']})
-   >>> print response.content
-   [
-   <BLANKLINE>
-       {
-         "template": "greeter.txt",
-         "filename": "bonjour.txt",
-         "context": {"greeter": "bonjour"}
-       },
-   <BLANKLINE>
-       {
-         "template": "greeter.txt",
-         "filename": "bonsoir.txt",
-         "context": {"greeter": "bonsoir"}
-       }
-   <BLANKLINE>
-   ]
-
-And guess what, this list of templates is used to render the directory
-resource:
-
-.. doctest::
-
-   >>> response = requests.post(dynamic_tree_url,
-   ...                          {'name': u'Remy',
-   ...                           'greeting_list': [u'bonjour', u'bonsoir']})
-   >>> archive = tarfile.open(fileobj=StringIO(response.content), mode='r:gz')
-   >>> print '\n'.join(archive.getnames())
-   bonjour.txt
-   bonsoir.txt
-   >>> print archive.extractfile('bonjour.txt').read()
-   bonjour Remy!
-   >>> print archive.extractfile('bonsoir.txt').read()
-   bonsoir Remy!
-   >>> archive.close()
-
-Here, the :file:`greeter.txt` template has been rendered several times, with
-different context data.
-
-See :doc:`/client/dynamic-trees` for details about dynamic tree templates.
+Examples using the demo's templates are explained in :doc:`client/index`.
 
 
 .. rubric:: References

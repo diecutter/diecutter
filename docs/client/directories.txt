@@ -25,7 +25,7 @@ Here is service's API overview:
 
 
 ***
-PUT
+PUT 
 ***
 
 In order to create a directory, ``PUT`` a file in it.
@@ -102,9 +102,35 @@ POST
 By default, archives are in tar.gz format. See `accept header`_ below for
 alternatives.
 
+Rendering only parts of a directory
+===================================
+
+You can render only parts of a directory! It means you can render
+sub-directories or single files:
+
+.. doctest::
+
+   >>> response = requests.post(
+   ...     diecutter_url + 'greetings/hello.txt',
+   ...     data={'name': 'world'})
+   >>> print response.content
+   Hello world
+
+This is because `diecutter` handles templates just as files and directories,
+in any filesystem it can read. If it can read a directory or a file, they can
+be used as a template, and so can be the sub-directories and files. `diecutter`
+does not need you to register templates, it only needs to be able to read the
+"filesystem" (repositories are kind of filesystems too) holding templates.
+
+Dynamic trees
+=============
+
 By default, all files in directory are rendered, and the context data does not
 vary. See :doc:`dynamic-trees` if you need to dynamically alter the list of
 files or the context data.
+
+Trailing slash
+==============
 
 Like with `GET`_, the trailing slash affects filenames: without trailing slash,
 filenames are prefixed with directory name.
