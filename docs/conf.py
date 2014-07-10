@@ -55,10 +55,10 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'diecutter'
-project_slug = re.sub(r'([\w_.-]+)', u'-', project)
+project_slug = re.sub(r'([\W_.-]+)', u'-', project)
 copyright = u'2012-2013, Remy Hubscher'
 author = u'Remy Hubscher'
-author_slug = re.sub(r'([\w_.-]+)', u'-', author)
+author_slug = re.sub(r'([\W_.-]+)', u'-', author)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
