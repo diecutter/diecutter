@@ -74,7 +74,7 @@ Defaults:
 .. note::
 
    `diecutter` itself does not implement engines. Engines are implemented as
-   part of `piecutter <https://piecutter.readthedocs.org>`_.
+   part of `piecutter <https://piecutter.readthedocs.io>`_.
 
 
 ***

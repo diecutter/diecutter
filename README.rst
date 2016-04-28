@@ -40,7 +40,7 @@ Although under active development, `diecutter` already works, so `give it a
 try! <http://diecutter.io>`_.
 
 Check `milestones <https://github.com/diecutter/diecutter/issues/milestones>`_
-and `vision <https://diecutter.readthedocs.org/en/latest/about/vision.html>`_
+and `vision <https://diecutter.readthedocs.io/en/latest/about/vision.html>`_
 for details about the future.
 
 Also notice that `diecutter` is part of an ecosystem:
@@ -64,10 +64,10 @@ Resources
 *********
 
 * Online demo: http://diecutter.io
-* Documentation: http://diecutter.readthedocs.org
+* Documentation: http://diecutter.readthedocs.io
 * PyPI page: http://pypi.python.org/pypi/diecutter
 * Bugtracker: https://github.com/diecutter/diecutter/issues
-* Changelog: https://diecutter.readthedocs.org/en/latest/about/changelog.html
+* Changelog: https://diecutter.readthedocs.io/en/latest/about/changelog.html
 * Roadmap: https://github.com/diecutter/diecutter/issues/milestones
 * Code repository: https://github.com/diecutter/diecutter
 * Continuous integration: https://travis-ci.org/diecutter/diecutter
@@ -75,4 +75,4 @@ Resources
 
 .. _`piecutter`: https://pypi.python.org/pypi/piecutter
 .. _`alternatives and related projects`:
-   https://diecutter.readthedocs.org/en/latest/about/alternatives.html
+   https://diecutter.readthedocs.io/en/latest/about/alternatives.html
