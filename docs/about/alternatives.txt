@@ -213,4 +213,4 @@ easily use the same templates whatever the provisioner or deployment procedure.
 .. _`ZCML`: http://docs.zope.org/zope.component/zcml.html
 .. _`cookiecutter`: https://pypi.python.org/pypi/cookiecutter
 .. _`cookiecutter alternatives`:
-   http://cookiecutter.readthedocs.org/en/latest/readme.html#similar-projects
+   http://cookiecutter.readthedocs.io/en/latest/readme.html#similar-projects

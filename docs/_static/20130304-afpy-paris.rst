@@ -6,7 +6,7 @@ Presentation at an `AFPY <http://www.afpy.org>`_ event, march 2013, Paris.
 
 By Rémy Hubscher and Benoit Bryon.
 
-Slides available on https://diecutter.readthedocs.org
+Slides available on https://diecutter.readthedocs.io
 
 This presentation is published under `CC BY 3.0
 <http://creativecommons.org/licenses/by/3.0/>`_

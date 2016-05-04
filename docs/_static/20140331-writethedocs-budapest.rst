@@ -6,7 +6,7 @@ Lightning-talk at `Write The Docs Europe 2014
 
 By Benoît Bryon <benoit@marmelune.net> @benoitbryon
 
-Slides available on https://diecutter.readthedocs.org
+Slides available on https://diecutter.readthedocs.io
 
 -------------------------------------------------------------------------------
 
@@ -150,6 +150,6 @@ Let's try diecutter!
 ====================
 
 * SAAS: http://diecutter.io
-* Documentation: https://diecutter.readthedocs.org
-* Slides: `https://diecutter.readthedocs.org
-  <https://diecutter.readthedocs.org/en/latest/_static/20140331-writethedocs-budapest.html>`__
+* Documentation: https://diecutter.readthedocs.io
+* Slides: `https://diecutter.readthedocs.io
+  <https://diecutter.readthedocs.io/en/latest/_static/20140331-writethedocs-budapest.html>`__
